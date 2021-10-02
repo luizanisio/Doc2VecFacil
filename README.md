@@ -25,9 +25,16 @@ São criados dois arquivos de vocabulários, um principal e um complementar
    - coloque aqui listas de palavras não tão importantes para o contexto do corpus, mas que são importantes na composição desses textos. Podem ser textos maiores, a ideia aqui é construir fragmentos de palavras menos importantes que as principais (stemmer + sufixos). Aos termos não encontrados no dicionário criado pelos textos principais será aplicado o stemmer e será incluído o sufixo do termo complementando o stemmer, criando um conjunto extra de termos que possibilitam uma flexibilidade de novas combinações não conhecidas durante o treino.
  - Essa combinação de termos completos e fragmentos (stemmer + sufixo) possibilita criar palavras por combinação ao submeter um documento novo ao modelo.
    
-   <b>Exemplo</b>: `engloba` pode ser composta por `englob` `#a`, e outras formações podem ocorrer como `englob` `#ada`, `englob` `#adamente`, `englob` `#adas` caso esses  fragmentos estejam disponíveis no vocabulário de treinamento.
+ - <b>Exemplo</b>: `engloba` pode ser composta por `englob` `#a`, e outras formações podem ocorrer como `englob` `#ada`, `englob` `#adamente`, `englob` `#adas` caso esses  fragmentos estejam disponíveis no vocabulário de treinamento.
    - O vocab de treinamento não precisa do `#` antes do sufixo, apenas dos fragmentos. Mas durante o treinamento os fragmentos usados como
      sufixo iniciarão com `#` para facilitar sua identificação e diferenciar dos termos principais.
+ - <b>Exemplo de tokenização</b>: 
+   ```python
+   print(dv.tokens_sentenca('ATENDIAM A TESTEMUNHA SEU DEPOIMENTO APESAR DE TRAZER ALGUMAS IMPRECISÕES SOBRE OS FATOS ATENDO-SE OS JURADOS ÀS PROVAS PRODUZIDAS EM PLENÁRIOS'))
+   ```
+   ```
+   ['atend', '#iam', 'testemunha', 'seu', 'depoimento', 'apesar', 'de', 'trazer', 'algumas', 'impreciso', '#es', 'sobre', 'os', 'fatos', 'atend', '#o', 'se', 'os', 'jurados', 'as', 'provas', 'produzidas', 'em', 'plenari', '#os']
+   ```
 
 Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt` com cada termo, sua frequência, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.
 - Opcionalmente pode-se editar o arquivo do dicionário principal com base nos dados dessa planilha e remover o dicionário complementar e rodar o código novamente para que o dicionário complementar seja recriado aproveitando o dicionário base ajustado manualmente, sem um novo processamento do dicionário principal.
@@ -45,7 +52,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
 ## Definição de pastas:
  A estrutura de pastas é pré-definida para facilitar o uso dos componentes. <br>
  O único parâmetro informado é a pasta raiz que vai conter as outras pastas. <br>
- - `Pasta raiz` (informada no parâmetro da chamada)
+ - `Pasta raiz` (informada no parâmetro da chamada - padrão = "meu_modelo")
    - `doc2vecfacil` (pasta do modelo): ao disponibilizar o modelo para uso, pode-se renomear essa pasta livremente
    - `textos_vocab`: textos que serão tokenizados para criação do vocab principal
    - `textos_complementares`: textos que seráo tokenizados para criação do dicionário complementar de fragmentos dos termos não encontrados no vocab principal.
