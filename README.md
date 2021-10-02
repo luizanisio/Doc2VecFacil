@@ -6,9 +6,13 @@ O componente trabalha em duas etapas:
  - criação de um vocab personalizado ao processar textos considerados importantes para o modelo que será treinado
  - treinamento do modelo usando a estrutura de tokenização criada a partir do vocab personalizado
 
+`EM BREVE`: Será disponibilizado um serviço exemplo em conjunto com o componente `PesquisaElasticFacil` para criação de modelos de similaridade textual, agregando valor às pesquisas do ElasticSearch de forma simples com um modelo treinado no corpus específico de cada projeto.
+
+`FINALIZANDO TESTES antes de disponibilizar`
+
 ## Criação do vocab personalizado
 
-O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil` e serve para facilitar a criação de arquivos que configuram o `TokenizadorInteligente`. A ideia é trabalhar com termos importantes para o modelo adicionados a termos complementares compostos por fragmentos de termos `stemmer` + `sufixo`. Com isso novos documentos que possuam termos fora do vocab principal podem ter o stemmer e o sufixo dentro do vocab do modelo, criando um vocab mais flexível e menor.
+O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil` e serve para facilitar a criação de arquivos que configuram o `TokenizadorInteligente`. A ideia é trabalhar com termos importantes para o modelo, adicionados a termos complementares compostos por fragmentos de termos `stemmer` + `sufixo`. Com isso novos documentos que possuam termos fora do vocab principal podem ter o stemmer e o sufixo dentro do vocab do modelo, criando um vocab mais flexível e menor.
 
 São criados dois arquivos de vocabulários, um principal e um complementar
  - o dicionário principal é composto pelos termos completos encontrados nos textos da pasta `textos_vocab`
@@ -48,26 +52,46 @@ Junto com a criação dos dicionários é criado um arquivo com cada termo, sua 
  - Pode-se gerar um vocab e utilizá-lo para treinar diversos conjuntos diferentes de arquivos em modelos diferentes. 
  - Por isso o arquivo `vocab_treino` pode ser menor que o arquivo `vocab_final`, já que vai conter apenas os termos encontrados durante o treino. Os arquivos criados são sugestões e podem ser alterados livremente antes de iniciar o treinamento do modelo.
 
-## Passo a passo para o treino: 
+## Passo a passo para criar o vocab: 
  1) Criar as pastas:
     - `meu_modelo`
     - `meu_modelo\textos_vocab`: colocar um conjunto de textos importantes para o corpus
     - `meu_modelo\textos_vocab_complementar`: colocar um conjunto de textos complementares (tokens serão quebrados)
     - `meu_modelo\textos_treino`: colocar os arquivos que serão usados no treinamento
- 2) Rodar: `python util_doc2vec_facil.py ./meu_modelo`
-    - para forcar recriar os arquivos se já existirem, basta colocar o parâmetro -reiniciar
+ 2) Rodar: `python util_doc2vec_vocab_facil.py -pasta./meu_modelo`
+    - para forcar recriar os arquivos se já existirem, basta colocar o parâmetro `-reiniciar`
     - ao chamar uma segunda vez, o código vai apenas atualizar o arquivo de curadoria
     - o arquivo de curadoria será criado considerando os textos da pasta `textos_treino` também
  3) Opcional: abrir o arquivo ./meu_modelo/doc2vecfacil/curadoria_vocab.txt no excel e analisar os termos
     - alterar os arquivos `VOCAB_BASE*` e `VOCAB_REMOVIDO*` com base na curadoria
     - alterar o arquivo `termos_comparacao_treino.txt` com termos importantes para acompanhar a evolução do modelo
- 4) Com os arquivos prontos, corrigidos manualmente ou não, pode-se treinar o modelo
- 5) Rodar: `python util_doc2vecfacil.py ./meu_modelo`
+    
+## Passo a passo para treinar o modelo doc2vec: 
+ 4) Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo
+ 5) Arquivos importantes para o treino:
+    - `meu_modelo\textos_treino\`: colocar os arquivos que serão usados no treinamento
+    - `meu_modelo\doc2vecfacil\VOCAB_BASE_*.txt`: arquivos com termos que serão treinados 
+    - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO_*.txt`: arquivos com termos que serão ignorados
+ 5) Rodar: `python util_doc2vec_facil.py -pasta ./meu_modelo`
     - se já existir o modelo, o treinamento será continuado.
-    - opcionalmente pode-se colocar novos documentos para atualizar o treinamento, mantendo os documentos antigos
-      - ao incluir novos documentos, apenas os termos no arquivo vocab_treino serão usados, para ampliar o vocab de treino deve-se apagar o modelo e reiniciar o treinamento
+    - opcionalmente pode-se colocar novos documentos para atualizar o treinamento, mantendo os documentos antigos. É importante ressaltar que, ao incluir novos documentos, apenas os termos no arquivo `vocab_treino.txt` serão usados (arquivo que informa a lista de termos do modelo criado). Para ampliar o vocab de treino deve-se apagar o modelo e reiniciar o treinamento, ou usar o parâmetro `-reiniciar sim`
     - sugere-se aguardar no mínimo 1000 épocas, se possível umas 5000
-    - pode-se acompanhar a evolução do modelo criando ou alterando o arquivo `termos_comparacao_treino.txt` que contém uma lista de termos para geração do arquivo termos_comparacao.log onde para cada termo será apresentada uma lista de termos mais semelhantes, permitindo uma avaliação do modelo em treinamento. Esse arquivo não interfere no treino e pode ser modificado a qualquer momento.
+    - pode-se acompanhar a evolução do modelo criando ou alterando o arquivo `termos_comparacao_treino.txt` que contém uma lista de termos para geração do arquivo `termos_comparacao.log` onde para cada termo será apresentada uma lista de termos mais semelhantes, permitindo uma avaliação do modelo em treinamento. Esse arquivo não interfere no treino e pode ser modificado a qualquer momento.
+
+## Parâmetros
+ - `python util_doc2vec_facil.py`
+    - `-pasta` - nome da pasta de treinamento que contém a pasta do modelo e as pastas de textos, o padrão é `meu_modelo` se não for informada.
+    - `-treinar`' - iniciar o treinamento do modelo
+    - `-reiniciar sim` - remove o modeo atual, se existir, e inicia um novo treinamento
+    - `-testar` - carrega o modelo atual, se existir, e atualiza o arquivo `comparar_termos.log` com os termos encontrados no arquivo `termos_comparacao_treino.txt`
+    - `-epocas` - define o número de épocas que serão treinadas, o padrão é 5000 e pode ser interrompido ou acrescido a qualquer momento.
+    - `-dimensoes` - define o número de dimensões dos vetores de treinamento.
+    - `-workers` - número de threads de treinamento, padrão 100
+
+ - `python util_doc2vec_vocab_facil.py`
+    - `-pasta` - nome da pasta de treinamento que contém as pastas de textos, o padrão é `meu_modelo` se não for informada.
+    - `-reiniciar` - remove os arquivos de vocab automáticos, se existirem, e reinicia a criação deles.
+    - `-teste` - carrega o `TokenizadorInteligente` para verificar se os arquivos que serão usados para o processamento no treino estão ok.
 
 ## Dicas:
  Ao rodar o código para criar o vocab:
