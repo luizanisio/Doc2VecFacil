@@ -81,7 +81,6 @@ Junto com a criação dos dicionários é criado um arquivo com cada termo, sua 
     - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO_*.txt`: arquivos com termos que serão ignorados
  5) Rodar: `python util_doc2vec_facil.py -pasta ./meu_modelo`.
     - se já existir o modelo, o treinamento será continuado.
-    - opcionalmente pode-se colocar novos documentos para atualizar o treinamento, mantendo os documentos antigos. É importante ressaltar que, ao incluir novos documentos, apenas os termos no arquivo `vocab_treino.txt` serão usados (arquivo que informa a lista de termos do modelo criado). Para ampliar o vocab de treino deve-se apagar o modelo e reiniciar o treinamento, ou usar o parâmetro `-reiniciar sim`
     - sugere-se aguardar no mínimo 1000 épocas, se possível umas 5000
     - pode-se acompanhar a evolução do modelo criando ou alterando o arquivo `termos_comparacao_treino.txt` que contém uma lista de termos para geração do arquivo `termos_comparacao.log` onde para cada termo será apresentada uma lista de termos mais semelhantes, permitindo uma avaliação do modelo em treinamento. Esse arquivo não interfere no treino e pode ser modificado a qualquer momento.
 
