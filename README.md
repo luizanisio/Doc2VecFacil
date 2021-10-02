@@ -105,3 +105,34 @@ Junto com a criação dos dicionários é criado um arquivo com cada termo, sua 
  - caso existam todos os dicionários, será criado/atualizado o arquivo de curadoria, sem modificar os dicionários existentes.
  - se durante a preparação do dicionário já existirem documetnos na pasta  `textos_treino`, o arquivo de curadoria será criado usando os textos de treinamento, facilitando identificar os termos que não serão treinados, bem como outros atributos de todos os termos.
  - no arquivo de curadoria, a coluna `VOCAB` S/N indica se o termo está contido inteiro no vocab e a coluna `VOCAB_QUEBRADOS` S/N indica se o termo foi incluído após ser fragmentado. Caso as duas colunas sejam N, isso indica que o termo não será treinado, nem inteiro e nem o seu stemmer #sufixo.
+
+## Usando o modelo:
+ O modelo pode ser carregado facilmente:
+ ```python 
+ from util_doc2vec_facil import UtilDoc2VecFacil
+ dv = UtilDoc2VecFacil(pasta_modelo=PASTA_MODELO)
+
+frase1 = 'EXECUÇÃO POR TÍTULO EXTRAJUDICIAL DE HONORÁRIO ADVOCATÍCIO EMBARGOS ADJUDICAÇÃO PENHORAS'
+frase2 = 'EMENTA SEGUROs de VIDA COBRANÇA CUMULADA C PRETENSÃO INDENIZATÓRIA PRESCRIÇÃO RECONHECIDA'
+frase3 = 'DE HONORÁRIOS ADVOCATÍCIOS EMBARGOS ADJUDICAÇÃO PENHORA EXECUÇÃO POR TÍTULO EXTRAJUDICIAL '
+print('Frase1: ', frase1, '\nFrase2: ', frase2, '\n\t - Similaridade: ', dv.similaridade(frase1,frase2))
+print('Frase1: ', frase1, '\nFrase3: ', frase3, '\n\t - Similaridade: ', dv.similaridade(frase1,frase3))        
+print('\nTokens frase 1: ', dv.tokens_sentenca(frase1))
+ ```
+ 
+ <b>Resultado:</b>
+ ```
+Frase1:  EXECUÇÃO POR TÍTULO EXTRAJUDICIAL DE HONORÁRIO ADVOCATÍCIO EMBARGOS ADJUDICAÇÃO PENHORAS
+Frase2:  EMENTA SEGUROs de VIDA COBRANÇA CUMULADA C PRETENSÃO INDENIZATÓRIA PRESCRIÇÃO RECONHECIDA
+         - Similaridade:  0.43190062046051025
+Frase1:  EXECUÇÃO POR TÍTULO EXTRAJUDICIAL DE HONORÁRIO ADVOCATÍCIO EMBARGOS ADJUDICAÇÃO PENHORAS
+Frase3:  DE HONORÁRIOS ADVOCATÍCIOS EMBARGOS ADJUDICAÇÃO PENHORA EXECUÇÃO POR TÍTULO EXTRAJUDICIAL
+         - Similaridade:  0.46588313579559326
+
+Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario', 'advocaticio', 'embargos', 'adjudicacao', 'penhoras'] 
+ ```
+
+## Dicas de uso:
+- gravar os vetores, textos e metadados dos documentos no ElasticSearch
+- fazer pesquisas com More Like This, vetoriais e por proximidade de termos como disponibilizado no componente `PesquisaElasticFacil` em breve.
+
