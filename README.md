@@ -107,6 +107,22 @@ Junto com a criação dos dicionários é criado um arquivo com cada termo, sua 
  - se durante a preparação do dicionário já existirem documetnos na pasta  `textos_treino`, o arquivo de curadoria será criado usando os textos de treinamento, facilitando identificar os termos que não serão treinados, bem como outros atributos de todos os termos.
  - no arquivo de curadoria, a coluna `VOCAB` S/N indica se o termo está contido inteiro no vocab e a coluna `VOCAB_QUEBRADOS` S/N indica se o termo foi incluído após ser fragmentado. Caso as duas colunas sejam N, isso indica que o termo não será treinado, nem inteiro e nem o seu stemmer #sufixo.
 
+### Termos comparados para acompanhar a evolução do modelo:
+Exemplo de saída do arquivo `comparar_termos.log` atualizado a cada época.
+Esse log é gerado com os termos disponíveis no arquivo `termos_comparacao_treino.txt` que é carregado no início do treino e pode ser alterado sempre que desejado.
+```
+artigo               |  art (77%)                |  artigos (55%)            |  arts (53%)              
+cobrados             |  pagos (54%)             
+cogitar              |  falar (52%)             
+compromisso          |  promessa (57%)          
+comprovadas          |  demonstradas (58%)      
+entendimento         |  posicionamento (52%)    
+entorpecentes        |  drogas (64%)            
+julga                |  julgou (71%)             |  julgando (53%)          
+parcelas             |  prestacoes (60%)         |  despesas (55%)           |  quantias (52%)          
+termo                |  peticao (64%)            |  inepcia (63%)           
+```
+
 ## Usando o modelo:
  O modelo pode ser carregado facilmente:
  ```python 
