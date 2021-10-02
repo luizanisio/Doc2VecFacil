@@ -7,6 +7,7 @@ O componente trabalha em duas etapas:
  - treinamento do modelo usando a estrutura de tokenização criada a partir do vocab personalizado
 
 `EM BREVE`: Será disponibilizado um serviço exemplo em conjunto com o componente `PesquisaElasticFacil` para criação de modelos de similaridade textual, agregando valor às pesquisas do ElasticSearch de forma simples com um modelo treinado no corpus específico de cada projeto.
+- https://github.com/luizanisio/PesquisaElasticFacil
 
 `FINALIZANDO TESTES antes de disponibilizar`
 
