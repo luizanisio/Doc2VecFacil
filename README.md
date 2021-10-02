@@ -41,7 +41,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
 - Opcionamente pode-se criar quantos dicionários quiser com o prefixo `vocab_base*.txt`, os termos desses dicionários não farão parte do dicionário principal criado, nem do complementar, mas serão carregados para treinamento do modelo. 
 - Opcionamente também é possível criar arquivos de termos excluídos do treinamento `vocab_removido*.txt`
 - Opcionamente também é possível criar arquivos de frases/termos compostos excluídos do treinamento `vocab_removido_composto*.txt`
-  - A diferença nesse caso é que a frase será removida da sentença antes da tokenização. Um exemplo de uso é incluir nomes de pessoas ou empresas que não há interesse em compor o treinamento e a vetorização posterior de novos documentos. Removendo ruídos conhecidos.
+  - A diferença nesse caso é que a frase será removida da sentença antes da tokenização (cada frase deve estar em uma linha do arquivo). Um exemplo de uso é incluir nomes de pessoas ou empresas que não há interesse em compor o treinamento e a vetorização posterior de novos documentos. Removendo ruídos conhecidos.
 
 ### Exemplo de arquivo `curadoria_vocab.txt` de curadoria de termos:
 | TERMO       | TFIDF       | TAMANHO |  QTD  | QTD_DOCS | VOCAB | VOCAB_QUEBRADOS |
