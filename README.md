@@ -35,12 +35,12 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
 - Opcionamente também é possível criar arquivos de termos excluídos do treinamento `vocab_removido*.txt`
 
 ### Exemplo de arquivo `curadoria_vocab.txt` de curadoria de termos:
-| TERMO       | TFIDF       | TAMANHO | QTD   | QTD_DOCS | VOCAB | VOCAB_QUEBRADOS |
-|-------------|-------------|---------|-------|----------|-------|-----------------|
-| acessorias  | 0,301051057 | 10      | 91    | 28       | S     | N               |
-| calculo     | 0,490002279 | 7       | 1736  | 810      | S     | N               |
-| cinco       | 0,471974082 | 5       | 68661 | 6846     | S     | N               |
-| custas      | 0,41286071  | 6       | 740   | 417      | S     | N               |
+| TERMO       | TFIDF       | TAMANHO |  QTD  | QTD_DOCS | VOCAB | VOCAB_QUEBRADOS |
+|-------------|-------------|:-------:|:-----:|:--------:|:-----:|:---------------:|
+| acessorias  | 0,301051057 |    10   |   91  |    28    |   S   |        N        |
+| calculo     | 0,490002279 |    7    |  1736 |    810   |   S   |        N        |
+| cinco       | 0,471974082 |    5    | 68661 |   6846   |   S   |        N        |
+| custas      | 0,41286071  |    6    |  740  |    417   |   S   |        N        |
 
 ## Definição de pastas:
  A estrutura de pastas é pré-definida para facilitar o uso dos componentes. <br>
