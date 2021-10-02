@@ -17,9 +17,9 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 São criados dois arquivos de vocabulários, um principal e um complementar
  - o dicionário principal é composto pelos termos completos encontrados nos textos da pasta `textos_vocab`
  - o dicionário complementar é composto pelos termos quebrados encontrados nos textos da pasta `textos_vocab_complementar'`
- - aos termos não encontrados no dicionário será aplicado o stemmer e será incluído o sufixo do termo complementando o stemmer,
-   criando um conjunto extra de termos que possibilitam uma flexibilidade de novas combinações não conhecidas durante o treino.
+ - aos termos não encontrados no dicionário será aplicado o stemmer e será incluído o sufixo do termo complementando o stemmer, criando um conjunto extra de termos que possibilitam uma flexibilidade de novas combinações não conhecidas durante o treino.
    - Isso possibilita criar palavras por combinação `prefixo` `#sufixo` ao submeter um documento novo ao modelo.
+   
    <b>Exemplo</b>: `engloba` pode ser composta por `englob` `#a`, e outras formações podem ocorrer como `englob` `#ada`, `englob` `#adamente`, `englob` `#adas` caso esses  fragmentos estejam disponíveis no vocabulário de treinamento.
    - O vocab de treinamento não precisa do `#` antes do sufixo, apenas dos fragmentos. Mas durante o treinamento os fragmentos usados como
      sufixo iniciarão com `#` para facilitar sua identificação e diferenciar dos termos principais.
@@ -52,7 +52,7 @@ Junto com a criação dos dicionários é criado um arquivo com cada termo, sua 
  - Pode-se gerar um vocab e utilizá-lo para treinar diversos conjuntos diferentes de arquivos em modelos diferentes. 
  - Por isso o arquivo `vocab_treino` pode ser menor que o arquivo `vocab_final`, já que vai conter apenas os termos encontrados durante o treino. Os arquivos criados são sugestões e podem ser alterados livremente antes de iniciar o treinamento do modelo.
 
-## Passo a passo para criar o vocab: 
+## Passo a passo para criar o vocab de treino: 
  1) Criar as pastas:
     - `meu_modelo`
     - `meu_modelo\textos_vocab`: colocar um conjunto de textos importantes para o corpus
@@ -65,14 +65,21 @@ Junto com a criação dos dicionários é criado um arquivo com cada termo, sua 
  3) Opcional: abrir o arquivo ./meu_modelo/doc2vecfacil/curadoria_vocab.txt no excel e analisar os termos
     - alterar os arquivos `VOCAB_BASE*` e `VOCAB_REMOVIDO*` com base na curadoria
     - alterar o arquivo `termos_comparacao_treino.txt` com termos importantes para acompanhar a evolução do modelo
-    
+
+## Criando o vocab manualmente (opcional):
+ Os arquivos necessários para o treino que serão usados para a tokenização são:
+    - `meu_modelo\doc2vecfacil\VOCAB_BASE_*.txt`: arquivos com termos que serão treinados 
+    - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO_*.txt`: arquivos com termos que serão ignorados
+ - Pode-se criar os arquivos manualmente com os termos desejados, ou aproveitar os arquivos de outro treino. Ou Ajustar os arquivos criados automaticamente.
+ - Pode-se conferir os arquivos `.clr` criados nas pastas `textos*` pois eles são o resultado do processamento dos textos originais com o `TokenizadorInteligente`
+
 ## Passo a passo para treinar o modelo doc2vec: 
- 4) Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo
- 5) Arquivos importantes para o treino:
+ 4) Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.
+ 5) Conferir a pasta de texto e arquivos do vocab:
     - `meu_modelo\textos_treino\`: colocar os arquivos que serão usados no treinamento
     - `meu_modelo\doc2vecfacil\VOCAB_BASE_*.txt`: arquivos com termos que serão treinados 
     - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO_*.txt`: arquivos com termos que serão ignorados
- 5) Rodar: `python util_doc2vec_facil.py -pasta ./meu_modelo`
+ 5) Rodar: `python util_doc2vec_facil.py -pasta ./meu_modelo`.
     - se já existir o modelo, o treinamento será continuado.
     - opcionalmente pode-se colocar novos documentos para atualizar o treinamento, mantendo os documentos antigos. É importante ressaltar que, ao incluir novos documentos, apenas os termos no arquivo `vocab_treino.txt` serão usados (arquivo que informa a lista de termos do modelo criado). Para ampliar o vocab de treino deve-se apagar o modelo e reiniciar o treinamento, ou usar o parâmetro `-reiniciar sim`
     - sugere-se aguardar no mínimo 1000 épocas, se possível umas 5000
