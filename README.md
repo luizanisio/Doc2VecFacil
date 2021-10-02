@@ -93,7 +93,12 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
     - `meu_modelo\doc2vecfacil\VOCAB_BASE_*.txt`: arquivos com termos que serão treinados 
     - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO_*.txt`: arquivos com termos que serão ignorados
  - Pode-se criar os arquivos manualmente com os termos desejados, ou aproveitar os arquivos de outro treino. Ou Ajustar os arquivos criados automaticamente.
- - Pode-se conferir os arquivos `.clr` criados nas pastas `textos*` pois eles são o resultado do processamento dos textos originais com o `TokenizadorInteligente`
+
+## Conferindo o processamento dos textos
+- Pode-se conferir os arquivos `.clr` criados nas pastas `textos*` pois eles são o resultado do processamento dos textos originais com o `TokenizadorInteligente`.
+- Nesse arquivo é possível identificar os fragmentos e os tokens principais e verificar se a tokenização está de acordo com o esperado. O treinamento do modelo será feito com esse arquivo. 
+- No início do treinamento os arquivos `.clr` serão atualizados para garantir que novos termos incluídos ou alterados manualmente sejam refletidos na tokenização.
+- Os arquivos `.clr` são necessários durante todo o treinamento e serão recriados se não forem encontrados, isso acelera o treinamento para não haver necessidade de reprocessar o texto a cada época.
 
 ## Passo a passo para treinar o modelo doc2vec: 
  4) Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.
