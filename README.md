@@ -98,7 +98,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
 - Pode-se conferir os arquivos `.clr` criados nas pastas `textos*` pois eles são o resultado do processamento dos textos originais com o `TokenizadorInteligente`.
 - Nesse arquivo é possível identificar os fragmentos e os tokens principais e verificar se a tokenização está de acordo com o esperado. O treinamento do modelo será feito com esse arquivo. 
 - No início do treinamento os arquivos `.clr` serão atualizados para garantir que novos termos incluídos ou alterados manualmente sejam refletidos na tokenização.
-- Os arquivos `.clr` são necessários durante todo o treinamento e serão recriados se não forem encontrados, isso acelera o treinamento para não haver necessidade de reprocessar o texto a cada época.
+- Os arquivos `.clr` são necessários durante todo o treinamento e serão recriados se não forem encontrados, isso acelera o treinamento para não haver necessidade de reprocessar o texto cada vez que o treinamento passar por ele.
 
 ## Passo a passo para treinar o modelo doc2vec: 
  1) Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.
