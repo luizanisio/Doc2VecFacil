@@ -20,18 +20,27 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 
 São criados dois arquivos de vocabulários, um principal e um complementar
  - o dicionário principal é composto pelos termos completos encontrados nos textos da pasta `textos_vocab`
- - o dicionário complementar é composto pelos termos quebrados encontrados nos textos da pasta `textos_vocab_complementar'`
- - aos termos não encontrados no dicionário será aplicado o stemmer e será incluído o sufixo do termo complementando o stemmer, criando um conjunto extra de termos que possibilitam uma flexibilidade de novas combinações não conhecidas durante o treino.
-   - Isso possibilita criar palavras por combinação `prefixo` `#sufixo` ao submeter um documento novo ao modelo.
+   - coloque aqui textos que contenham boas palavras, limpas de preferência. Podem ser listas retiradas de algum documento, não importa o contexto delas, apenas as palavras nesse momento. Então listas de palavras e documentos como gramáticas de dicionários de português digitais parecem uma boa opção. Coloque também documentos com palavras relacionadas ao corpus desejado (psicologia, medicina, legislação, administração, etc).
+ - o dicionário complementar é composto pelos termos quebrados encontrados nos textos da pasta `textos_vocab_complementar'`. 
+   - coloque aqui listas de palavras não tão importantes para o contexto do corpus, mas que são importantes na composição desses textos. Podem ser textos maiores, a ideia aqui é construir fragmentos de palavras menos importantes que as principais (stemmer + sufixos). Aos termos não encontrados no dicionário criado pelos textos principais será aplicado o stemmer e será incluído o sufixo do termo complementando o stemmer, criando um conjunto extra de termos que possibilitam uma flexibilidade de novas combinações não conhecidas durante o treino.
+ - Essa combinação de termos completos e fragmentos (stemmer + sufixo) possibilita criar palavras por combinação ao submeter um documento novo ao modelo.
    
    <b>Exemplo</b>: `engloba` pode ser composta por `englob` `#a`, e outras formações podem ocorrer como `englob` `#ada`, `englob` `#adamente`, `englob` `#adas` caso esses  fragmentos estejam disponíveis no vocabulário de treinamento.
    - O vocab de treinamento não precisa do `#` antes do sufixo, apenas dos fragmentos. Mas durante o treinamento os fragmentos usados como
      sufixo iniciarão com `#` para facilitar sua identificação e diferenciar dos termos principais.
 
-Junto com a criação dos dicionários é criado um arquivo com cada termo, sua frequência, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.
+Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt` com cada termo, sua frequência, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.
 - Opcionalmente pode-se editar o arquivo do dicionário principal com base nos dados dessa planilha e remover o dicionário complementar e rodar o código novamente para que o dicionário complementar seja recriado aproveitando o dicionário base ajustado manualmente, sem um novo processamento do dicionário principal.
 - Opcionamente pode-se criar quantos dicionários quiser com o prefixo `vocab_base*.txt`, os termos desses dicionários não farão parte do dicionário principal criado, nem do complementar, mas serão carregados para treinamento do modelo. 
 - Opcionamente também é possível criar arquivos de termos excluídos do treinamento `vocab_removido*.txt`
+
+### Exemplo de arquivo `curadoria_vocab.txt` de curadoria de termos:
+| TERMO       | TFIDF       | TAMANHO | QTD   | QTD_DOCS | VOCAB | VOCAB_QUEBRADOS |
+|-------------|-------------|---------|-------|----------|-------|-----------------|
+| acessorias  | 0,301051057 | 10      | 91    | 28       | S     | N               |
+| calculo     | 0,490002279 | 7       | 1736  | 810      | S     | N               |
+| cinco       | 0,471974082 | 5       | 68661 | 6846     | S     | N               |
+| custas      | 0,41286071  | 6       | 740   | 417      | S     | N               |
 
 ## Definição de pastas:
  A estrutura de pastas é pré-definida para facilitar o uso dos componentes. <br>
