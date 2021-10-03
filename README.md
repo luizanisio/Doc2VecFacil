@@ -8,11 +8,13 @@ O componente trabalha em duas etapas:
  - treinamento do modelo usando a estrutura de tokenização criada a partir do vocab personalizado
    - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
 
+- Códigos: 
+  - [Criação de vocab](util_doc2vec_vocab_facil.py)
+  - [UtilDoc2VecFacil](util_doc2vec_facil.py) e [UtilDoc2VecFacil_Treinamento](util_doc2vec_facil.py) 
+
 Logo abaixo estão algumas dicas de como criar um modelo personalizado com esse código, como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente ou textualmente, como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
 
 `EM BREVE`: Será disponibilizado um serviço exemplo em conjunto com o componente [PesquisaElasticFacil](https://github.com/luizanisio/PesquisaElasticFacil) para criação de modelos de similaridade textual, agregando valor às pesquisas do ElasticSearch de forma simples com um modelo treinado no corpus específico de cada projeto.
-
-`FINALIZANDO TESTES antes de disponibilizar`
 
 ## Criação do vocab personalizado
 
