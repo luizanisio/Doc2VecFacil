@@ -93,8 +93,10 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
 ## Criando o vocab manualmente (opcional):
  Os arquivos necessários para o treino que serão usados para a tokenização são:
     - `meu_modelo\doc2vecfacil\VOCAB_BASE_*.txt`: arquivos com termos que serão treinados 
-    - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO_*.txt`: arquivos com termos que serão ignorados
- - Pode-se criar os arquivos manualmente com os termos desejados, ou aproveitar os arquivos de outro treino. Ou Ajustar os arquivos criados automaticamente.
+ Opcionais:
+    - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados
+    - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO_COMPOSTO*.txt`: arquivos com frases que serão removidas
+ - Pode-se criar os arquivos manualmente com os termos desejados, ou aproveitar os arquivos de outro treino. Ou Ajustar os arquivos criados automaticamente incluindo ou retirando termos.
 
 ## Conferindo o processamento dos textos
 - Pode-se conferir os arquivos `.clr` criados nas pastas `textos*` pois eles são o resultado do processamento dos textos originais com o `TokenizadorInteligente`.
@@ -103,12 +105,12 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
 - Os arquivos `.clr` são necessários durante todo o treinamento e serão recriados se não forem encontrados, isso acelera o treinamento para não haver necessidade de reprocessar o texto cada vez que o treinamento passar por ele.
 
 ## Passo a passo para treinar o modelo doc2vec: 
- 1) Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.
- 2) Conferir a pasta de texto e arquivos do vocab:
+ Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.
+ 1) Conferir a pasta de texto e arquivos do vocab:
     - `meu_modelo\textos_treino\`: colocar os arquivos que serão usados no treinamento
     - `meu_modelo\doc2vecfacil\VOCAB_BASE_*.txt`: arquivos com termos que serão treinados 
     - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO_*.txt`: arquivos com termos que serão ignorados
- 3) Rodar: `python util_doc2vec_facil.py -pasta ./meu_modelo`.
+ 2) Rodar: `python util_doc2vec_facil.py -pasta ./meu_modelo`.
     - se já existir o modelo, o treinamento será continuado.
     - sugere-se aguardar no mínimo 1000 épocas, se possível umas 5000
     - pode-se acompanhar a evolução do modelo criando ou alterando o arquivo `termos_comparacao_treino.txt` que contém uma lista de termos para geração do arquivo `termos_comparacao.log` onde para cada termo será apresentada uma lista de termos mais semelhantes, permitindo uma avaliação do modelo em treinamento. Esse arquivo não interfere no treino e pode ser modificado a qualquer momento.
