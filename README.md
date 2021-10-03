@@ -23,7 +23,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 São criados dois arquivos de vocabulários, um principal e um complementar
  - o dicionário principal é composto pelos termos completos encontrados nos textos da pasta `textos_vocab`
    - coloque aqui textos que contenham boas palavras, limpas de preferência. Podem ser listas retiradas de algum documento, não importa o contexto delas, apenas as palavras nesse momento. Então listas de palavras e documentos como gramáticas de dicionários de português digitais parecem uma boa opção. Coloque também documentos com palavras relacionadas ao corpus desejado (psicologia, medicina, legislação, administração, etc).
- - o dicionário complementar é composto pelos termos quebrados encontrados nos textos da pasta `textos_vocab_complementar'`. 
+ - o dicionário complementar é composto pelos termos quebrados encontrados nos textos da pasta `textos_vocab_complementar`. 
    - coloque aqui listas de palavras não tão importantes para o contexto do corpus, mas que são importantes na composição desses textos. Podem ser textos maiores, a ideia aqui é construir fragmentos de palavras menos importantes que as principais (stemmer + sufixos). Aos termos não encontrados no dicionário criado pelos textos principais será aplicado o stemmer e será incluído o sufixo do termo complementando o stemmer, criando um conjunto extra de termos que possibilitam uma flexibilidade de novas combinações não conhecidas durante o treino.
  - Essa combinação de termos completos e fragmentos (stemmer + sufixo) possibilita criar palavras por combinação ao submeter um documento novo ao modelo.
    
