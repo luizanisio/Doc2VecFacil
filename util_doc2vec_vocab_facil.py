@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+#######################################################################
 # Código complementar ao Doc2VecFacil para criar os vocabs de um conjuntos de textos em pastas padronizadas
 # Esse código, dicas de uso e outras informações: 
 #   -> https://github.com/luizanisio/Doc2VecFacil/
 # Luiz Anísio 
 # Ver 0.1.0 - 03/10/2021 - disponibilizado no GitHub  
+#######################################################################
 
 from gensim.models import TfidfModel
 from gensim.corpora import Dictionary
