@@ -133,8 +133,8 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
 ## Dicas:
  Ao rodar o código para criar o vocab:
  - caso exista um ou mais arquivos do dicionário principal e não existam arquivos do secundário, será criado apenas o dicionário secundário com base nos textos complementares das pastas `textos_vocab_complementar`. Isso facilita criar novos modelos mantendo um dicionário base padrão.
- - caso existam todos os dicionários, será criado/atualizado o arquivo de curadoria, sem modificar os dicionários existentes.
- - se durante a preparação do dicionário já existirem documetnos na pasta  `textos_treino`, o arquivo de curadoria será criado usando os textos de treinamento, facilitando identificar os termos que não serão treinados, bem como outros atributos de todos os termos.
+ - caso existam todos os dicionários, será criado/atualizado o arquivo de curadoria, sem modificar os dicionários existentes. Usando o parâmetros `-reiniciar`, o vocab automático e automático complementar serão recriados.
+ - se durante a preparação do dicionário existirem documetnos na pasta  `textos_treino`, o arquivo de curadoria será criado usando os textos de treinamento, facilitando identificar os termos que não serão treinados, bem como outros atributos de todos os termos. Como o processo pode demorar, para um corpus muito grande pode-se deixar alguns textos na pasta treino e colocar todos no momento de treinamento propriamente dito.
  - no arquivo de curadoria, a coluna `VOCAB` S/N indica se o termo está contido inteiro no vocab e a coluna `VOCAB_QUEBRADOS` S/N indica se o termo foi incluído após ser fragmentado. Caso as duas colunas sejam N, isso indica que o termo não será treinado, nem inteiro e nem o seu stemmer #sufixo.
 
 ### Termos comparados para acompanhar a evolução do modelo:
