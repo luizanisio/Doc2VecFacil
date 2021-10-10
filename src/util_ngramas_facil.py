@@ -76,7 +76,7 @@ def quebrar_sentencas_stop_ngramas(lista_de_sentencas):
     return novas_sentencas
 
 # gera modelo de bigramas
-def gerar_bigramas_preprocessados(pasta_textos=r'.\textos', pasta_saida_ngramas=None, min_count=10, threshold = 10):
+def gerar_bigramas_preprocessados(pasta_textos=r'.\textos', pasta_saida_ngramas=None, min_count=10, threshold = 20):
     # looping para ngramas
     iterarq_1 = IterarArquivos(pasta = pasta_textos, mascara = '*.txt')
     iterarq_2 = IterarArquivos(pasta = pasta_textos, mascara = '*.txt')
@@ -223,7 +223,13 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Pasta do modelo')
     parser.add_argument('-pasta', help='pasta raiz contendo as pastas do modelo e dos textos', required=False)
+    parser.add_argument('-epocas', help='número de épocas para treinamento - padrão 5000 ', required=False, action='store_const', const=5000)
+    parser.add_argument('-min_count', help='número de ocorrências para usar um termo - padrão 10 ', required=False)
+    parser.add_argument('-threshold', help='threshold para aceitar termos como compostos - padrão 20 ', required=False)
+
     args = parser.parse_args()
+    min_count = int(args.min_count) if args.min_count else 10
+    threshold = int(args.threshold) if args.threshold else 20
 
     if not args.pasta:
         print('============================================================================')
@@ -249,23 +255,26 @@ if __name__ == "__main__":
     pasta_saida_ngramas = os.path.join(PASTA_BASE,'analise_ngramas')
     if not os.path.isdir(pasta_saida_ngramas):
         os.makedirs(pasta_saida_ngramas,exist_ok=True)
-    min_count = 3
-    min_count=3
-    threshold=15
 
     # gera os ngramas com os textos do vocab
     pasta_textos = os.path.join(PASTA_BASE,'textos_vocab')
     if not os.path.isdir(pasta_textos):
         pasta_textos = PASTA_BASE
-    gerar_bigramas_preprocessados(pasta_textos=pasta_textos, pasta_saida_ngramas= pasta_saida_ngramas, min_count=min_count, threshold=threshold)
+    gerar_bigramas_preprocessados(pasta_textos=pasta_textos, 
+                                  pasta_saida_ngramas= pasta_saida_ngramas, 
+                                  min_count=min_count, 
+                                  threshold=threshold)
 
     # testa com os textos de treino ou do vocab
     pasta_textos_treino = os.path.join(PASTA_BASE,'textos_treino')
     if os.path.isdir(pasta_textos_treino):
         pasta_textos = pasta_textos_treino
-    testar_ngramas(pasta_textos=pasta_textos, pasta_saida_ngramas = pasta_saida_ngramas, maximo_linhas=100)
+    testar_ngramas(pasta_textos=pasta_textos, 
+                   pasta_saida_ngramas = pasta_saida_ngramas, 
+                   maximo_linhas=100)
 
     print('=========================================================================================')
+    print(f'nGrams gerados com min_count = {min_count} e threshold = {threshold}')
     print(f'Sugestões e modelos de bigramas e quadrigramas criados em: ', pasta_saida_ngramas)
     print('=========================================================================================')
 
