@@ -48,8 +48,9 @@ Sugestões e modelos de bigramas e quadrigramas criados em:  ./meu_modelo\analis
 ```python
 gerador = TransformarNGramas(pasta_ngramas)
 texto = 'Conforme Agravo de Instrumento apreciado pelo primeiro grau'
-print(' - Aplicanto ngramas em: ', texto)
-tokens = gerador.transformar( pre_processamento(texto) )
+tokens = pre_processamento(texto)
+
+tokens = gerador.transformar( tokens )
 print(' '.join(tokens))
 ```
 Resultado:
