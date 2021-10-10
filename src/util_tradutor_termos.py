@@ -1,4 +1,15 @@
 # -*- coding: utf-8 -*-
+#######################################################################
+# Código complementar ao Doc2VecFacil para criar traduzir termos simples 
+# ou compostos do documento VOCAB_TRADUTOR.txt, foi otimizado para textos
+# grandes levando em consideração o case, já que será usado após a
+# tokenização e limpeza do documento
+# Esse código, dicas de uso e outras informações: 
+#   -> https://github.com/luizanisio/Doc2VecFacil/
+# Luiz Anísio 
+# 09/10/2021 - disponibilizado no GitHub  
+#######################################################################
+
 import re
 
 class TradutorTermosRe(dict):

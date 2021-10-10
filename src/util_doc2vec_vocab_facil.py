@@ -5,7 +5,7 @@
 # Esse código, dicas de uso e outras informações: 
 #   -> https://github.com/luizanisio/Doc2VecFacil/
 # Luiz Anísio 
-# Ver 0.1.0 - 03/10/2021 - disponibilizado no GitHub  
+# 03/10/2021 - disponibilizado no GitHub  
 #######################################################################
 
 from gensim.models import TfidfModel
@@ -48,7 +48,6 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, gerar_curad
     arquivo_saida_vocab = None
     # definição dos arquivos de curadoria
     arquivo_saida = os.path.join(pasta_vocab,'curadoria_planilha_vocab.txt')
-    arquivo_saida_oov_pesos = os.path.join(pasta_vocab,'curadoria_planilha_vocab (OOV).txt')
     arquivo_saida_oov = os.path.join(pasta_vocab,'curadoria termos inteiros OOV.txt')
     arquivo_saida_oov_quebrados = os.path.join(pasta_vocab,'curadoria termos OOV TOKENS QUEBRADOS.txt')
     arquivo_saida_oov_quebrados_tokens = os.path.join(pasta_vocab,'curadoria termos stemmer OOV TOKENS INTEIROS.txt')
@@ -93,7 +92,7 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, gerar_curad
     docs = Documentos(pasta_textos=pasta_textos, retornar_tokens=True, ignorar_cache=False)
     print('\t - calculando modelo TFIDF')
     modelo_tfidf = TfidfModel((dicionario.doc2bow(d) for d in docs), normalize = True)
-    print('\t - calculando quantidades e maior peso de cada termo')
+    print('\t - calculando quantidades e maior peso de cada termo nos documentos')
     docs = Documentos(pasta_textos=pasta_textos, retornar_tokens=True, ignorar_cache=False)
     pesos_maximos = dict({})
     contadores = Counter()
@@ -123,21 +122,18 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, gerar_curad
            contadores_docs[t] = 0
            contadores[t] = 0
 
-    with open(arquivo_saida_oov_pesos,'w') as fo:
-        fo.write(f'TERMO\tTFIDF\tTAMANHO\tQTD\tQTD_DOCS\tVOCAB\tVOCAB_QUEBRADOS\n')
-        with open(arquivo_saida,'w') as f:
-            f.write(f'TERMO\tTFIDF\tTAMANHO\tQTD\tQTD_DOCS\tVOCAB\tVOCAB_QUEBRADOS\n')
-            for c,v in pesos_maximos.items():
-                if len(c) > TAMANHO_MAXIMO_TOKEN:
-                    continue
-                v = str(v).replace('.',',') # para uso no excel
-                c = c.replace('#','')
-                ok_vocab = 'S' if c in vocab_base else 'N'
-                ok_vocab_quebrados = 'S' if c in vocab_base_quebrados else 'N'
-                # registra os novos tokens para criar um novo vocab
-                f.write(f'{c}\t{v}\t{len(c)}\t{contadores[c]}\t{contadores_docs[c]}\t{ok_vocab}\t{ok_vocab_quebrados}\n')
-                if ok_vocab != 'S' or ok_vocab_quebrados != 'S':
-                    fo.write(f'{c}\t{v}\t{len(c)}\t{contadores[c]}\t{contadores_docs[c]}\t{ok_vocab}\t{ok_vocab_quebrados}\n')
+    with open(arquivo_saida,'w') as f:
+        f.write(f'TERMO\tTFIDF\tTAMANHO\tQTD\tQTD_DOCS\tCOMPOSTO\tVOCAB\tVOCAB_QUEBRADOS\n')
+        for c,v in pesos_maximos.items():
+            if len(c) > TAMANHO_MAXIMO_TOKEN:
+                continue
+            v = str(v).replace('.',',') # para uso no excel
+            c = c.replace('#','')
+            ok_vocab = 'S' if c in vocab_base else 'N'
+            ok_vocab_quebrados = 'S' if c in vocab_base_quebrados else 'N'
+            composto = 'S' if c.find('_')>=0 else 'N'
+            # registra os novos tokens para criar um novo vocab
+            f.write(f'{c}\t{v}\t{len(c)}\t{contadores[c]}\t{contadores_docs[c]}\t{composto}\t{ok_vocab}\t{ok_vocab_quebrados}\n')
 
     print('Análise concluída: ', pasta_textos, ' para ',arquivo_saida)
     print('=============================================================')
@@ -290,7 +286,9 @@ if __name__ == "__main__":
     if os.path.isdir(PASTA_TEXTOS_TREINO):
         pastas.append(PASTA_TEXTOS_TREINO)
         print('# >> incluindo textos de treinamento na curadoria         #')
-    criar_arquivo_curadoria_termos(pasta_textos = pastas, pasta_vocab=PASTA_MODELO)
+    criar_arquivo_curadoria_termos(pasta_textos = pastas, 
+                                   pasta_vocab=PASTA_MODELO, 
+                                   gerar_curadoria=True)
     print('#---------------------------------------------------------#')
     print('# Arquivos de curadoria criados                           #')
     print('# Abra o arquivo curadoria_vocab.txt no Excel             #')

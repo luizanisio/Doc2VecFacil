@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+#######################################################################
+# Código complementar ao Doc2VecFacil para criar nGramas para o documento VOCAB_TRADUTOR.txt 
+# Esse código, dicas de uso e outras informações: 
+#   -> https://github.com/luizanisio/Doc2VecFacil/
+# Luiz Anísio 
+# 09/10/2021 - disponibilizado no GitHub  
+#######################################################################
+
 import random
 import glob
 import os

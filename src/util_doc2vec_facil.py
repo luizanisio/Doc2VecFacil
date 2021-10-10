@@ -8,10 +8,7 @@
 # Esse código, dicas de uso e outras informações: 
 #   -> https://github.com/luizanisio/Doc2VecFacil/
 # Luiz Anísio 
-# Ver 0.1.0 - 03/10/2021 - disponibilizado no GitHub  
-# Ver 0.1.1 - 08/10/2021 - substituição de termos - arquivo vocab_composto_substituir
-#                        - a substituição ocorre após a remoção de acentos e da união de siglas
-#                        - os números são substituídos depois dos compostos
+# 03/10/2021 - disponibilizado no GitHub  
 #######################################################################
 
 from functools import cmp_to_key
@@ -504,17 +501,29 @@ class UtilDoc2VecFacil():
 
     # recebe uma lista de termos e retorna os mais similares >=50%
     # retorna um dict termo: [(termo, sim)] ou uma string para print ou arquivo
+    # caso tenha = entre os termos, vai comparar frases
     def comparar_termos(self, termos, retorno_string = False):
         if not any(termos):
             return []
         res = {} # {termo: [(termo, % sim)]) exemplo: {'juiz': [('minitro',85),('juiza',71)]}
-        for termo in sorted(termos):
-            try:
-                ms = self.model.wv.most_similar(termo, topn=3)
-                ms = [(f'{_[0]}',int(round(_[1]*100))) for _ in ms if _[1]>=0.5]
-                res[termo] = ms
-            except KeyError:
+        for termo in sorted(termos, key=lambda k:f'_{k}' if k.find('=')>=0 else k):
+            if not termo:
                 continue
+            if termo.find('=')<0:
+                try:
+                    ms = self.model.wv.most_similar(termo, topn=3)
+                    ms = [(f'{_[0]}',int(round(_[1]*100))) for _ in ms if _[1]>=0.5]
+                    res[termo] = ms
+                except KeyError:
+                    continue
+            else:
+                # compara dois termos ou duas frases
+                sents = termo.split('=')
+                sents = [_.strip() for _ in sents]
+                if sents[0] and sents[1]:
+                    sim = self.similaridade(sents[0],sents[1])
+                    res[sents[0]] = [(f'{sents[1]}',int(round(sim*100)))]
+                    #print('Sentenças: ',termo, sents[0], sents[1], sim)
         if not retorno_string:
             return res
         # retorna uma lista de strings para print ou arquivo
@@ -529,12 +538,18 @@ class UtilDoc2VecFacil():
         return res_txt
 
     # carrega uma lista de termos de comparação de um arquivo - em geral é preparado para testes
+    # caso tenha o =, a comparação será feita entre duas frases ou dois termos pré-definidos
     def carregar_lista_termos_comparacao(self):
         arq = os.path.join(self.pasta_modelo, 'termos_comparacao_treino.txt')
         lista = []
         if os.path.isfile(arq):
-            lista = carregar_arquivo(arq,False,True)
-            lista = re.sub(r'\s+',' ',lista).split(' ')
+            linhas = carregar_arquivo(arq=arq,limpar=False,juntar_linhas=False)
+            for linha in linhas:
+                if linha.find('=')>=0:
+                    lista.append(linha.strip())
+                else:
+                    tokens = re.sub(r'\s+',' ',linha).split(' ')
+                    lista.extend(tokens)
         return [_ for _ in lista if _]
 
 # Classe para treinamento do modelo usando o tokenizador inteligente, o modelo é gravado a cada época
@@ -694,6 +709,7 @@ if __name__ == "__main__":
     parser.add_argument('-reiniciar', help='use "-reiniciar sim" >> apaga o modelo e inicia um novo treinamento', required=False)
     parser.add_argument('-epocas', help='número de épocas para treinamento - padrão 5000 ', required=False)
     parser.add_argument('-dimensoes', help='número de dimensões para treinamento - padrão 200 ', required=False)
+    parser.add_argument('-janela', help='janela de termos para treinamento - padrão 10 ', required=False)
     parser.add_argument('-workers', help='threads de treinamento - padrão 100 ', required=False)
     args = parser.parse_args()
 
@@ -745,12 +761,14 @@ if __name__ == "__main__":
     dimensoes = int(args.dimensoes) if args.dimensoes else 200
     epocas = int(args.epocas) if args.epocas else 5000
     workers = int(args.workers) if args.workers else 100
+    janela_termos = int(args.janela) if args.workers else 10
     doc2vecTreina = UtilDoc2VecFacil_Treinamento(pasta_modelo= PASTA_MODELO,
                                                     pasta_textos= PASTA_TEXTOS_TREINO,
                                                     epocas=epocas,
                                                     dimensoes=dimensoes,
                                                     min_count=5,
                                                     workers=workers,
+                                                    janela_termos=janela_termos,
                                                     comparar_termos=None)
     doc2vecTreina.treinar()
 
