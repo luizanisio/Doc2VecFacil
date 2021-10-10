@@ -44,7 +44,7 @@ Sugestões e modelos de bigramas e quadrigramas criados em:  ./meu_modelo\analis
 ```
 
 ### Usando os ngramas
-- O arquivo [`python util_ngramas_facil.py`](./src/python util_ngramas_facil.py) tem a classe `TransformarNGramas()` que permite usar os arquivos bigramas.bin e quadrigramas.bin em um conjunto de tokens de um arquivo.
+- O arquivo [`python util_ngramas_facil.py`](./src/util_ngramas_facil.py) tem a classe `TransformarNGramas()` que permite usar os arquivos bigramas.bin e quadrigramas.bin em um conjunto de tokens de um arquivo.
 ```python
 gerador = TransformarNGramas(pasta_ngramas)
 texto = 'Conforme Agravo de Instrumento apreciado pelo primeiro grau'
