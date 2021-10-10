@@ -3,6 +3,7 @@
 Componente python que simplifica o processo de criação de um modelo `Doc2Vec` (gensim) com facilitadores para geração de um vocab personalizado e com a geração de arquivos de curadoria.
 - se você não sabe o que é um modelo de similaridade, em resumo é um algoritmo não supervisionado para transformar frases ou documentos em vetores matemáticos que podem ser comparados retornando um valor que representa a similaridade semântica entre dois ou mais documentos. Nesse contexto a máquina 'aprende' o vocabulário treinado e o contexto em que as palavras aparecem, permitindo identificar a similaridade entre os termos, as frases e os documentos.
 - Com essa comparação vetorial, é possível encontrar documentos semelhantes a um indicado, agrupar documentos semelhantes de uma lista de documentos e monitorar documentos que entram na base ao compará-los com os documentos marcados como importantes. 
+- Esse é um repositório de estudos, analise, ajuste, corrija e use os códigos como desejar.
 
 ### O componente `Doc2VecFacil` trabalha em duas etapas:
  - criação de um vocab personalizado ao processar textos considerados importantes para o modelo que será treinado
