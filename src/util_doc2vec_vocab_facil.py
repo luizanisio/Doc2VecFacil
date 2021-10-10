@@ -10,10 +10,8 @@
 
 from gensim.models import TfidfModel
 from gensim.corpora import Dictionary
-from gensim.utils import tokenize
 
 from util_doc2vec_facil import Documentos, TokenizadorInteligente, carregar_arquivo, UtilDoc2VecFacil
-from pandas import DataFrame as df
 from collections import Counter
 import os
 import random

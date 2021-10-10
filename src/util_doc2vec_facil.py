@@ -11,7 +11,6 @@
 # 03/10/2021 - disponibilizado no GitHub  
 #######################################################################
 
-from functools import cmp_to_key
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import os
 import logging
