@@ -1,6 +1,6 @@
 # Doc2VecFacil
 
-Componente python que simplifica o processo de criação de um modelo `Doc2Vec` [Gensim 4.0.1](https://radimrehurek.com/gensim/) com facilitadores para geração de um vocab personalizado e com a geração de arquivos de curadoria.
+Componente python que simplifica o processo de criação de um modelo `Doc2Vec` [`Gensim 4.0.1`](https://radimrehurek.com/gensim/) com facilitadores para geração de um vocab personalizado e com a geração de arquivos de curadoria.
 - se você não sabe o que é um modelo de similaridade, em resumo é um algoritmo não supervisionado para transformar frases ou documentos em vetores matemáticos que podem ser comparados retornando um valor que representa a similaridade semântica entre dois ou mais documentos. Nesse contexto a máquina 'aprende' o vocabulário treinado e o contexto em que as palavras aparecem, permitindo identificar a similaridade entre os termos, as frases e os documentos.
 - Com essa comparação vetorial, é possível encontrar documentos semelhantes a um indicado, agrupar documentos semelhantes de uma lista de documentos e monitorar documentos que entram na base ao compará-los com os documentos marcados como importantes para monitoramento. 
 - Esse é um repositório de estudos, analise, ajuste, corrija e use os códigos como desejar.
@@ -62,7 +62,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
 | custas                 | 0,41286071  |    6    |  740  |    417   |    N     |   S   |        N        |
 | materia_constitucional	| 0,20749608  |   	22	  |   8   |    	2	   |    S	    |   S   |       	N        |
 
-> Notas sobre as colunas 💡: 
+> 💡 Notas sobre as colunas: 
 > - `TFIDF` - contém o maior peso que o termo teve dentre os pesos que teve nos documentos - [Saiba mais sobre `TFIDF`](https://www.ti-enxame.com/pt/python/interpretar-um-resumo-das-pontuacoes-das-palavras-do-tf-idf-nos-documentos/829990829/)
 > - `TAMANHO` - é o tamanho do termo
 > - `QTD` - é a quantidade de vezes que o termo apareceu no corpus
