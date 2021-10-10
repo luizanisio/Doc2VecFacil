@@ -1,6 +1,6 @@
 ### Geração de ngramas com curadoria e lista de exclusões
 
-- A ideia desse código é facilitar a criação de modelos de bigramas, trigramas e quadrigramas de forma simples e com a facilidade de intervir de alguma forma no modelo gerado pelo Phrases do gensim.
+- A ideia desse código é permitir a criação de modelos de bigramas, trigramas e quadrigramas de forma simples e com a facilidade de intervir de alguma forma no modelo gerado pelo Phrases do gensim.
 - Dada uma pasta de textos ou uma pasta de modelo para treinamento com Doc2VecFacil, pode-se gerar um modelo de ngramas e usar a classe NGramasFacil() para carregar e usar o modelo quando conveniente.
 - Para saber mais sobre a geração de bigramas pelo Gensim, clique aqui: [Gensim Phrases](https://radimrehurek.com/gensim/models/phrases.html)
 - A ideia geral é combinar termos que normalmente aparecem juntos em um único token para treinamento de modelos.
@@ -13,9 +13,19 @@
   - `quadrigramas.bin` - modelo de trigramas ou quadrigramas
   - `quadrigramas.log` - lista de quadrigramas gerados no formato texto
   - `vocab_sub_bigramas_sugerido.txt` - arquivo com transformações sugeridas para usar no [`Doc2VecFacil`](https://github.com/luizanisio/Doc2VecFacil)
-- Pode-se analisar as sugestões, incluir outras manualmente e criar um arquivo `VOCAB_TRADUTOR ngramas.txt` para o [`Doc2VecFacil`](https://github.com/luizanisio/Doc2VecFacil).
-- Resultado: ao rodar o código, serão mostrados alguns exemplos de bigramas e quadrigramas gerados e o caminho dos arquivos gerados.
+  - `ngramas_remover.txt` - lista de termos (um por linha) que não devem comport bigramas ou quadrigramas. 
+    - Exemplo:
+    ```
+    fls
+    documento
+    pagina_digitalizada
+    ```
+  - Esses termos são removidos da análise do Phrases criando uma quebra de linha nos documentos tokenizados durante a análise.
+  - Sempre que essa lista for alterada, deve-se rodar novamente o código `util_ngramas_facil.py` para geração de novos ngramas sem esses termos.
+  - No exemplo acima, `fls` e `documento` não formarão bigramas, enquanto que `pagina_digitalizada` se formar bigrama, não formará trigrama ou quadrigrama.
+  - Essa configuração evitaria bigramas como `penal_fls`, e evitaria `pagina_digitalizada_agravo` caso `pagina_digitalizada` fosse um bigrama formado.
 
+- Resultado: ao rodar o código, serão mostrados alguns exemplos de bigramas e quadrigramas gerados e o caminho dos arquivos gerados.
 ```
 Iniciando...
 Lista de exclusões carregada com 20 termos
