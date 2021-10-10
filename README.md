@@ -11,10 +11,10 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
    - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
 
 - <b>Códigos</b>: 
-  - [`Criação de vocab`](.src/util_doc2vec_vocab_facil.py)
-  - [`UtilDoc2VecFacil`](.src/util_doc2vec_facil.py) e [`UtilDoc2VecFacil_Treinamento`](.src/util_doc2vec_facil.py) 
-  - [`TradutorTermos`](.src/util_tradutor_termos.py)
-  - [`Criação de ngramas`](.src/util_ngramas_facil.py) dicas aqui [NGramasFacil](readme_ngramas.md)
+  - [`Criação de vocab`](./src/util_doc2vec_vocab_facil.py)
+  - [`UtilDoc2VecFacil`](./src/util_doc2vec_facil.py) e [`UtilDoc2VecFacil_Treinamento`](./src/util_doc2vec_facil.py) 
+  - [`TradutorTermos`](./src/util_tradutor_termos.py)
+  - [`Criação de ngramas`](./src/util_ngramas_facil.py) dicas aqui [NGramasFacil](readme_ngramas.md)
 
 Logo abaixo estão algumas dicas de como criar um modelo personalizado com esse código, como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente ou textualmente, como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
 
