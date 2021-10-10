@@ -13,7 +13,7 @@
   - `quadrigramas.bin` - modelo de trigramas ou quadrigramas
   - `quadrigramas.log` - lista de quadrigramas gerados no formato texto
   - `vocab_sub_bigramas_sugerido.txt` - arquivo com transformações sugeridas para usar no [`Doc2VecFacil`](https://github.com/luizanisio/Doc2VecFacil)
-  - `ngramas_remover.txt` - lista de termos (um por linha) que não devem comport bigramas ou quadrigramas. 
+  - `ngramas_remover.txt` - lista de termos (um por linha) que não devem compôr bigramas ou quadrigramas. 
     - Exemplo:
     ```
     fls
