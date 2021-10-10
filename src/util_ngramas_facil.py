@@ -89,12 +89,15 @@ def gerar_bigramas_preprocessados(pasta_textos=r'.\textos', pasta_saida_ngramas=
     arquivo_remover = os.path.join(pasta_saida,'ngramas_remover.txt')
     if os.path.isfile(arquivo_remover):
         lista = carregar_arquivo(arquivo_remover, juntar_linhas=False)
-        lista = [pre_processamento(_, realizar_split=False).strip() for _ in lista if _]
+        lista = [pre_processamento(_, realizar_split=False).strip() for _ in lista if _ and _[0] !='#']
         if any(lista):
             global STOP_NGRAMAS
             STOP_NGRAMAS.update(lista)
             print(f'Lista de exclusões carregada com {len(lista)} termos')
             #print('- ', list(STOP_NGRAMAS))
+    else:
+        with open(arquivo_remover,'w') as f:
+            f.write('### lista de termos para remoção ###\n')
 
     phrases = Phrases(min_count=min_count, threshold=threshold)
     print(f'Analisando bigramas de {qtd_arquivos} arquivos com min_count = {min_count} e threshold = {threshold}')
@@ -234,9 +237,8 @@ if __name__ == "__main__":
     if not args.pasta:
         print('============================================================================')
         print(f'ATENÇÃO: Pasta base não definida, usando pasta padrão "./meu_modelo"', end='', flush=True)
-        for i in range(4):
-            sleep(1)
-            print(' . ', end='', flush=True)
+        sleep(1)
+        print(' . ', end='', flush=True)
         print('\n============================================================================')
         sleep(1)
         print('Iniciando...')
