@@ -2,7 +2,7 @@
 
 - A ideia desse código é permitir a criação de modelos de bigramas, trigramas e quadrigramas de forma simples e com a facilidade de intervir de alguma forma no modelo gerado pelo Phrases do gensim.
 - Dada uma pasta de textos ou uma pasta de modelo para treinamento com Doc2VecFacil, pode-se gerar um modelo de ngramas e usar a classe NGramasFacil() para carregar e usar o modelo quando conveniente.
-- Para saber mais sobre a geração de bigramas pelo Gensim, clique aqui: [Gensim Phrases](https://radimrehurek.com/gensim/models/phrases.html)
+- Para saber mais sobre a geração de bigramas pelo Gensim, clique aqui: [`Gensim 4.0.1 Phrases`](https://radimrehurek.com/gensim/models/phrases.html)
 - A ideia geral é combinar termos que normalmente aparecem juntos em um único token para treinamento de modelos.
 
 ## Gerando os modelos de bigramas e nGramas:
