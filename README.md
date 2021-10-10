@@ -138,7 +138,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
     - `-reiniciar sim` - remove o modeo atual, se existir, e inicia um novo treinamento
     - `-testar` - carrega o modelo atual, se existir, e atualiza o arquivo `comparar_termos.log` com os termos encontrados no arquivo `termos_comparacao_treino.txt`
     - `-epocas` - define o número de épocas que serão treinadas, o padrão é 5000 e pode ser interrompido ou acrescido a qualquer momento.
-    - `-dimensoes` - define o número de dimensões dos vetores de treinamento.
+    - `-dimensoes` - define o número de dimensões dos vetores de treinamento (não pode ser alterado depois de iniciado o treinamento).
     - `-workers` - número de threads de treinamento, padrão 100
 
  - `python util_doc2vec_vocab_facil.py`
