@@ -11,7 +11,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
  - treinamento do modelo usando a estrutura de tokenização criada a partir do vocab personalizado
    - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
 
-- <b>Códigos</b>: 
+- :page_with_curl: <b>Códigos</b>: 
   - [`Criação de vocab`](./src/util_doc2vec_vocab_facil.py)
   - [`UtilDoc2VecFacil`](./src/util_doc2vec_facil.py) e [`UtilDoc2VecFacil_Treinamento`](./src/util_doc2vec_facil.py) 
   - [`TradutorTermos`](./src/util_tradutor_termos.py)
@@ -74,14 +74,14 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
 ## Definição de pastas:
  A estrutura de pastas é pré-definida para facilitar o uso dos componentes. <br>
  O único parâmetro informado é a pasta raiz que vai conter as outras pastas. <br>
- - `\Pasta raiz` (informada no parâmetro da chamada - padrão = "meu_modelo")
-   - `\doc2vecfacil` (pasta do modelo): ao disponibilizar o modelo para uso, pode-se renomear essa pasta livremente
-   - `\textos_vocab`: textos que serão tokenizados para criação do vocab principal
-   - `\textos_complementares`: textos que seráo tokenizados para criação do dicionário complementar de fragmentos dos termos não encontrados no vocab principal.
+ - :file_folder: `Pasta raiz` (informada no parâmetro da chamada - padrão = "meu_modelo")
+   - :file_folder: `doc2vecfacil` (pasta do modelo): ao disponibilizar o modelo para uso, pode-se renomear essa pasta livremente
+   - :file_folder: `textos_vocab`: textos que serão tokenizados para criação do vocab principal
+   - :file_folder: `textos_complementares`: textos que seráo tokenizados para criação do dicionário complementar de fragmentos dos termos não encontrados no vocab principal.
 
  Ao final são gerados os arquivos de dicionários que podem ser alterados manualmente antes do treinamento do modelo, desde que mantidos os nomes dos arquivos que são padronizados e definirão a tokenização para treinamento e a tokenização durante o uso do modelo final.
  
- - `\Pasta raiz`
+ - :file_folder: `Pasta raiz`
    - `doc2vecfacil/VOCAB_BASE*.txt` são arquivos carregados em conjunto para formar o vocab de tokenização
    - `doc2vecfacil/VOCAB_REMOVIDO*.txt` são arquivos carregados em conjunto para excluir termos do vocab de tokenização
    - `doc2vecfacil/VOCAB_TRADUTOR*.txt` são arquivos com tradutores no estilo `termo1 => termo2`, podendo conter termos compostos nas duas pontas ou não conter `=>` que indica que o termo ou os termos da esquerda serão removidos. A avaliação é feita após a limpeza, lowercase e remoção de acentos. Um arquivo `vocab_tradutor_termos.log` é criado indicando como as transformações serão realizadas.
@@ -99,10 +99,10 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
 
 ## Passo a passo para criar o vocab de treino: 
  1) Criar as pastas:
-    - `meu_modelo`
-    - `meu_modelo\textos_vocab`: colocar um conjunto de textos importantes para o corpus
-    - `meu_modelo\textos_vocab_complementar`: colocar um conjunto de textos complementares (tokens serão quebrados)
-    - `meu_modelo\textos_treino`: colocar os arquivos que serão usados no treinamento
+    - :file_folder: `meu_modelo`
+      - :file_folder: `textos_vocab`: colocar um conjunto de textos importantes para o corpus
+      - :file_folder: `textos_vocab_complementar`: colocar um conjunto de textos complementares (tokens serão quebrados)
+      - :file_folder: `textos_treino`: colocar os arquivos que serão usados no treinamento
  2) Rodar: `python util_doc2vec_vocab_facil.py -pasta./meu_modelo`
     - para forcar recriar os arquivos se já existirem, basta colocar o parâmetro `-reiniciar`
     - ao chamar uma segunda vez, o código vai apenas atualizar o arquivo de curadoria
@@ -110,6 +110,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
  3) Opcional: abrir o arquivo ./meu_modelo/doc2vecfacil/curadoria_vocab.txt no excel e analisar os termos
     - alterar os arquivos `VOCAB_BASE*` e `VOCAB_REMOVIDO*` com base na curadoria
     - alterar o arquivo `termos_comparacao_treino.txt` com termos importantes para acompanhar a evolução do modelo
+    
  4) Opcional: arquivos de exclusão e de transformação de termos
     - arquivos no formato `VOCAB_TRADUTOR*.txt` com transformações, ngramas etc, e um ou mais arquivos .
     - arquivos no roamto `VOCAB_REMOVIDO*.txt' com termos que serão excluídos do vocab final (a diferença entre o arquivo de transformação é que trabalha com termos únicos do vocab).
@@ -164,9 +165,28 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
  - no arquivo de curadoria, a coluna `VOCAB` S/N indica se o termo está contido inteiro no vocab e a coluna `VOCAB_QUEBRADOS` S/N indica se o termo foi incluído após ser fragmentado. Caso as duas colunas sejam N, isso indica que o termo não será treinado, nem inteiro e nem o seu formato `stemmer`+`#sufixo`.
 
 ### Termos comparados para acompanhar a evolução do modelo:
-Exemplo de saída do arquivo `comparar_termos.log` atualizado a cada época.
-Esse log é gerado com os termos disponíveis no arquivo `termos_comparacao_treino.txt` que é carregado no início do treino e pode ser alterado sempre que desejado.
+- Exemplo de saída do arquivo `comparar_termos.log` atualizado a cada época.
+- Esse log é gerado com os termos ou frases disponíveis no arquivo `termos_comparacao_treino.txt` que é carregado no início do treino e pode ser alterado sempre que desejado.
+  - o arquivo contém termos linha a linha e frases que podem ser comparadas.
+Exemplo do arquivo `termos_comparacao_treino.txt`:
 ```
+apresentada para o réu a decisão sobre o processo = apresentada para o acusado a sentença sobre o processo
+artigo
+cobrados
+cogitar 
+compromisso
+comprovadas
+entendimento
+lei
+entorpecentes
+julga
+parcelas
+termo
+```
+> 💡 Nota: na primeira linha temos duas frases que serão comparadas ao longo do treino. Nas outras linhas temos termos soltos que serão apresentados os termos mais parecidos durante o treino. 
+> O resultado do arquivo `comparar_termos.log` é esse:
+```
+apresentada para o réu a decisão sobre o processo | apresentada para o acusado a sentença sobre o processo (65%)
 artigo               |  art (77%)                |  artigos (55%)            |  arts (53%)              
 cobrados             |  pagos (54%)             
 cogitar              |  falar (52%)             
