@@ -123,7 +123,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
     - `meu_modelo\doc2vecfacil\VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados
     - `meu_modelo\doc2vecfacil\VOCAB_TRADUTOR*.txt`: arquivos com termos ou frases que serão removidas ou transformadas
  - Pode-se criar os arquivos manualmente com os termos desejados, ou aproveitar os arquivos de outro treino. Ou Ajustar os arquivos criados automaticamente incluindo ou retirando termos.
- - Pode-se criar arquivos de transformação automaticamente usando o código `util_tradutor_termos.py-pasta = meu_modelo´. Ele vai carregar os arquivos e utilizar o `Phrases` do gensim para sugerir bigramas, trigramas e quadrigramas que poderam ser analisados e incorporados a um arquivo de transformação como `meu_modelo\doc2vecfacil\VOCAB_TRADUTOR_NGRAMAS.txt` por exemplo. Caso queira saber mais sobre a criação de ngramas usando esse componente, veja aqui: [nGramasFacil](ngramas.md)
+ - Pode-se criar arquivos de transformação automaticamente usando o código `util_tradutor_termos.py-pasta = meu_modelo`. Ele vai carregar os arquivos da pasta `textos_vocab` e utilizar o `Phrases` do gensim para sugerir bigramas, trigramas e quadrigramas que poderam ser analisados e incorporados a um arquivo de transformação como `meu_modelo\doc2vecfacil\VOCAB_TRADUTOR_NGRAMAS.txt` por exemplo. Caso queira saber mais sobre a criação de ngramas usando esse componente, veja aqui: [nGramasFacil](ngramas.md)
 
 ## Conferindo o processamento dos textos
 - Pode-se conferir os arquivos `.clr` criados nas pastas `textos*` pois eles são o resultado do processamento dos textos originais com o `TokenizadorInteligente`.
