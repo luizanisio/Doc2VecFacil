@@ -192,6 +192,12 @@ Frase3:  DE HONORÁRIOS ADVOCATÍCIOS EMBARGOS ADJUDICAÇÃO PENHORA EXECUÇÃO 
 
 Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario', 'advocaticio', 'embargos', 'adjudicacao', 'penhoras'] 
  ```
+ 
+- O que precisa ser disponibilizado para o modelo funcionar:
+  - `VOCAB_BASE*.txt` - arquivo com termos e fragmentos que compõem o vocab
+  - `VOCAB_TRADUTOR*.txt` - arquivo de transformações do tokenizados
+  - `VOCAB_REMOVER*.txt` - arquivo de exclusões do tokenizados
+  - `doc2vec*` - arquivos do modelo treinado
 
 ## Dicas de uso:
 - gravar os vetores, textos e metadados dos documentos no ElasticSearch
