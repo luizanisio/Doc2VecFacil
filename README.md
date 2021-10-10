@@ -14,6 +14,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
   - [`Criação de vocab`](util_doc2vec_vocab_facil.py)
   - [`UtilDoc2VecFacil`](util_doc2vec_facil.py) e [`UtilDoc2VecFacil_Treinamento`](util_doc2vec_facil.py) 
   - [`TradutorTermos`](util_tradutor_termos.py)
+  - [`Criação de ngramas`](util_ngramas_facil.py) dicas aqui [NGramasFacil](readme_ngramas.md)
 
 Logo abaixo estão algumas dicas de como criar um modelo personalizado com esse código, como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente ou textualmente, como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
 
@@ -48,7 +49,8 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_vocab.txt
 - Opcionamente pode-se criar quantos dicionários quiser com o prefixo `vocab_base*.txt`, os termos desses dicionários não farão parte do dicionário principal criado, nem do complementar, mas serão carregados para treinamento do modelo. 
 - Opcionamente também é possível criar arquivos de termos excluídos do treinamento `vocab_removido*.txt`
 - Opcionamente também é possível criar arquivos de frases/termos para tradução/transformação como substituir `processo penal` por `processo_penal`, compondo termos compostos para serem tratados como termos únicos no modelo. Pode-se também remover termos ao não indicar a transformação. Podem ser criados arquivos no formato `vocab_tradutor*.txt`. E a configuração dos termos é por linha `processo penal => processo_penal`, ou `remover esse trecho =>`.
-  - Um exemplo de uso é incluir nomes de pessoas ou empresas que não há interesse em compor o treinamento ou reduzir termos compostos em termos únicos para a vetorização posterior de novos documentos. Removendo ruídos conhecidos e reduzindo o vocabulário principal. Importante ressaltar que quanto maior o número de termos, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação veja a classe `TradutorTermos` no arquivo `util_tradutor_termos`.
+  - Um exemplo de uso é incluir nomes de pessoas ou empresas que não há interesse em compor o treinamento ou reduzir termos compostos em termos únicos para a vetorização posterior de novos documentos. Removendo ruídos conhecidos e reduzindo o vocabulário principal. Importante ressaltar que quanto maior o número de termos, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação veja a classe `TradutorTermos` no arquivo `util_tradutor_termos`. 
+  - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
 
 ### Exemplo de arquivo `curadoria_vocab.txt` de curadoria de termos:
 | TERMO       | TFIDF       | TAMANHO |  QTD  | QTD_DOCS | VOCAB | VOCAB_QUEBRADOS |
