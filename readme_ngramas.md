@@ -15,27 +15,13 @@
   - `vocab_sub_bigramas_sugerido.txt` - arquivo com transformações sugeridas para usar no [`Doc2VecFacil`](https://github.com/luizanisio/Doc2VecFacil)
 - Pode-se analisar as sugestões, incluir outras manualmente e criar um arquivo `VOCAB_TRADUTOR ngramas.txt` para o [`Doc2VecFacil`](https://github.com/luizanisio/Doc2VecFacil).
 - Resultado: ao rodar o código, serão mostrados alguns exemplos de bigramas e quadrigramas gerados e o caminho dos arquivos gerados.
+
 ```
 Iniciando...
 Lista de exclusões carregada com 20 termos
 Analisando bigramas de 34 arquivos com min_count = 20 e threshold = 50
- - gravando modelo bigramas:  ./meu_modelo\analise_ngramas\bigramas.bin
- - gravando log de Bigramas gerados: bigramas.log
- - número de Bigramas gerados: 38
- - alguns Bigramas: 
-   - constrangimento_ilegal
-   - organizacao_criminosa
 
- - gravando modelo Quadrigramas:  ./meu_modelo\analise_ngramas\quadrigramas.bin
- - gravando log de Quadrigramas gerados: quadrigramas.log
- - número de Quadrigramas gerados: 69
- - alguns Quadrigramas:
-   - condicoes_pessoais_favoraveis
-   - aplicacao_medidas_cautelares
-
-Modelos finalizados:  ./meu_modelo\analise_ngramas\bigramas.bin ./meu_modelo\analise_ngramas\quadrigramas.bin
-
-[..]
+[..] dados do processamento, exemplos etc [..]
 
 =========================================================================================
 nGrams gerados com min_count = 20 e threshold = 50
