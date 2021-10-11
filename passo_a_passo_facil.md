@@ -1,5 +1,5 @@
 # Dicas simplificadas de como preparar e treinar um modelo em diversos cenários
-Abaixo estão descritos alguns [`cenários`](#grupo-cenarios) e seus passos.<br>
+Abaixo estão descritos alguns [`cenários`](#grupo-cenarios-link) e seus passos.<br>
 As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`, mas pode criar a pasta com o nome que quiser, basta passar esse nome no parêmtro.
   
 #### Estrutura de pastas:  
@@ -26,7 +26,9 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`comparar_termos.log`: a cada época o arquivo `comparar_termos.log` será atualizado com os termos mais similares dos termos indicados para acompanhamento, bem como a similaridade entre frases indicadas para acompanhamento.
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`termos_comparacao_treino.txt`: termos/frases desse arquivo `termos_comparacao_treino.txt` serão usadas para a geração do arquivo de acompanhamento de treinamento. Caso esse arquivo não exista, será criado com alguns termos do vocab treinado e uma frase de exemplo. Altere esse arquivo sempre que quiser.<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`vocab_treino.txt`: será criado após a primeira época e contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento após a tokenização)
-#grupo-cenarios
+
+#grupo-cenarios-link
+
 ## 1) Quero treinar sem preparar um vocab:
  - Crie a pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_treino`
