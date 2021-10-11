@@ -73,7 +73,8 @@ def listar_arquivos(pasta, extensao='txt', inicio=''):
 # registrar_oov: 
 # tokenizar_tudo: 
 class TokenizadorInteligente():
-    RE_TOKENIZAR = re.compile(r'[^a-z0-9á-ú\_]')
+    RE_TOKENIZAR = re.compile(r'[^a-z0-9á-ú]')
+    RE_TOKENIZAR_COMPOSTO = re.compile(r'[^a-z0-9á-ú\_]')
     REGEX_SIGLAS = re.compile(r"(?<=\W[a-z])\.(?=[a-z]\W)" )
     RE_ESPACOS_QUEBRAS = re.compile(r'(\s|<br>|\\n)+')
     RE_ESPACOS_QUEBRAS_COMPOSTO = re.compile(r'(\s|<br>|\\n|_)+')
@@ -157,7 +158,7 @@ class TokenizadorInteligente():
             _termo = self.remover_acentos(_termo.lower()).strip()
             # a saída pode ser termo simples ou composto, mas símbolos serão convertidos para _
             if saida:
-                _termo = self.RE_TOKENIZAR.sub('_', _termo)
+                _termo = self.RE_TOKENIZAR_COMPOSTO.sub('_', _termo)
                 _termo = self.RE_ESPACOS_QUEBRAS_COMPOSTO.sub('_',_termo ).strip()
             else:
                 _termo = self.RE_TOKENIZAR.sub(' ', _termo)
@@ -188,10 +189,12 @@ class TokenizadorInteligente():
             self.tradutor_termos = TradutorTermos(self.vocab_tradutor_termos)
             # grava o arquivo de substituição de termos compostos processado
             # grava se não existir ou se for uma tokenização completa (início de um vocab ou treinamento)
+            # termos compostos são incluídos no vocab
             if (self.tokenizar_tudo or self.registrar_oov or not os.path.isfile(arq_log_composto)):
                 with open(arq_log_composto,'w') as f:
                         for composto, novo_termo in self.tradutor_termos.termos:
                             f.write(f'{composto} => {novo_termo}\n')
+                            vocab += f' {novo_termo}'
 
         # identificação de termos que devem ser retirados do vocab
         vocab_removido = self.remover_acentos( vocab_removido.replace('\n',' ').lower() )
@@ -234,7 +237,7 @@ class TokenizadorInteligente():
         if rapido:
             return tokens if rapido=='str' else tokens.split(' ') 
 
-        # realiza a tradução/remoção de termos
+        # realiza a tradução/remoção de termos e agrupamento de ngramas
         if self.tradutor_termos is not None:
             tokens = self.tradutor_termos.sub(tokens)
 

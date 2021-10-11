@@ -15,6 +15,7 @@ from util_doc2vec_facil import Documentos, TokenizadorInteligente, carregar_arqu
 from collections import Counter
 import os
 import random
+import re
 
 # TFIDF: https://rockcontent.com/br/blog/tf-idf/
 
@@ -39,7 +40,7 @@ def progress_bar(current_value, total, msg=''):
     print('{} {}           '.format(text, msg), end="\n" if percentual == 100 else "")
 
 # gera os arquivos e retorna uma lista dos tokens (token, estava no vocab, estava no vocab quebrado)
-def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, gerar_curadoria = True):
+def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, gerar_curadoria = True, vocab_inteiros = {}, vocab_quebrados={}):
     arquivo_saida_oov = None
     arquivo_saida_oov_quebrados = None
     arquivo_saida_ok_quebrados = None
@@ -59,7 +60,10 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, gerar_curad
                       pasta_vocab=pasta_vocab,
                       ignorar_cache=True, registrar_oov=arquivo_saida_oov) #recria o cache
     # recupera a lista de tokens que entraram depois de quebrados para incluir na análise
-    vocab_base_quebrados = set(docs.tokenizer.oov_quebrados_tokens) 
+    vocab_base_quebrados = set(docs.tokenizer.ok_quebrados) 
+    if any(vocab_quebrados):
+        vocab_base_quebrados = set(vocab_quebrados)
+
     tokenizador_inicial = docs.tokenizer
     print('\t - processando documentos e compilando dicionário de termos')
     dicionario = Dictionary(docs)
@@ -99,6 +103,9 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, gerar_curad
     if pasta_vocab is not None:
         temp_tokenizador = TokenizadorInteligente(pasta_vocab=pasta_vocab)
         vocab_base = set(temp_tokenizador.vocab)
+        if any(vocab_inteiros): 
+            vocab_base = set(vocab_inteiros)
+        # vocabs de análise foram enviados:
         print(f'\t - vocab base para análise de termos carregado com {len(vocab_base)} tokens')
         print(f'\t - vocab quebrado para análise de termos carregado com {len(vocab_base_quebrados)} tokens')
         print(f'\t - vocab termos de tradução carregados com {len(temp_tokenizador.vocab_tradutor_termos)} linhas')
@@ -120,18 +127,34 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, gerar_curad
            contadores_docs[t] = 0
            contadores[t] = 0
 
+    re_estranho = re.compile(r'([^rsaei])\1{2,}')
+    re_estranho_consoantes = re.compile(r'[^rsaeiounl_\n]{3,}')
+    re_vogais = re.compile(r'[aeiouáéíóú]')
+    def _estranho(termo):
+        # não tem vogais ou tem letras repetidas
+        if re_estranho.search(termo) or re_estranho_consoantes.search(termo):
+            return 'S'
+        if not re_vogais.search(termo):
+            return 'S'
+        if termo and (termo[0] == '_') or termo[-1]=='_':
+            return 'S'
+        return 'N'
+        
     with open(arquivo_saida,'w') as f:
-        f.write(f'TERMO\tTFIDF\tTAMANHO\tQTD\tQTD_DOCS\tCOMPOSTO\tVOCAB\tVOCAB_QUEBRADOS\n')
+        f.write(f'TERMO\tQUEBRADO\tTFIDF\tTAMANHO\tQTD\tQTD_DOCS\tCOMPOSTO\tVOCAB\tVOCAB_QUEBRADOS\tESTRANHO\n')
         for c,v in pesos_maximos.items():
             if len(c) > TAMANHO_MAXIMO_TOKEN:
                 continue
             v = str(v).replace('.',',') # para uso no excel
             c = c.replace('#','')
             ok_vocab = 'S' if c in vocab_base else 'N'
-            ok_vocab_quebrados = 'S' if c in vocab_base_quebrados else 'N'
             composto = 'S' if c.find('_')>=0 else 'N'
+            quebrado = TOKENIZADOR.quebrar_token_simples(c) if composto !='S' else ''
+            quebrado = '' if quebrado == c else quebrado
+            estranho = _estranho(c)
+            ok_vocab_quebrados = 'S' if ok_vocab == 'N' and quebrado.split(' ')[0] in vocab_base else 'N'
             # registra os novos tokens para criar um novo vocab
-            f.write(f'{c}\t{v}\t{len(c)}\t{contadores[c]}\t{contadores_docs[c]}\t{composto}\t{ok_vocab}\t{ok_vocab_quebrados}\n')
+            f.write(f'{c}\t{quebrado}\t{v}\t{len(c)}\t{contadores[c]}\t{contadores_docs[c]}\t{composto}\t{ok_vocab}\t{ok_vocab_quebrados}\t{estranho}\n')
 
     print('Análise concluída: ', pasta_textos, ' para ',arquivo_saida)
     print('=============================================================')
@@ -221,6 +244,8 @@ if __name__ == "__main__":
             if os.path.isfile(arq):
                os.remove(arq)
 
+    vocab_inteiros = {}
+    vocab_quebrados = {}
     # não encontrou arquivos de vocab principais, cria tudo
     if  (not os.path.isfile(ARQUIVO_VOCAB_AUTOMATICO)):
         print('###########################################################')
@@ -231,6 +256,7 @@ if __name__ == "__main__":
         tokenizador = criar_arquivo_curadoria_termos(pasta_textos = PASTA_TEXTOS,
                                                      pasta_vocab=PASTA_MODELO,
                                                      gerar_curadoria=False)
+        vocab_inteiros = {_ for _ in tokenizador.vocab}
         # todos os tokens processados serão incluídos
         with open(ARQUIVO_VOCAB_AUTOMATICO,'w') as f:
             [f.write(f'{_}\n') for _ in tokenizador.oov]
@@ -260,6 +286,7 @@ if __name__ == "__main__":
         tokenizador = criar_arquivo_curadoria_termos(pasta_textos = pastas, 
                                                      pasta_vocab=PASTA_MODELO,
                                                      gerar_curadoria=False)
+        vocab_quebrados = tokenizador.ok_quebrados
         # todos os tokens fora do vocab serão incluídos
         with open(ARQUIVO_VOCAB_AUTOMATICO_C,'w') as f:
             [f.write(f'{_}\n') for _ in tokenizador.oov_quebrados]
@@ -286,7 +313,9 @@ if __name__ == "__main__":
         print('# >> incluindo textos de treinamento na curadoria         #')
     criar_arquivo_curadoria_termos(pasta_textos = pastas, 
                                    pasta_vocab=PASTA_MODELO, 
-                                   gerar_curadoria=True)
+                                   gerar_curadoria=True,
+                                   vocab_inteiros = vocab_inteiros,
+                                   vocab_quebrados=vocab_quebrados)
     print('#---------------------------------------------------------#')
     print('# Arquivos de curadoria criados                           #')
     print('# Abra o arquivo curadoria_vocab.txt no Excel             #')
