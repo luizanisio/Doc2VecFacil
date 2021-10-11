@@ -1,16 +1,15 @@
 # Dicas simplificadas de como preparar e treinar um modelo em diversos cenários
 Abaixo estão descritos alguns cenários e seus passos.<br>
 As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`, mas pode criar a pasta com o nome que quiser, basta passar esse nome no parêmtro.
-> 💡 Nota: Após a primeira época será criado o arquivo `vocab_treino.txt` que contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento)
-> - A cada época o arquivo `comparar_termos.log` será atualizado com a comparação de termos/frases do arquivo `termos_comparacao_treino.txt`. Caso esse arquivo não exista, será criado com alguns termos do vocab treinado e uma frase de exemplo. Altere esse arquivo sempre que quiser. 
-> - O arquivo `curadoria_planilha_vocab.xlsx` tem todos os termos encontrados nos textos da pasta `textos_vocab`, suas frequências, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.
   
 #### Estrutura de pastas:  
 :file_folder: `Pasta raiz` (informada no parâmetro da chamada - padrão = "meu_modelo")<br>
 &nbsp;&nbsp;\_:file_folder: `doc2vecfacil` (pasta do modelo e dos vocabs): ao disponibilizar o modelo para uso, pode-se renomear essa pasta livremente<br>
 &nbsp;&nbsp;\_:file_folder: `textos_vocab`: textos que serão usados para criar a planilha de curadoria<br>
 &nbsp;&nbsp;\_:file_folder: `textos_treino`: textos que serão usados na fase de treinamento.<br>
+
 > 💡 Nota: opcionalmente pode-se usar o parâmetro `-treino` para que a planilha de curadoria seja criada com os textos da pasta `textos_treino`.
+> - sugere-se um treinamento de no mínimo 1000 épocas, se possível umas 5000 mas é difícil precisar esse número pois depende de vários fatores, entre eles o número de termos e documentos treinados.
         
 #### Estrutura de arquivos:
  Os arquivos necessários para o treino que serão usados para a tokenização são:<br>
@@ -19,7 +18,15 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`VOCAB_BASE_*.txt`: arquivos com termos que serão treinados <br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados (opcional)<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`VOCAB_TRADUTOR*.txt`: arquivos com termos ou frases que serão removidas ou transformadas (opcional)<br>
-        
+
+### Durante o treino:
+ Arquivos para acompanhar durante o treinamento:<br>
+ :file_folder: `meu_modelo` <br>
+ &nbsp;&nbsp;\_:file_folder: `doc2vecfacil`<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`comparar_termos.log`: a cada época o arquivo `comparar_termos.log` será atualizado com os termos mais similares dos termos indicados para acompanhamento, bem como a similaridade entre frases indicadas para acompanhamento.
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`termos_comparacao_treino.txt`: termos/frases desse arquivo `termos_comparacao_treino.txt` serão usadas para a geração do arquivo de acompanhamento de treinamento. Caso esse arquivo não exista, será criado com alguns termos do vocab treinado e uma frase de exemplo. Altere esse arquivo sempre que quiser.<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`vocab_treino.txt`: será criado após a primeira época e contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento após a tokenização)
+    
 ## 1) Quero treinar sem preparar um vocab:
  - Crie a pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_treino`
@@ -48,6 +55,8 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
    - Coloque nesta pasta documentos relevantes para a criação do vocab
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo`
 
+ > 💡 Nota: Será criado o arquivo `curadoria_planilha_vocab.xlsx` com todos os termos encontrados nos textos da pasta `textos_vocab`, suas frequências, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.
+
 #### 4.1 realize o ciclo de curadoria :repeat::
  - Abra o arquivo `curadoria_planilha_vocab.xlsx` e avalie os termos que deseja treinar.
    - Crie um arquivo com os termos completos ex. `VOCAB_BASE meus termos.txt`, coloque nesse arquivo os termos completos que deseja treinar.
@@ -67,6 +76,6 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_vocab`
    - Coloque nesta pasta documentos relevantes para a criação do vocab extra
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo`
- - Siga os passos 4.1 até ter o vocab desejado
+ - Siga o passo `4.1` até ter o vocab desejado
  - Inicie o treinamento:
     - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
