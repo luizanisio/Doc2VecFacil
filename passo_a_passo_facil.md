@@ -18,6 +18,8 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados (opcional)<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_TRADUTOR*.txt`: arquivos com termos ou frases que serão removidas ou transformadas (opcional)<br>
 
+> 💡 Nota: baixe os [`exemplos`](./exemplos) de configurações do tokenizador. Analise, ajuste os termos, termos compostos e remoções, gere a planilha de curadoria e adapte ao seu contexto.
+
 #### Durante o treino:
  Arquivos para acompanhar durante o treinamento:<br>
  :file_folder: `meu_modelo` <br>
