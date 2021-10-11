@@ -8,25 +8,24 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
 &nbsp;&nbsp;\_:file_folder: `textos_vocab`: textos que serão usados para criar a planilha de curadoria<br>
 &nbsp;&nbsp;\_:file_folder: `textos_treino`: textos que serão usados na fase de treinamento.<br>
 
-> 💡 Nota: opcionalmente pode-se usar o parâmetro `-treino` para que a planilha de curadoria seja criada com os textos da pasta `textos_treino`.
-> - sugere-se um treinamento de no mínimo 1000 épocas, se possível umas 5000 mas é difícil precisar esse número pois depende de vários fatores, entre eles o número de termos e documentos treinados.
+> 💡 Nota: é difícil definir um número de épocas para o treinamento, pode ter 1000 ou 5000. Esse número depende de vários fatores, entre eles o número de termos e documentos treinados.
         
 #### Estrutura de arquivos:
  Os arquivos necessários para o treino que serão usados para a tokenização são:<br>
  :file_folder: `meu_modelo` <br>
  &nbsp;&nbsp;\_:file_folder: `doc2vecfacil`<br>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`VOCAB_BASE_*.txt`: arquivos com termos que serão treinados <br>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados (opcional)<br>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`VOCAB_TRADUTOR*.txt`: arquivos com termos ou frases que serão removidas ou transformadas (opcional)<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_BASE_*.txt`: arquivos com termos que serão treinados <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados (opcional)<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_TRADUTOR*.txt`: arquivos com termos ou frases que serão removidas ou transformadas (opcional)<br>
 
 #### Durante o treino:
  Arquivos para acompanhar durante o treinamento:<br>
  :file_folder: `meu_modelo` <br>
  &nbsp;&nbsp;\_:file_folder: `doc2vecfacil`<br>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`doc2vec.log`: algumas informações sobre a última época treinada e dados do modelo.
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`comparar_termos.log`: a cada época o arquivo `comparar_termos.log` será atualizado com os termos mais similares dos termos indicados para acompanhamento, bem como a similaridade entre frases indicadas para acompanhamento.
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`termos_comparacao_treino.txt`: termos/frases desse arquivo `termos_comparacao_treino.txt` serão usadas para a geração do arquivo de acompanhamento de treinamento. Caso esse arquivo não exista, será criado com alguns termos do vocab treinado e uma frase de exemplo. Altere esse arquivo sempre que quiser.<br>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`vocab_treino.txt`: será criado após a primeira época e contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento após a tokenização)
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `doc2vec.log`: algumas informações sobre a última época treinada e dados do modelo.<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `comparar_termos.log`: a cada época o arquivo `comparar_termos.log` será atualizado com os termos mais similares dos termos indicados para acompanhamento, bem como a similaridade entre frases indicadas para acompanhamento.<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `termos_comparacao_treino.txt`: termos/frases desse arquivo `termos_comparacao_treino.txt` serão usadas para a geração do arquivo de acompanhamento de treinamento. Caso esse arquivo não exista, será criado com alguns termos do vocab treinado e uma frase de exemplo. Altere esse arquivo sempre que quiser.<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `vocab_treino.txt`: será criado após a primeira época e contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento após a tokenização)
 
 ## 1) Quero treinar sem preparar um vocab:
  - Crie a pasta `meu_modelo`
@@ -57,6 +56,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo`
 
  > 💡 Nota: Será criado o arquivo `curadoria_planilha_vocab.xlsx` com todos os termos encontrados nos textos da pasta `textos_vocab`, suas frequências, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.
+ > - opcionalmente pode-se usar o parâmetro `-treino` para que a planilha de curadoria seja criada com os textos da pasta `textos_treino`.
 
 #### 4.1 realize o ciclo de curadoria :repeat::
  - Abra o arquivo `curadoria_planilha_vocab.xlsx` e avalie os termos que deseja treinar.
