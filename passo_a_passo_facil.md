@@ -9,6 +9,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
   > 💡 Nota: todos os tokens serão treinados, será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente
+  > - você pode rodar `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias antes do treinamento.
 
 ## 2) Quero usar as palavras sugeridas ou já tenho as minhas:
  - Crie a pasta `meu_modelo`
@@ -31,12 +32,13 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo`
 
 #### 4.1 realize o ciclo de curadoria :repeat::
- - Abra o arquivo `curadoria_planilha_vocab.txt` e avalie os termos que deseja treinar.
+ - Abra o arquivo `curadoria_planilha_vocab.xlsx` e avalie os termos que deseja treinar.
    - Crie um arquivo com os termos completos ex. `VOCAB_BASE meus termos.txt`, coloque nesse arquivo os termos completos que deseja treinar.
    - Crie um arquivo com os termos fragmentados, se desejar, ex. `VOCAB_BASE meus fragmentos.txt`, coloque nesse arquivo os termos da coluna QUEBRADOS que deseja treinar.
  - Crie uma subpasta `meu_modelo/textos_treino` e coloque alguns ou todos os arquivos de treino
+   - ❗ lembre de fechar o arquivo de curadoria antes de rodar novamente o ciclo
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo -reiniciar`
- - Abra o arquivo `curadoria_planilha_vocab.txt` e avalie os termos que não foram localizados (colunas VOCAB ou VOCAB_QUEBRADOS iguais a N), atualize os seus arquivos com esses termos.
+ - Abra o arquivo `curadoria_planilha_vocab.xlsx` e avalie os termos que não foram localizados (colunas VOCAB ou VOCAB_QUEBRADOS iguais a N), atualize os seus arquivos com esses termos.
  - Siga esse ciclo até que o seu vocab esteja como deseja e inicie o treinamento :repeat:.
  - Inicie o treinamento:
     - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
