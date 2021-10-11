@@ -7,14 +7,14 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 - O core desse componente é o uso de um Tokenizador Inteligente que usa as configurações dos arquivos contidos na pasta do modelo para tokenizar os arquivos de treinamento e os arquivos novos para comparação no futuro.
 
 ### Esse componente `Doc2VecFacil` trabalha em duas etapas:
- - criação de um vocab personalizado para auxiliar a configuração do Tokenizador Inteligente.
+ - criação/configuração de um vocab personalizado para o Tokenizador Inteligente.
    - `python util_doc2vec_vocab_facil.py -pasta ./meu_modelo`
  - treinamento do modelo usando a estrutura de tokenização criada 
    - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
 
- - Aqui tem um passo a passo simplificado para criação do vocab e realização do treinamento: [`Passo a Passo`](passo_a_passo_facil.md)
+ - Aqui tem um passo a passo simplificado para criação/configuração do vocab e realização do treinamento: [`Passo a Passo`](passo_a_passo_facil.md)
  
- - Logo abaixo estão as explicações detalhadas de como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente ou textualmente, como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
+ - Logo abaixo estão as explicações detalhadas de como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente (por vetores) e/ou textualmente (por termos), como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
 
 - :page_with_curl: <b>Códigos</b>: 
   - [`Criação de vocab`](./src/util_doc2vec_vocab_facil.py)
@@ -120,7 +120,7 @@ julga
 parcelas
 termo
 ```
-> 💡 Nota: na primeira linha temos duas frases que serão comparadas ao longo do treino. Nas outras linhas temos termos soltos que serão apresentados os termos mais parecidos durante o treino. 
+> 💡 Nota: na primeira linha temos duas frases que serão comparadas ao longo do treino. Nas outras linhas temos termos soltos que serão apresentados os termos mais parecidos durante o treino. Coloque quantos termos ou frases desejar. Aparecerão os termos que tiverem similares com mais de 50% de similaridade.<br>
 > O resultado do arquivo `comparar_termos.log` é esse:
 ```
 apresentada para o réu a decisão sobre o processo | apresentada para o acusado a sentença sobre o processo (65%)
