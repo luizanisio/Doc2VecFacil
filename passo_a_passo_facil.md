@@ -1,5 +1,5 @@
 # Dicas simplificadas de como preparar e treinar um modelo em diversos cenários
-Abaixo estão descritos alguns [`cenários`](#grupo-cenarios-link) e seus passos.<br>
+Logo abaixo estão descritos alguns cenários de criação de vocab e treinamento e os seus passos.<br>
 As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`, mas pode criar a pasta com o nome que quiser, basta passar esse nome no parêmtro.
   
 #### Estrutura de pastas:  
@@ -19,15 +19,14 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados (opcional)<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`VOCAB_TRADUTOR*.txt`: arquivos com termos ou frases que serão removidas ou transformadas (opcional)<br>
 
-### Durante o treino:
+#### Durante o treino:
  Arquivos para acompanhar durante o treinamento:<br>
  :file_folder: `meu_modelo` <br>
  &nbsp;&nbsp;\_:file_folder: `doc2vecfacil`<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`doc2vec.log`: algumas informações sobre a última época treinada e dados do modelo.
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`comparar_termos.log`: a cada época o arquivo `comparar_termos.log` será atualizado com os termos mais similares dos termos indicados para acompanhamento, bem como a similaridade entre frases indicadas para acompanhamento.
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`termos_comparacao_treino.txt`: termos/frases desse arquivo `termos_comparacao_treino.txt` serão usadas para a geração do arquivo de acompanhamento de treinamento. Caso esse arquivo não exista, será criado com alguns termos do vocab treinado e uma frase de exemplo. Altere esse arquivo sempre que quiser.<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`vocab_treino.txt`: será criado após a primeira época e contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento após a tokenização)
-
-#grupo-cenarios-link
 
 ## 1) Quero treinar sem preparar um vocab:
  - Crie a pasta `meu_modelo`
