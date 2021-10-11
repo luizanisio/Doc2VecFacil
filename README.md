@@ -68,7 +68,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
 > - `TAMANHO` - é o tamanho do termo
 > - `QTD` - é a quantidade de vezes que o termo apareceu no corpus
 > - `QTD_DOCS` - é a quantidade de documentos onde o termo apareceu
-> - `COMPOSTO` Sim / Não - indica se o termo está presente no vocab principal
+> - `COMPOSTO` Sim / Não - indica se o termo é composto 
 > - `VOCAB` Sim / Não - indica se o termo está presente no vocab principal
 > - `VOCAB_QUEBRADOS` Sim / Não - indica se pelo menos o stemmer do termo está presente no vocab de fragmentos (vocab complementar)
 
