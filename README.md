@@ -29,7 +29,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 
 ### Arquivo de curadoria para criação do vocab
  Ao rodar o código `python util_doc2vec_vocab_facil.py -pasta ./meu_modelo`, será criado um arquivo de curadoria `curadoria_planilha_vocab.xlsx` com os termos encontrados nos textos da pasta `textos_vocab`. 
- - coloque aqui textos que contenham boas palavras, limpas de preferência. Podem ser listas retiradas de algum documento, não importa o contexto delas, apenas as palavras nessa primeira etapa. Então listas de palavras e documentos como gramáticas e dicionários de português digitais parecem uma boa opção. Coloque também documentos com palavras relacionadas ao corpus desejado (psicologia, medicina, legislação, administração, etc). Esse site permite uma análise muito boa de termos e suas características [Dicio](https://www.dicio.com.br/).
+ - coloque na pasta `textos_vocab` textos que contenham boas palavras, limpas de preferência. Podem ser listas retiradas de algum documento, não importa o contexto delas, apenas as palavras nessa primeira etapa. Então listas de palavras e documentos como gramáticas e dicionários de português digitais parecem uma boa opção. Coloque também documentos com palavras relacionadas ao corpus desejado (psicologia, medicina, legislação, administração, etc). Esse site permite uma análise muito boa de termos e suas características [Dicio](https://www.dicio.com.br/).
  - Alguns termos podem não ser tão importantes para o domínio escolhido, mas podem ser importantes para o contexto. Esses termos podem compor o dicionário em forma de `stemmer` + `sufixo`. Aos termos não encontrados no dicionário durante a tokenização para treinamento, será aplicado o stemmer com o sufixo após o stemmer. Caso o stemmer esteja no vocab de treinamento, este será usado. O sufixo é opcional e será incluído se estiver no vocab de treinamento também.
  - Essa combinação de termos completos e fragmentos (stemmer + sufixo) possibilita criar palavras por combinação ao submeter um documento novo ao modelo que contenha termos fora do vocam de treinamento.
  - Opcionalmente pode-se usar o parâmetro `-treino` para gerar o arquivo de curadoria com base nos arquivos da pasta `texto_treino`.
@@ -47,7 +47,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
    ```
 - Veja o [`passo a passo`](passo_a_passo_facil.md) para criar o vocabulário de treinamento de acordo com o cenário desejado e realizar o treinamento propriamente dito.
 
-- Como funciona o TokenizadorInteligente:
+## Como funciona o Tokenizador Inteligente
   - Ao ser instanciado, o tokenizador busca os termos do vocab de treinamento contidos nos arquivos com padrão `VOCAB_BASE*.txt` (não importa o case).
   - Podem existir listas de termos que serão excluídos do treinamento, basta esterem em arquivos com o padrão `VOCAB_REMOVIDO*.txt`.
   - Podem existir transformadores de termos nos arquivos com o padrão `VOCAB_TRADUTOR*.txt` que podem conter termos simples ou compostos que será convertidos em outros termos simples ou compostos, como ngramas por exempo. Veja [`NGramasFacil`](readme_ngramas.md) para mais detalhes.
@@ -55,12 +55,11 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
     - `termo1 => termo2` - converte o `termo1` em `termo2` quando encontrado no texto (ex. `min => ministro`)
     - `termo1 termo2 => termo1_termo2` - converte o termo composto `termo1 termo2` em um termo único `termo1_termo2` (Ex. `processo penal => processo_penal`)
     - `termo1 termo2` - remove o termo composto `termo1 termo2` (Ex. `documento digital => ` ou `documento digital`)
-  - Os tradutores podem ser usados para converter nomes de organizações em suas siglas, termos compostos em um termo únicos (ngramas) e até termos conhecidos como idênticos em sua forma mais usual.
+  - Os tradutores podem ser usados para converter nomes de organizações em suas siglas, termos compostos em um termo únicos (ngramas) e até termos conhecidos como idênticos em sua forma mais usual. É importante ressaltar que quanto maior o número de termos para transformação, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação (veja a classe `TradutorTermos` no arquivo [`util_tradutor_termos.py`](./src/util_tradutor_termos.py) ). 
+    - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
+
 > 💡 A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo `VOCAB_BASE portugues.txt` com termos que farão parte de vários modelos, um arquivo `VOCAB_BASE direito.txt` com termos do direito que serão somados ao primeiro no treinamento, um arquivo `VOCAB_BASE direito fragmentos.txt` com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante. Facilitando evoluções futuras dos vocabulários.
 
-- É importante ressaltar que quanto maior o número de termos, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação (veja a classe `TradutorTermos` no arquivo [`util_tradutor_termos.py`](./src/util_tradutor_termos.py) ). 
-  - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
-> 💡 A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo VOCAB_BASE_portugues.txt com termos que farão parte de vários modelos, um arquivo VOCAB_BASE_direito.txt com termos do direito que serão somados ao primeiro no treinamento, um arquivo VOCAB_COMPLEMENTAR_direito.txt com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante.
 
 ### Exemplo de arquivo `curadoria_planilha_vocab.xlsx` de curadoria de termos:
 | TERMO                  | QUEBRADO         | TFIDF   | TAMANHO |  QTD  | QTD_DOCS | COMPOSTO | VOCAB | VOCAB_QUEBRADOS | ESTRANHO |
@@ -88,16 +87,14 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 - Os arquivos `.clr` são necessários durante todo o treinamento e serão recriados se não forem encontrados, isso acelera o treinamento para não haver necessidade de reprocessar o texto cada vez que o treinamento passar por ele.
 
 ## Treinando o modelo doc2vec: 
- Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.
- Rodar: `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`.
-    - se já existir o modelo, o treinamento será continuado da última época que parou.
-    - sugere-se aguardar no mínimo 1000 épocas, se possível umas 5000
+ Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.<br>
+ Siga os passos do cenário que atende à sua necessidade: [`passo a passo`](passo_a_passo_facil.md)
 
 ### Parâmetros
  - `python util_doc2vec_facil.py`
     - `-pasta` - nome da pasta de treinamento que contém a pasta do modelo e as pastas de textos, o padrão é `meu_modelo` se não for informada.
     - `-treinar`' - iniciar o treinamento do modelo
-    - `-reiniciar sim` - remove o modeo atual, se existir, e inicia um novo treinamento
+    - `-reiniciar sim` - remove o modeo atual, se existir, e inicia um novo treinamento (o sim é para garantir que se quer apagar o modelo e reiniciar)
     - `-testar` - carrega o modelo atual, se existir, e atualiza o arquivo `comparar_termos.log` com os termos encontrados no arquivo `termos_comparacao_treino.txt`
     - `-epocas` - define o número de épocas que serão treinadas, o padrão é 5000 e pode ser interrompido ou acrescido a qualquer momento.
     - `-dimensoes` - define o número de dimensões dos vetores de treinamento (não pode ser alterado depois de iniciado o treinamento).
@@ -145,7 +142,16 @@ termo                |  peticao (64%)            |  inepcia (63%)
 ```
 
 ## Usando o modelo:
- O modelo pode ser carregado facilmente:
+O que precisa ser disponibilizado para o modelo funcionar:<br>
+ :file_folder: `modelo_teste` <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_BASE*.txt` - arquivo com termos e fragmentos que compõem o vocab <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_TRADUTOR*.txt` - arquivo de transformações do tokenizados <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_REMOVER*.txt` - arquivo de exclusões do tokenizados <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `doc2vec*` - arquivos do modelo treinado <br>
+ 
+ Coloque tudo em uma pasta com o nome que desejar e pronto. Esse é um pacote do seu modelo. <br>
+
+O modelo pode ser carregado facilmente:
  ```python 
  from util_doc2vec_facil import UtilDoc2VecFacil
  dv = UtilDoc2VecFacil(pasta_modelo=PASTA_MODELO)
@@ -169,12 +175,6 @@ Frase3:  DE HONORÁRIOS ADVOCATÍCIOS EMBARGOS ADJUDICAÇÃO PENHORA EXECUÇÃO 
 
 Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario', 'advocaticio', 'embargos', 'adjudicacao', 'penhoras'] 
  ```
- 
-- O que precisa ser disponibilizado para o modelo funcionar:
-  - `VOCAB_BASE*.txt` - arquivo com termos e fragmentos que compõem o vocab
-  - `VOCAB_TRADUTOR*.txt` - arquivo de transformações do tokenizados
-  - `VOCAB_REMOVER*.txt` - arquivo de exclusões do tokenizados
-  - `doc2vec*` - arquivos do modelo treinado
 
 ## Dicas de uso:
 - gravar os vetores, textos e metadados dos documentos no ElasticSearch
