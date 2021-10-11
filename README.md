@@ -11,13 +11,14 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
  - treinamento do modelo usando a estrutura de tokenização criada manualmente ou a partir do código acima
    - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
 
+ - Aqui tem um passo a passo simplificado: [`Passo a Passo`](passo_a_passo_facil.md)
+ - Logo abaixo estão as explicações detalhadas de como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente ou textualmente, como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
+
 - :page_with_curl: <b>Códigos</b>: 
   - [`Criação de vocab`](./src/util_doc2vec_vocab_facil.py)
   - [`UtilDoc2VecFacil`](./src/util_doc2vec_facil.py) e [`UtilDoc2VecFacil_Treinamento`](./src/util_doc2vec_facil.py) 
   - [`TradutorTermos`](./src/util_tradutor_termos.py)
   - [`Criação de ngramas`](./src/util_ngramas_facil.py) dicas aqui [NGramasFacil](readme_ngramas.md)
-
-Logo abaixo estão algumas dicas de como criar um modelo personalizado com esse código, como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente ou textualmente, como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
 
 `EM BREVE`: Será disponibilizado um serviço exemplo em conjunto com o componente [PesquisaElasticFacil](https://github.com/luizanisio/PesquisaElasticFacil) para criação de modelos de similaridade textual, agregando valor às pesquisas do ElasticSearch de forma simples com um modelo treinado no corpus específico de cada projeto.
 
