@@ -23,6 +23,7 @@ import json
 from nltk.stem.snowball import SnowballStemmer
 from util_tradutor_termos import TradutorTermos
 from numpy import linalg
+import random
 
 STEMMER = SnowballStemmer('portuguese')
 
@@ -96,6 +97,7 @@ class TokenizadorInteligente():
         self.oov_quebrados = set()              # palavras não localizadas mesmo quebradas - token quebrado
         self.oov_quebrados_tokens = set()       # palavras não localizadas mesmo quebradas - token original
         self.ok_quebrados = set()               # palavras localizadas após quebradas - token quebrado prefixo sufixo/oov
+        self.ok_quebrados_tokens = set()        # palavras inteiras que foram localizadas após quebradas
         self.registrar_oov = registrar_oov      # registra as listas de oov durante a tokenização (usado na geração do vocab, não usar em treinamento)
         self.vocab_final = set()                # palavras encontradas no vocab
         self.vocab_tradutor_termos = set()      # termos simples ou compostos para substituição ou remoção
@@ -288,10 +290,12 @@ class TokenizadorInteligente():
             if sufixo and (sufixo in self.vocab):
                 if self.registrar_oov:
                     self.ok_quebrados.update({f'{prefixo} #{sufixo}'})
+                    self.ok_quebrados_tokens.update({f'token'})
                 return [f'{prefixo}',f'#{sufixo}']
             else:
                 if self.registrar_oov:
                     self.ok_quebrados.update({f'{prefixo} #OOV'})
+                    self.ok_quebrados_tokens.update({f'token'})
                 return [f'{prefixo}','#OOV']
         # atualiza o oov quebrado
         if self.registrar_oov: 
@@ -528,7 +532,8 @@ class UtilDoc2VecFacil():
                     continue
             else:
                 # compara dois termos ou duas frases
-                sents = termo.split('=')
+                sents = self.tokenizer.remover_acentos(termo).lower().replace('=>','=')
+                sents = sents.split('=')
                 sents = [_.strip() for _ in sents]
                 if sents[0] and sents[1]:
                     sim = self.similaridade(sents[0],sents[1])
@@ -554,12 +559,23 @@ class UtilDoc2VecFacil():
         lista = []
         if os.path.isfile(arq):
             linhas = carregar_arquivo(arq=arq,limpar=False,juntar_linhas=False)
-            for linha in linhas:
-                if linha.find('=')>=0:
-                    lista.append(linha.strip())
-                else:
-                    tokens = re.sub(r'\s+',' ',linha).split(' ')
-                    lista.extend(tokens)
+        else:
+            # cria uma lista de termos para comparação
+            if self.model is None:
+                return []
+            _novos_termos = [_ for _ in self.model.wv.key_to_index if _.find('#')<0]
+            random.shuffle(_novos_termos)
+            linhas = _novos_termos[:250]
+            if any(linhas):
+                with open(arq,'w') as f:
+                    f.writelines('\n'.join(linhas))
+
+        for linha in linhas:
+            if linha.find('=')>=0:
+                lista.append(linha.strip())
+            else:
+                tokens = re.sub(r'\s+',' ',linha).split(' ')
+                lista.extend(tokens)
         return [_ for _ in lista if _]
 
 # Classe para treinamento do modelo usando o tokenizador inteligente, o modelo é gravado a cada época
@@ -578,7 +594,7 @@ class UtilDoc2VecFacil():
 # dvt.treinar()
 
 class UtilDoc2VecFacil_Treinamento():
-    def __init__(self, pasta_modelo, pasta_textos, workers=10, epocas=10, min_count = 5, janela_termos = 10, dimensoes = 200, comparar_termos=None) -> None:
+    def __init__(self, pasta_modelo, pasta_textos, workers=10, epocas=10, min_count = 5, janela_termos = 10, dimensoes = 200) -> None:
         self.doc2vec = UtilDoc2VecFacil(pasta_modelo=pasta_modelo)
         # facilitadores
         self.nome_modelo = self.doc2vec.nome_modelo
@@ -598,7 +614,7 @@ class UtilDoc2VecFacil_Treinamento():
             self.dimensoes = self.doc2vec.model.vector_size
         else:
             self.dimensoes = dimensoes
-        self.comparar_termos = comparar_termos
+        self.comparar_termos = []
         self.carregar_lista_termos_comparacao()
 
     def treinar(self):
@@ -619,11 +635,14 @@ class UtilDoc2VecFacil_Treinamento():
             self.criar_modelo()
             print(f'Carregando lista de documentos para criação do VOCAB de treino ... ')
             # ignora o cache de pré-processamento na criação do vocab do modelo
-            # evita que os documentos tenham sido processados para criação dos vocabs complementares
+            # evita que os documentos tenham sido processados para criação dos vocabs complementares e
+            # tenham side feitos ajustes manuais nos vocabs antes do treino.
             documentos_treino = Documentos(pasta_textos = self.pasta_textos, 
                                            pasta_vocab = self.doc2vec.pasta_modelo, 
                                            registrar_oov = True,
                                            ignorar_cache = True)
+            if len(documentos_treino.documentos) ==0:
+                raise Exception(str(f'Não foram encontrados documentos para treinamento em: {self.pasta_textos}' ))
             inicio_treino = timer()
             print(f'Criando VOCAB de treino e pré-processando {documentos_treino.high} documentos ')
             self.doc2vec.model.build_vocab(documentos_treino, update=False)
@@ -664,8 +683,6 @@ class UtilDoc2VecFacil_Treinamento():
     # 
     def carregar_lista_termos_comparacao(self):
         lista = self.doc2vec.carregar_lista_termos_comparacao()
-        if self.comparar_termos is not None:
-           lista =  list(self.comparar_termos) + lista
         self.comparar_termos = list(set(lista))
         self.comparar_termos.sort()
 
@@ -687,8 +704,11 @@ class UtilDoc2VecFacil_Treinamento():
 
     # grava um log de comparação dos termos
     def log_comparacao(self):
-        if self.comparar_termos is None:
-            return 
+        if not any(self.comparar_termos):
+            # tenta criar a lista do vocab
+            self.carregar_lista_termos_comparacao()
+            if not any(self.comparar_termos):
+                return 
         res = self.doc2vec.comparar_termos(self.comparar_termos, retorno_string=True)
         print('\tTermos de comparação: ', len(self.comparar_termos), len(res))
         with open(self.nome_log_comparacao,'w') as f:
@@ -778,7 +798,6 @@ if __name__ == "__main__":
                                                     dimensoes=dimensoes,
                                                     min_count=5,
                                                     workers=workers,
-                                                    janela_termos=janela_termos,
-                                                    comparar_termos=None)
+                                                    janela_termos=janela_termos)
     doc2vecTreina.treinar()
 
