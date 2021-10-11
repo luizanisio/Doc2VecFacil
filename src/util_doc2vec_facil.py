@@ -22,6 +22,7 @@ import re
 import json
 from nltk.stem.snowball import SnowballStemmer
 from util_tradutor_termos import TradutorTermos
+from numpy import linalg
 
 STEMMER = SnowballStemmer('portuguese')
 
@@ -467,8 +468,15 @@ class UtilDoc2VecFacil():
     def tokens_sentenca(self, sentenca):
         return self.tokenizer.tokenizar(sentenca)
 
-    def vetor_sentenca(self, sentenca):
-        return self.model.infer_vector(self.tokens_sentenca(sentenca))
+    # vetor normalizado
+    @classmethod
+    def normalizar(self, v):
+        return [float(f) for f in v / linalg.norm(v)]    
+
+    def vetor_sentenca(self, sentenca, normalizado = True):
+        if normalizado:
+            return self.normalizar( self.model.infer_vector(self.tokens_sentenca(sentenca)) )
+        return self.model.infer_vector(self.tokens_sentenca(sentenca)) 
 
     def similaridade_vetor(self, vetor1,vetor2):
         return 1- distance.cosine(vetor1,vetor2)
