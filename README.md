@@ -55,13 +55,13 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
 > 💡 A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo VOCAB_BASE_portugues.txt com termos que farão parte de vários modelos, um arquivo VOCAB_BASE_direito.txt com termos do direito que serão somados ao primeiro no treinamento, um arquivo VOCAB_COMPLEMENTAR_direito.txt com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante.
 
 ### Exemplo de arquivo `curadoria_vocab.txt` de curadoria de termos:
-| TERMO                  | TFIDF       | TAMANHO |  QTD  | QTD_DOCS | COMPOSTO | VOCAB | VOCAB_QUEBRADOS |
-|------------------------|-------------|:-------:|:-----:|:--------:|:--------:|:-----:|:---------------:|
-| acao_penal             | 0,371274382 |   	30	  |  178  |   	44	   |    S     |  	S   |        N        |
-| acessorias             | 0,301051057 |    10   |   91  |    28    |    N     |   S   |        N        |
-| calculo                | 0,490002279 |    7    |  1736 |    810   |    N     |   S   |        N        |
-| custas                 | 0,41286071  |    6    |  740  |    417   |    N     |   S   |        N        |
-| materia_constitucional	| 0,20749608  |   	22	  |   8   |    	2	   |    S	    |   S   |       	N        |
+| TERMO                  | TFIDF       | TAMANHO |  QTD  | QTD_DOCS | COMPOSTO | VOCAB | VOCAB_QUEBRADOS | ESTRANHO |
+|------------------------|-------------|:-------:|:-----:|:--------:|:--------:|:-----:|:---------------:|:--------:|
+| acao_penal             | 0,371274382 |   	30	  |  178  |   	44	   |    S     |  	S   |        N        |    N     |
+| acessorias             | 0,301051057 |    10   |   91  |    28    |    N     |   S   |        N        |    N     |
+| calculo                | 0,490002279 |    7    |  1736 |    810   |    N     |   S   |        N        |    N     |
+| custas                 | 0,41286071  |    6    |  740  |    417   |    N     |   S   |        N        |    N     |
+| materia_constitucional	| 0,20749608  |   	22	  |   8   |    	2	   |    S	    |   S   |       	N        |    N     |
 
 > 💡 Notas sobre as colunas: 
 > - `TFIDF` - contém o maior peso que o termo teve dentre os pesos que teve nos documentos - [Saiba mais sobre `TFIDF`](https://www.ti-enxame.com/pt/python/interpretar-um-resumo-das-pontuacoes-das-palavras-do-tf-idf-nos-documentos/829990829/)
@@ -71,6 +71,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
 > - `COMPOSTO` Sim / Não - indica se o termo é composto 
 > - `VOCAB` Sim / Não - indica se o termo está presente no vocab principal
 > - `VOCAB_QUEBRADOS` Sim / Não - indica se pelo menos o stemmer do termo está presente no vocab de fragmentos (vocab complementar)
+> - `ESTRANHO` Sim / Não - termos sem vogais ou com consoantes com várias repetições
 
 ## Definição de pastas:
  A estrutura de pastas é pré-definida para facilitar o uso dos componentes. <br>
