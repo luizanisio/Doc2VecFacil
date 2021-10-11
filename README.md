@@ -8,7 +8,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 ### Esse componente `Doc2VecFacil` trabalha em duas etapas:
  - criação de um vocab personalizado ao processar textos considerados importantes para o modelo que será treinado
    - `python util_doc2vec_vocab_facil.py -pasta ./meu_modelo`
- - treinamento do modelo usando a estrutura de tokenização criada a partir do vocab personalizado
+ - treinamento do modelo usando a estrutura de tokenização criada manualmente ou a partir do código acima
    - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
 
 - :page_with_curl: <b>Códigos</b>: 
