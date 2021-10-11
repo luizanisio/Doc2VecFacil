@@ -2,6 +2,7 @@
 Segue abaixo alguns cenários e seus passos.<br>
 As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`, mas pode criar a pasta com o nome que quiser, basta passar esse nome no parêmtro.
 > 💡 Nota: Após a primeira época será criado o arquivo `vocab_treino.txt` que contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento)
+> - A cada época o arquivo `comparar_termos.log` será atualizado com a comparação de termos/frases do arquivo `termos_comparacao_treino.txt`. 
   
 ## 1) Quero treinar sem preparar um vocab:
  - Crie a pasta `meu_modelo`
