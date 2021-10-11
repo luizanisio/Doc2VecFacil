@@ -237,10 +237,12 @@ if __name__ == "__main__":
     parser.add_argument('-epocas', help='número de épocas para treinamento - padrão 5000 ', required=False, action='store_const', const=5000)
     parser.add_argument('-min_count', help='número de ocorrências para usar um termo - padrão 10 ', required=False)
     parser.add_argument('-threshold', help='threshold para aceitar termos como compostos - padrão 20 ', required=False)
+    parser.add_argument('-treino', help='gera a curadoria com os textos de', required=False, action='store_const', const=1)
 
     args = parser.parse_args()
     min_count = int(args.min_count) if args.min_count else 10
     threshold = int(args.threshold) if args.threshold else 20
+    pasta_treino = args.treino
 
     if not args.pasta:
         print('============================================================================')
@@ -267,7 +269,7 @@ if __name__ == "__main__":
         os.makedirs(pasta_saida_ngramas,exist_ok=True)
 
     # gera os ngramas com os textos do vocab
-    pasta_textos = os.path.join(PASTA_BASE,'textos_vocab')
+    pasta_textos = os.path.join(PASTA_BASE,'textos_treino') if pasta_treino else os.path.join(PASTA_BASE,'textos_vocab')
     if not os.path.isdir(pasta_textos):
         pasta_textos = PASTA_BASE
     gerar_bigramas_preprocessados(pasta_textos=pasta_textos, 
