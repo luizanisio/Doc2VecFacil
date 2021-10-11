@@ -41,10 +41,10 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Inicie o treinamento:
     - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
 
-## 5) Quero criar um vocab extra além dos termos dos arquivos de exemplo:
+## 5) Quero criar um vocab extra com ajuda da curadoria:
  - Crie a pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_treino`
- - Crie uma subpasta `meu_modelo/doc2vecfacil` e coloque os arquivos `VOCAB_BASE_PTBR.txt` e, se quiser que ocorra a fragmentação de termos fora do vocab, coloque também o arquivo `VOCAB_BASE_PTBR_FRAGMENTOS.txt`. Ou use seus arquivos com ou sem esses dois sugeridos. 
+ - Crie uma subpasta `meu_modelo/doc2vecfacil` e coloque os arquivos `VOCAB_BASE_PTBR.txt` e, se quiser que ocorra a fragmentação de termos fora do vocab, coloque também o arquivo `VOCAB_BASE_PTBR_FRAGMENTOS.txt`. Ou use seus arquivos com ou sem esses dois sugeridos, ou quantos arquivos desejar para compor o `VOCAB_BASE. 
  - Crie uma subpasta `meu_modelo/textos_vocab`
    - Coloque nesta pasta documentos relevantes para a criação do vocab extra
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo`
