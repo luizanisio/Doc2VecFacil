@@ -1,14 +1,14 @@
 # Dicas simplificadas de como preparar e treinar um modelo em diversos cenários
 Segue abaixo alguns cenários e seus passos.<br>
 As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`, mas pode criar a pasta com o nome que quiser, basta passar esse nome no parêmtro.
-
+> 💡 Nota: Após a primeira época será criado o arquivo `vocab_treino.txt` que contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento)
+  
 ## 1) Quero treinar sem preparar um vocab:
  - Crie a pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_treino`
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
   > 💡 Nota: todos os tokens serão treinados, será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente
-  > - Após a primeira época será criado o arquivo `vocab_treino.txt` que contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treino)
 
 ## 2) Quero usar as palavras sugeridas ou já tenho as minhas:
  - Crie a pasta `meu_modelo`
@@ -17,14 +17,12 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
  > 💡 Nota: serão treinados apenas os termos encontrados nos arquivos `VOCAB_BASE*.txt` ou no caso de um termo não ser encontrado, o `stemmer` e `sufixo` dele serão treinados se estiverem no vocab.
-  > - Após a primeira época será criado o arquivo `vocab_treino.txt` que contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treino)
 
 ## 3) Quero criar ngramas ou limpar o texto com termos que não devem ser treinados:
  - Além dos arquivos do cenário `2`, acrescente o arquivo `VOCAB_TRADUTOR_COMPOSTOS_PTBR.txt` e crie outros arquivos se desejar com seus ngramas (veja [NGramasFacil](readme_ngramas.md) ) ou termos compostos para remoção. Crie também um ou mais arquivos `VOCAB_REMOVIDO*.txt` com suas listas de exclusões.
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
  > 💡 Nota: os termos compostos são agrupados após a tokenização e limpeza e serão incluídos automaticamente no vocab de treino.  
-  > - Após a primeira época será criado o arquivo `vocab_treino.txt` que contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treino)
 
 ## 4) Quero criar meu vocab do zero, fazer curadoria e depois treinar:
  - Crie a pasta `meu_modelo`
