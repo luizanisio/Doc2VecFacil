@@ -22,20 +22,18 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 
 `EM BREVE`: Será disponibilizado um serviço exemplo em conjunto com o componente [PesquisaElasticFacil](https://github.com/luizanisio/PesquisaElasticFacil) para criação de modelos de similaridade textual, agregando valor às pesquisas do ElasticSearch de forma simples com um modelo treinado no corpus específico de cada projeto.
 
-### Criação do vocab personalizado
+## Criação do vocab personalizado
 
 O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil` e serve para facilitar a criação de arquivos que configuram o `TokenizadorInteligente`. A ideia é trabalhar com termos importantes para o modelo, adicionados a termos complementares compostos por fragmentos de termos `stemmer` + `sufixo`. Com isso novos documentos que possuam termos fora do vocab principal podem ter o stemmer e o sufixo dentro do vocab do modelo, criando um vocab mais flexível e menor. É possível também transformar termos ou conjunto de termos durante o processamento, como criar n-gramas, reduzir nomes de organizações em sigla, remover termos simples ou compostos etc.
 
-### São criados dois arquivos de vocabulários, um principal e um complementar
- - o dicionário principal é composto pelos termos completos encontrados nos textos da pasta `textos_vocab`
-   - coloque aqui textos que contenham boas palavras, limpas de preferência. Podem ser listas retiradas de algum documento, não importa o contexto delas, apenas as palavras nessa primeira etapa. Então listas de palavras e documentos como gramáticas e dicionários de português digitais parecem uma boa opção. Coloque também documentos com palavras relacionadas ao corpus desejado (psicologia, medicina, legislação, administração, etc).
- - o dicionário complementar é composto pelos termos quebrados encontrados nos textos da pasta `textos_vocab_complementar`. 
-   - coloque aqui listas de palavras não tão importantes para o contexto do corpus, mas que são importantes na composição desses textos. Podem ser textos maiores, a ideia aqui é construir fragmentos de palavras menos importantes que as principais, no formato (stemmer + sufixos). Aos termos não encontrados no dicionário criado pelos textos principais será aplicado o stemmer e será incluído o sufixo do termo complementando o stemmer, criando um conjunto extra de termos que possibilitam uma flexibilidade de novas combinações não conhecidas durante o treino.
- - Essa combinação de termos completos e fragmentos (stemmer + sufixo) possibilita criar palavras por combinação ao submeter um documento novo ao modelo.
+### Arquivo de curadoria para criação do vocab
+ - Será criado um arquivo de curadoria `curadoria_planilha_vocab.xlsx` com os termos encontrados nos textos da pasta `textos_vocab`. 
+   - coloque aqui textos que contenham boas palavras, limpas de preferência. Podem ser listas retiradas de algum documento, não importa o contexto delas, apenas as palavras nessa primeira etapa. Então listas de palavras e documentos como gramáticas e dicionários de português digitais parecem uma boa opção. Coloque também documentos com palavras relacionadas ao corpus desejado (psicologia, medicina, legislação, administração, etc). Esse site permite uma análise muito boa de termos e suas características [Dicio](https://www.dicio.com.br/).
+ - Alguns termos podem não ser tão importantes para o domínio escolhido, mas podem ser importantes para o contexto. Esses termos podem compor o dicionário em forma de `stemmer` + `sufixo`. Aos termos não encontrados no dicionário durante a tokenização para treinamento, será aplicado o stemmer com o sufixo após o stemmer. Caso o stemmer esteja no vocab de treinamento, este será usado. O sufixo é opcional e será incluído se estiver no vocab de treinamento também.
+ - Essa combinação de termos completos e fragmentos (stemmer + sufixo) possibilita criar palavras por combinação ao submeter um documento novo ao modelo que contenha termos fora do vocam de treinamento.
    
  - <b>Exemplo</b>: `engloba` pode ser composta por `englob` `#a`, e outras formações podem ocorrer como `englob` `#ada`, `englob` `#adamente`, `englob` `#adas` caso esses  fragmentos estejam disponíveis no vocabulário de treinamento.
-   - O vocab de treinamento não precisa do `#` antes do sufixo, apenas dos fragmentos. Mas durante o treinamento os fragmentos usados como
-     sufixo iniciarão com `#` para facilitar sua identificação e diferenciar dos termos principais no modelo final.
+   - O vocab de treinamento não precisa do `#` antes do sufixo, apenas dos fragmentos. Mas durante o treinamento os fragmentos usados como sufixo iniciarão com `#` para facilitar sua identificação e diferenciar dos termos principais no modelo final.
  - <b>Exemplo de tokenização</b>: 
    ```python
    # para carregar o modelo, indique a pasta criada no treinamento
@@ -45,24 +43,32 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
    ```
    ['atendiam_testemunha', 'seu', 'depoimento', 'apesar', 'de', 'trazer', 'algumas', 'impreciso', '#es', 'sobre', 'os', 'fatos', 'atend', '#o', 'se', 'os', 'jurados', 'as', 'provas', 'produzidas', 'em', 'plenari', '#os']
    ```
+- Veja o [`passo a passo`](passo_a_passo_facil.md) para criar o vocabulário de treinamento de acordo com o cenário desejado.
+- O arquivo `curadoria_planilha_vocab.xlsx` tem todos os termos encontrados nos textos da pasta `textos_vocab`, suas frequências, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.
 
-Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_vocab.txt` com cada termo, sua frequência, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.
-- Opcionalmente pode-se editar o arquivo do dicionário principal com base nos dados dessa planilha e remover o dicionário complementar e rodar o código novamente para que o dicionário complementar seja recriado aproveitando o dicionário base ajustado manualmente, sem um novo processamento do dicionário principal.
-- Opcionamente pode-se criar quantos dicionários quiser com o prefixo `vocab_base*.txt`, os termos desses dicionários <b>não</b> farão parte do dicionário principal criado, nem farão parte do complementar, pois entende-se que já estão fixados para treinamento e vão compor o vocabulário final de treinamento. 
-- Opcionamente também é possível criar arquivos de termos excluídos do treinamento `vocab_removido*.txt`
-- Opcionamente também é possível criar arquivos de frases/termos para tradução/transformação como substituir `processo penal` por `processo_penal`, compondo termos compostos para serem tratados como termos únicos no modelo. Pode-se também remover termos ao não indicar a transformação. Podem ser criados arquivos no formato `vocab_tradutor*.txt`. E a configuração dos termos é por linha `processo penal => processo_penal`, ou `remover esse trecho =>`.
-  - Um exemplo de uso é incluir nomes de pessoas ou empresas que não há interesse em compor o treinamento ou reduzir termos compostos em termos únicos para a vetorização posterior de novos documentos. Removendo ruídos conhecidos e reduzindo o vocabulário principal. Importante ressaltar que quanto maior o número de termos, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação veja a classe `TradutorTermos` no arquivo `util_tradutor_termos`. 
+- Como funciona o TokenizadorInteligente:
+  - Ao ser instanciado, o tokenizador busca os termos do vocab de treinamento contidos nos arquivos com padrão `VOCAB_BASE*.txt` (não importa o case).
+  - Podem existir listas de termos que serão excluídos do treinamento, basta esterem em arquivos com o padrão `VOCAB_REMOVIDO*.txt`.
+  - Podem existir transformadores de termos nos arquivos com o padrão `VOCAB_TRADUTOR*.txt` que podem conter termos simples ou compostos que será convertidos em outros termos simples ou compostos, como ngramas por exempo. Veja [`NGramasFacil`](readme_ngramas.md) para mais detalhes.
+  - Os tradutores funcionam após a limpeza do texto e transformam termos de acordo com a configuração no arquivo:
+    - `termo1 => termo2` - converte o `termo1` em `termo2` quando encontrado no texto (ex. `min => ministro`)
+    - `termo1 termo2 => termo1_termo2` - converte o termo composto `termo1 termo2` em um termo único `termo1_termo2` (Ex. `processo penal => processo_penal`)
+    - `termo1 termo2` - remove o termo composto `termo1 termo2` (Ex. `documento digital => ` ou `documento digital`)
+  - Os tradutores podem ser usados para converter nomes de organizações em suas siglas, termos compostos em um termo únicos (ngramas) e até termos conhecidos como idênticos em sua forma mais usual.
+> 💡 A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo `VOCAB_BASE portugues.txt` com termos que farão parte de vários modelos, um arquivo `VOCAB_BASE direito.txt` com termos do direito que serão somados ao primeiro no treinamento, um arquivo `VOCAB_BASE direito fragmentos.txt` com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante. Facilitando evoluções futuras dos vocabulários.
+
+- É importante ressaltar que quanto maior o número de termos, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação (veja a classe `TradutorTermos` no arquivo [`util_tradutor_termos.py`](./src/util_tradutor_termos.py) ). 
   - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
 > 💡 A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo VOCAB_BASE_portugues.txt com termos que farão parte de vários modelos, um arquivo VOCAB_BASE_direito.txt com termos do direito que serão somados ao primeiro no treinamento, um arquivo VOCAB_COMPLEMENTAR_direito.txt com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante.
 
-### Exemplo de arquivo `curadoria_vocab.txt` de curadoria de termos:
-| TERMO                  | TFIDF       | TAMANHO |  QTD  | QTD_DOCS | COMPOSTO | VOCAB | VOCAB_QUEBRADOS | ESTRANHO |
-|------------------------|-------------|:-------:|:-----:|:--------:|:--------:|:-----:|:---------------:|:--------:|
-| acao_penal             | 0,371274382 |   	30	  |  178  |   	44	   |    S     |  	S   |        N        |    N     |
-| acessorias             | 0,301051057 |    10   |   91  |    28    |    N     |   S   |        N        |    N     |
-| calculo                | 0,490002279 |    7    |  1736 |    810   |    N     |   S   |        N        |    N     |
-| custas                 | 0,41286071  |    6    |  740  |    417   |    N     |   S   |        N        |    N     |
-| materia_constitucional	| 0,20749608  |   	22	  |   8   |    	2	   |    S	    |   S   |       	N        |    N     |
+### Exemplo de arquivo `curadoria_planilha_vocab.xlsx` de curadoria de termos:
+| TERMO                  | QUEBRADO         | TFIDF   | TAMANHO |  QTD  | QTD_DOCS | COMPOSTO | VOCAB | VOCAB_QUEBRADOS | ESTRANHO |
+|------------------------|------------------|:-------:|:-------:|:-----:|:--------:|:--------:|:------|:---------------:|:--------:|
+| acao_penal             |                  | 0,37127 |   	30	  |  178  |   	44	   |    S     |  	S   |        N        |    N     |
+| adaptacao              | adaptaca o       | 0,30105 |    10   |   91  |    28    |    N     |   S   |        N        |    N     |
+| advogado               | advog ado        | 0,49000 |    7    |  1736 |    810   |    N     |   S   |        N        |    N     |
+| custas                 | cust as          | 0,41286 |    6    |  740  |    417   |    N     |   S   |        N        |    N     |
+| materia_constitucional	|                  | 0,20749 |   	22	  |   8   |    	2	   |    S	    |   S   |       	N        |    N     |
 
 > 💡 Notas sobre as colunas: 
 > - `TFIDF` - contém o maior peso que o termo teve dentre os pesos que teve nos documentos - [Saiba mais sobre `TFIDF`](https://www.ti-enxame.com/pt/python/interpretar-um-resumo-das-pontuacoes-das-palavras-do-tf-idf-nos-documentos/829990829/)
@@ -71,7 +77,7 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
 > - `QTD_DOCS` - é a quantidade de documentos onde o termo apareceu
 > - `COMPOSTO` Sim / Não - indica se o termo é composto 
 > - `VOCAB` Sim / Não - indica se o termo está presente no vocab principal
-> - `VOCAB_QUEBRADOS` Sim / Não - indica se pelo menos o stemmer do termo está presente no vocab de fragmentos (vocab complementar)
+> - `VOCAB_QUEBRADOS` Sim / Não - indica se pelo menos o stemmer do termo está presente no vocab principal
 > - `ESTRANHO` Sim / Não - termos sem vogais ou com consoantes com várias repetições
 
 ## Definição de pastas:
@@ -82,23 +88,6 @@ Junto com a criação dos dicionários é criado um arquivo `curadoria_planilha_
    - :file_folder: `textos_vocab`: textos que serão tokenizados para criação do vocab principal
    - :file_folder: `textos_complementares`: textos que seráo tokenizados para criação do dicionário complementar de fragmentos dos termos não encontrados no vocab principal.
 
- Ao final são gerados os arquivos de dicionários que podem ser alterados manualmente antes do treinamento do modelo, desde que mantidos os nomes dos arquivos que são padronizados e definirão a tokenização para treinamento e a tokenização durante o uso do modelo final.
- 
- - :file_folder: `Pasta raiz`
-   - `doc2vecfacil/VOCAB_BASE*.txt` são arquivos carregados em conjunto para formar o vocab de tokenização
-   - `doc2vecfacil/VOCAB_REMOVIDO*.txt` são arquivos carregados em conjunto para excluir termos do vocab de tokenização
-   - `doc2vecfacil/VOCAB_TRADUTOR*.txt` são arquivos com tradutores no estilo `termo1 => termo2`, podendo conter termos compostos nas duas pontas ou não conter `=>` que indica que o termo ou os termos da esquerda serão removidos. A avaliação é feita após a limpeza, lowercase e remoção de acentos. Um arquivo `vocab_tradutor_termos.log` é criado indicando como as transformações serão realizadas.
- - São gerados alguns arquivos para auxílio na curadoria que podem ser apagados depois. Pode-se abrir os arquivos `curadoria_planilha_vocab.txt` no Excel para análise mais apurada dos termos (use os filtros do excel para analisar, remover ou incluir termos novos).
-    'curadoria_planilha_vocab.txt` - planilha de curadoria dos termos inteiros ou fragmentados onde pelo menos o stemmer estava no dicionário, com vários atributos como: tamanho, tfidf, frequência, etc. Poderá ser aberto no excel para análise e refinamento do vocabulário final de treinamento
-   - `curadoria termos inteiros OOV.txt` - são os termos inteiros que não foram encontrados no dicionário principal (antes de serem fragmentados)
-   - `curadoria termos OOV TOKENS QUEBRADOS.txt` - são os fragmentos dos termos que não foram encontrados nos dicionários 
-   - `curadoria termos stemmer OOV TOKENS INTEIROS.txt` - são os termos inteiros que mesmo após fragmentados não foram encontrados nos dicionários 
-   - `curadoria termos VOCAB TOKENS QUEBRADOS.txt` - são os termos que não foram encontrados inteiros no vocab mas seus fragmentos forma encontrados
-   - `curadoria termos VOCAB FINAL PRÉ-TREINO.txt` - são os termos e fragmentos que vão compor o vocab de treinamento. 
-
- - Pode-se gerar um vocab e utilizá-lo para treinar diversos conjuntos diferentes de arquivos em modelos diferentes. 
- - Por isso o arquivo `vocab_treino`, gerado durante o treinamento, pode ser menor que o arquivo `curadoria termos VOCAB FINAL PRÉ-TREINO`, já que vai conter apenas os termos encontrados durante o treinamento. Os arquivos criados são sugestões e podem ser alterados livremente antes de iniciar o treinamento do modelo.
- - Por esse motivo, ao iniciar o treinamento o cache de pré-processamento é reconstruído para evitar que ajustes manuais não estejam contemplados no treinamento.
 
 ## Passo a passo para criar o vocab de treino: 
  1) Criar as pastas:
