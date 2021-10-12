@@ -6,7 +6,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 - Com essa comparação vetorial, é possível encontrar documentos semelhantes a um indicado, agrupar documentos semelhantes entre si de uma lista de documentos, e também monitorar documentos que entram na base ao compará-los com os documentos rotulados para monitoramento, como uma classificação rápida.
 - Esse é um repositório de estudos, analise, ajuste, corrija e use os códigos como desejar.
 - O core desse componente é o uso de um Tokenizador Inteligente que usa as configurações dos arquivos contidos na pasta do modelo para tokenizar os arquivos de treinamento e os arquivos novos para comparação no futuro.
-- :warning: A quantidade de termos treinados e de épocas de treinamento são valores que dependem do objetivo e do tipo de texto de cada projeto. Quanto mais termos, mais detalhes e mais diferenças serão destacadas entre os textos e o modelo vai realçar as particularidades da escrita. Escohendo menos termos, mais relacionados com o domínio analisado, o modelo vai realçar a temática geral dos textos.
+> :warning: A quantidade de termos treinados e de épocas de treinamento são valores que dependem do objetivo e do tipo de texto de cada projeto. Quanto mais termos, mais detalhes e mais diferenças serão destacadas entre os textos e o modelo vai realçar as particularidades da escrita. Escohendo menos termos mais relacionados com o domínio analisado, e compondo ngramas, há uma chance maior do modelo realçar a temática geral dos textos.
 
 ### Esse componente `Doc2VecFacil` trabalha em duas etapas:
  - criação/configuração de um vocab personalizado para o Tokenizador Inteligente.
