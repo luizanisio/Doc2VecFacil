@@ -18,7 +18,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados (opcional)<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_TRADUTOR*.txt`: arquivos com termos ou frases que serão removidas ou transformadas (opcional)<br>
 
-> 💡 Nota: baixe os [`exemplos`](./exemplos) de configurações do tokenizador. Analise, ajuste os termos, termos compostos e remoções, gere a planilha de curadoria e adapte ao seu contexto. <br>
+> 💡 Nota: baixe os [`exemplos`](./exemplos) de configurações do tokenizador. Analise, ajuste os termos, termos compostos e remoções, gere a planilha de curadoria e adapte ao seu contexto. São termos muito usados, mas não estão completos, pode iniciar com eles, mas não considere eles prontos para uso em modelos mais complexos. <br>
 > 📑 O exemplo `modelo_legislacoes` já possui alguns textos para o vocab e diversos termos, fragmentos e ngramas configurados, bastando apenas incluir seus documentos para gerar uma planilha de curadoria ou iniciar o treinamento de uma primeira versão do seu modelo. Os textos foram baixados de links públicos, os links estão na pasta de exemplo.
 
 #### Durante o treino:
