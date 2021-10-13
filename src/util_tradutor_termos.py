@@ -47,7 +47,7 @@ class TradutorTermos(dict):
         Objetivo fazer tradução rápida em grande volume de 
         textos já tokenizados
     """
-    def __init__(self, termos, usar_replace = False):
+    def __init__(self, termos):
         # caso tenha uma lista, é uma lista de remoção de termos
         # caso tenha um dict, é um conjunto de tradução de termos
         # caso tenha uma tupla, é um conjunto de tradução de termos
@@ -58,27 +58,12 @@ class TradutorTermos(dict):
         self.termos.sort(key= lambda k:len(k[0]), reverse = True )
         # inclui espaço nos termos
         self.termos = [(f' {c} ',f' {v} ') for c,v in self.termos]
-        self.usar_replace = usar_replace
 
     def sub(self, texto):
         """ Aplica a tradução/remoção de cada termo """
         _texto = f' {texto} '
-        if self.usar_replace:
-           for composto, novo in self.termos:
-               _texto = _texto.replace(composto, novo)
-           return _texto.strip()
-        # com find
         for composto, novo in self.termos:
-            #print(f'{c} => {v}')
-            pos = _texto.find(composto)
-            if pos>=0:
-                novo_texto = ''
-                # caminha nas posições até não encontrar mais
-                while pos >= 0:
-                  novo_texto += (_texto[:pos] + novo)
-                  _texto = _texto[pos+len(composto):]
-                  pos = _texto.find(composto)
-                _texto = novo_texto + _texto        
+            _texto = _texto.replace(composto, novo)
         return _texto.strip()
 
 def teste_tradutores():
@@ -87,7 +72,7 @@ def teste_tradutores():
     texto_ci = 'APELAÇÃO (cível) AÇÃO QUE OBJETIVA O RESSARCIMENTO  (danos) CAUSADOS AO (ERÁRIO) EM FUNÇÃO DA CONCESSÃO ILEGAL E LESIVA  PERMISSÃO  USO  BEM PÚBLICO PELO ENTÃO CHEFE DO PODER EXECUTIVO ESTADUAL EM FAVOR DA SEGUNDA RÉ'
     texto_cs = 'APELAÇÃO CÍVEL AÇÃO QUE OBJETIVA O RESSARCIMENTO DE DANOS CAUSADOS AO (ERÁRIO) EM FUNÇÃO DA CONCESSÃO ILEGAL E LESIVA DE PERMISSÃO DE USO DE BEM PÚBLICO PELO ENTÃO CHEFE DO PODER EXECUTIVO ESTADUAL EM FAVOR DA SEGUNDA RÉ'
 
-    for i in range(4):
+    for i in range(3):
         if i == 0:
             tipo =  'TradutorTermosRe ic'
             tradutor = TradutorTermosRe(termos, True)
@@ -99,13 +84,8 @@ def teste_tradutores():
             texto_traduzido = tradutor.sub(texto)
             esperado = texto_cs
         elif i == 2:
-            tipo =  'TradutorTermos Find cs'
-            tradutor = TradutorTermos(termos, False)
-            texto_traduzido = tradutor.sub(texto)
-            esperado = texto_cs
-        elif i == 3:
-            tipo =  'TradutorTermos Replace cs'
-            tradutor = TradutorTermos(termos, True)
+            tipo =  'TradutorTermos cs'
+            tradutor = TradutorTermos(termos)
             texto_traduzido = tradutor.sub(texto)
             esperado = texto_cs
 

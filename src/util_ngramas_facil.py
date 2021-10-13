@@ -16,7 +16,7 @@ import re
 from util_doc2vec_facil import TokenizadorInteligente, carregar_arquivo
 from timeit import default_timer as timer
 
-TOKENIZADOR = TokenizadorInteligente('',registrar_oov=False,tokenizar_tudo=True)
+TOKENIZADOR = TokenizadorInteligente('',registrar_oov=False, tokenizar_tudo=True, fragmentar=False)
 
 # exemplos de conjuntos de stop_words para os ngramas
 STOP_MINI = {'de', 'da', 'do', 'para', 'ao', 'a', 'e', 'i', 'o', 'u', 'pra', 'di', 'du', 'por', 'em', 'num', 'ao','aos','no', 'na' }
@@ -155,10 +155,11 @@ def gerar_bigramas_preprocessados(pasta_textos=r'.\textos', pasta_saida_ngramas=
     print('Modelos finalizados: ', arquivo_bigrama, arquivo_quadrigrama)
 
     print(' - gravando vocab de substituição')
-    with open(os.path.join(pasta_saida,'vocab_sub_bigramas_sugerido.txt'),'w') as f:
+    with open(os.path.join(pasta_saida,'VOCAB_TRADUTOR ngramas sugeridos.txt'),'w') as f:
         for linha in lst_vocab_sub:
             de, por = linha.strip().replace('_',' '), linha.strip()
-            f.write(f'{de} => {por}\n')
+            if len(de)>1 and len(por)>1:
+                f.write(f'{de} => {por}\n')
 
 def testar_ngramas(pasta_textos=r'.\textos', pasta_saida_ngramas=None, texto='', maximo_linhas=1000):
     pasta_ngramas = pasta_saida_ngramas if pasta_saida_ngramas else pasta_textos 

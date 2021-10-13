@@ -16,6 +16,7 @@ import os
 import logging
 from timeit import default_timer as timer
 from datetime import datetime
+from gensim.utils import tokenize
 from scipy.spatial import distance
 from unicodedata import normalize
 import re
@@ -79,12 +80,17 @@ class TokenizadorInteligente():
     REGEX_SIGLAS = re.compile(r"(?<=\W[a-z])\.(?=[a-z]\W)" )
     RE_ESPACOS_QUEBRAS = re.compile(r'(\s|<br>|\\n)+')
     RE_ESPACOS_QUEBRAS_COMPOSTO = re.compile(r'(\s|<br>|\\n|_)+')
-    NUMEROS = [_ for _ in ' zero um dois tres quatro cinco seis sete oito nove '.split(' ') if _]
+    NUMEROS = {_ for _ in ' zero um dois tres quatro cinco seis sete oito nove '.split(' ') if _}
 
     RE_URL = re.compile(r'\b(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})\b')
     RE_EMAIL = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
 
-    def __init__(self, pasta_vocab, registrar_oov = False, tokenizar_tudo = False):
+    #terminações dos plurais
+    SINGULARIZACAO = [['s',''], ['aes','ao'], ['ais','al'], ['oes','ao'],
+                     ['eis','el'],  ['ois','ol'], ['is','il'],   ['ns','m'],
+                     ['les','l'],   ['res','r'],  ['zes', 'z'] ]
+
+    def __init__(self, pasta_vocab, registrar_oov = False, tokenizar_tudo = False, fragmentar = True):
         self.pasta_vocab = str(pasta_vocab) if pasta_vocab else '' # pasta vocab vazia indica que o vocab é criado pelo texto
         self.nome_oov = None                    # palavras não localizadas no vocab
         self.nome_oov_quebrados = None          # palavras quebradas e ainda não localizadas
@@ -92,6 +98,7 @@ class TokenizadorInteligente():
         self.nome_ok_quebrados  = None          # palavras quebradas e encontradas - token quebrado por linha
         self.nome_vocab_final  =  None          # palavras quebradas e encontradas
         self.tokenizar_tudo = tokenizar_tudo    # True/False se retorna todos os tokens mesmo fora do vocab
+        self.fragmentar = fragmentar            # True/False fragmenta o token em prefixo e sufixo se não encontrado no vocab
         self.oov = set()                        # palavras não localizadas no vocab
         #self.oov_final = set()
         self.oov_quebrados = set()              # palavras não localizadas mesmo quebradas - token quebrado
@@ -109,7 +116,7 @@ class TokenizadorInteligente():
             self.nome_ok_quebrados = os.path.join(self.pasta_vocab,'treinamento - vocab_ok_quebrados.txt')
             self.nome_vocab_final = os.path.join(self.pasta_vocab,'treinamento - vocab_final.txt')
             # recarrega os arquivos se existirem pois ao usar o cache dos textos 
-            # não há verificação de tokens oov
+            # não há verificação de tokens oov - se o cache for alterado, esses dados podem ficar inconsistentes
             if os.path.isfile(self.nome_oov):
                 self.oov = set(carregar_arquivo(self.nome_oov,juntar_linhas=False))
             if os.path.isfile(self.nome_oov_quebrados):
@@ -184,9 +191,12 @@ class TokenizadorInteligente():
         # criar o tradutor
         self.tradutor_termos = None
         if any(_compostos):
-            #_compostos = sorted(_compostos, key = lambda k:len(k[0]), reverse=True)
+            # primeiro faz a substituição dos termos maiores
+            _compostos = sorted(_compostos, key = lambda k:len(k[0]), reverse=True)
             for composto, novo_termo in _compostos:
                 self.vocab_tradutor_termos.append((composto, novo_termo))
+                # inclui os termos compostos no vocab
+                vocab += f' {novo_termo}'
             arq_log_composto = os.path.join(self.pasta_vocab,'vocab_tradutor_termos.log')
             self.tradutor_termos = TradutorTermos(self.vocab_tradutor_termos)
             # grava o arquivo de substituição de termos compostos processado
@@ -196,14 +206,13 @@ class TokenizadorInteligente():
                 with open(arq_log_composto,'w') as f:
                         for composto, novo_termo in self.tradutor_termos.termos:
                             f.write(f'{composto} => {novo_termo}\n')
-                            vocab += f' {novo_termo}'
 
         # identificação de termos que devem ser retirados do vocab
         vocab_removido = self.remover_acentos( vocab_removido.replace('\n',' ').lower() )
         vocab_removido = {_ for _ in vocab_removido.split(' ') if _}
         # construção do vocab sem os termos removidos
         _txt_numeros = ' '.join(self.NUMEROS)
-        vocab += _txt_numeros
+        vocab += f' {_txt_numeros} '
         vocab = self.remover_acentos( vocab.replace('\n',' ').lower() )
         vocab = {_ for _ in vocab.split(' ') if _ and (_ not in vocab_removido) }
         if self.vocab_vazio:
@@ -236,14 +245,18 @@ class TokenizadorInteligente():
             sentenca = sentenca.replace(str(i),f' {n} ')
 
         tokens = self.RE_TOKENIZAR.sub(' ',sentenca)
+
         if rapido:
-            return tokens if rapido=='str' else tokens.split(' ') 
+            # só faz a limpeza e retorna string ou list de tokens
+            tokens = tokens.replace('_ ',' ').replace(' _',' ').strip() # compostos órfãos
+            return tokens if rapido=='str' else [_ for _ in tokens.split(' ') if _]
 
         # realiza a tradução/remoção de termos e agrupamento de ngramas
         if self.tradutor_termos is not None:
             tokens = self.tradutor_termos.sub(tokens)
 
         tokens = tokens.replace('_ ',' ').replace(' _',' ') # compostos órfãos
+
         # tokeniza o resultado final
         tokens = tokens.split(' ')
 
@@ -253,7 +266,7 @@ class TokenizadorInteligente():
         for t in tokens:
             if not t:
                 continue
-            _quebrados = self.quebrar_tokens(t)
+            _quebrados = self.quebrar_tokens(t) 
             if (self.vocab_vazio or self.tokenizar_tudo) and len(_quebrados) ==0:
                _quebrados = [t]  # sem vocab, o vocab é criado mas os oov são registrados
             elif len(_quebrados)==0:
@@ -269,6 +282,10 @@ class TokenizadorInteligente():
     def quebrar_tokens(self, token):
         if not token:
             return []
+        # verifica se o token existe no singular
+        _singular = self.singularizar(token)
+        if _singular != token and _singular in self.vocab:
+            return [_singular]
         # está no vocab, é o token completo
         if token in self.vocab: 
             return [token]
@@ -276,10 +293,15 @@ class TokenizadorInteligente():
         if self.registrar_oov: 
             self.oov.update({token}) 
         # não está no vocab e tem 1 letra, não tem como quebrar
-        if len(token) == 1:  
+        # se for termo composto, não vai quebrar
+        if len(token) == 1 or token.find('_')>=0:  
             if self.registrar_oov: 
                 self.oov.update({token})
             return []
+        # tokenizar tudo, retorna o token inteiro
+        # veio até aqui para registrar o OOV se necessário
+        if not self.fragmentar:
+            return [token]
         # não está no vocab, quebra o token em:  prefixo #sufixo
         prefixo = STEMMER.stem(token)
         if len(prefixo) < len(token):  
@@ -305,7 +327,7 @@ class TokenizadorInteligente():
 
     @classmethod
     def quebrar_token_simples(self, token):
-        if len(token)<=1:
+        if len(token)<=1 or token.find('_') >= 0:
             return token
         prefixo = STEMMER.stem(token)
         if len(prefixo) < len(token):  
@@ -313,7 +335,17 @@ class TokenizadorInteligente():
         else:
             sufixo = ''
         return f'{prefixo} {sufixo}'.strip()
-    
+
+    #singulariza se não for composto 
+    @classmethod
+    def singularizar(self, token):
+        if len(token)<=1 or token.find('_')>=0 or token in self.NUMEROS:
+            return token
+        for de, por in self.SINGULARIZACAO:
+            if de == token[-1*len(de):]:
+                return token[0: -1*len(de)] + por
+        return token
+
     @classmethod
     def retornar_vocab_texto(self, texto):
         # verifica se é texto ou lista
@@ -347,14 +379,16 @@ class Documentos:
                     registrar_oov = False, 
                     retornar_tokens = False,
                     ignorar_cache = False,
-                    tokenizar_tudo = False):
+                    tokenizar_tudo = False,
+                    fragmentar = True):
         self.current = -1
         self.pasta = pasta_textos
         self.documentos = self.listar_documentos()
         # se a pasta_vocab vier vazia, o vocab vai ser criado pelo texto
         self.tokenizer = TokenizadorInteligente( pasta_vocab=pasta_vocab, 
-                                                 registrar_oov=registrar_oov, 
-                                                 tokenizar_tudo=tokenizar_tudo)
+                                                    registrar_oov=registrar_oov, 
+                                                    tokenizar_tudo=tokenizar_tudo,
+                                                    fragmentar = fragmentar)
         self.retornar_tokens = retornar_tokens
         self.ignorar_cache = ignorar_cache
         if maximo_documentos:
@@ -386,7 +420,7 @@ class Documentos:
             if self.retornar_tokens:
                 return tokens
             return TaggedDocument(tokens, [self.current]) 
-        print(' o/') # finaliza o progresso de iterações
+        print(f' [{round(timer()-self.timer)}s] o/') # finaliza o progresso de iterações
         raise StopIteration    
 
     def get_tokens_doc(self, arquivo):
@@ -575,7 +609,7 @@ class UtilDoc2VecFacil():
                 lista.append(linha.strip())
             else:
                 tokens = re.sub(r'\s+',' ',linha).split(' ')
-                lista.extend(tokens)
+                lista.extend([self.tokenizer.singularizar(t) for t in tokens])
         return [_ for _ in lista if _]
 
 # Classe para treinamento do modelo usando o tokenizador inteligente, o modelo é gravado a cada época
