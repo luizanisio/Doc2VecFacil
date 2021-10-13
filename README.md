@@ -1,5 +1,4 @@
 # Doc2VecFacil
-
 Componente python que simplifica o processo de criação de um modelo `Doc2Vec` [`Gensim 4.0.1`](https://radimrehurek.com/gensim/) com facilitadores para geração de um vocab personalizado e com a geração de arquivos de curadoria.
 - se você não sabe o que é um modelo de similaridade, em resumo é um algoritmo não supervisionado para criar um modelo que transforma frases ou documentos em vetores matemáticos que podem ser comparados retornando um valor equivalente à similaridade semântica dos documentos. Nesse contexto a máquina 'aprende' o vocabulário treinado e o contexto em que as palavras aparecem, permitindo identificar a similaridade entre os termos, as frases e os documentos. 
   - alguns links para saber mais: [`me Amilar 2018`](https://repositorio.idp.edu.br/handle/123456789/2635), [`Gensim 4.0.1 Doc2Vec`](https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html), [`ti-exame`](https://www.ti-enxame.com/pt/python/como-calcular-similaridade-de-sentenca-usando-o-modelo-word2vec-de-gensim-com-python/1045257495/)
@@ -32,7 +31,8 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 
 ## Como funciona o Tokenizador Inteligente
   - Ao ser instanciado, o tokenizador busca os termos do vocab de treinamento contidos nos arquivos com padrão `VOCAB_BASE*.txt` (não importa o case).
-  - Podem existir listas de termos que serão excluídos do treinamento, basta esteram em arquivos com o padrão `VOCAB_REMOVIDO*.txt`.
+  - Você pode criar listas de termos que serão excluídos do treinamento, basta esteram em arquivos com o padrão `VOCAB_REMOVIDO*.txt`.
+  - Há um singularizador de termos automático. Dependendo da terminação do termo, ele será singularizado por regras simples de singularização e caso o resultado desse processamento esteja no vocab, o termo ficará no singular. A ideia é reduzir um pouco mais o vocab nesse passo. Exemplo: o termo `humanos` será convertido em `humano` se o termo `humano` estiver no vocab.
   - Podem existir transformadores de termos nos arquivos com o padrão `VOCAB_TRADUTOR*.txt` que podem conter termos simples ou compostos que serão convertidos em outros termos simples ou compostos, como ngramas por exempo. Veja [`NGramasFacil`](readme_ngramas.md) para mais detalhes.
   - Os tradutores funcionam após a limpeza do texto e transformam termos de acordo com a configuração no arquivo:
     - `termo1 => termo2` - converte o `termo1` em `termo2` quando encontrado no texto (ex. `min => ministro`)
@@ -40,6 +40,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
     - `termo1 termo2` - remove o termo composto `termo1 termo2` (Ex. `documento digital => ` ou `documento digital`)
   - Os tradutores podem ser usados para converter nomes de organizações em suas siglas, termos compostos em um termo únicos (ngramas) e até termos conhecidos como idênticos em sua forma mais usual. É importante ressaltar que quanto maior o número de termos para transformação, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação (veja a classe `TradutorTermos` no arquivo [`util_tradutor_termos.py`](./src/util_tradutor_termos.py) ). 
     - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
+  - Os tradutores são processados antes da singularização, então termos transformados em termos compostos não serão afetados pela singularização.
 
 > 💡 A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo `VOCAB_BASE portugues.txt` com termos que farão parte de vários modelos, um arquivo `VOCAB_BASE direito.txt` com termos do direito que serão somados ao primeiro no treinamento, um arquivo `VOCAB_BASE direito fragmentos.txt` com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante. Facilitando evoluções futuras dos vocabulários.
 
