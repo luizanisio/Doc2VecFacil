@@ -208,12 +208,12 @@ class TokenizadorInteligente():
                             f.write(f'{composto} => {novo_termo}\n')
 
         # identificação de termos que devem ser retirados do vocab
-        vocab_removido = self.remover_acentos( vocab_removido.replace('\n',' ').lower() )
+        vocab_removido = self.remover_acentos( vocab_removido.replace('\t',' ').replace('\n',' ').lower() )
         vocab_removido = {_ for _ in vocab_removido.split(' ') if _}
         # construção do vocab sem os termos removidos
         _txt_numeros = ' '.join(self.NUMEROS)
         vocab += f' {_txt_numeros} '
-        vocab = self.remover_acentos( vocab.replace('\n',' ').lower() )
+        vocab = self.remover_acentos( vocab.replace('\t',' ').replace('\n',' ').lower() )
         vocab = {_ for _ in vocab.split(' ') if _ and (_ not in vocab_removido) }
         if self.vocab_vazio:
             if self.pasta_vocab:
