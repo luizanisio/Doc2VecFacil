@@ -67,7 +67,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
    - Crie um arquivo com os termos fragmentados, se desejar, ex. `VOCAB_BASE meus fragmentos.txt`, coloque nesse arquivo os termos da coluna QUEBRADOS que deseja treinar.
  - Crie uma subpasta `meu_modelo/textos_treino` e coloque alguns ou todos os arquivos de treino
    - ❗ lembre de fechar o arquivo de curadoria antes de rodar novamente o ciclo
-   - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo -reiniciar`
+   - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo`
  - Abra o arquivo `curadoria_planilha_vocab.xlsx` e avalie os termos que não foram localizados (colunas VOCAB ou VOCAB_QUEBRADOS iguais a N), atualize os seus arquivos com esses termos.
  - Siga esse ciclo até que o seu vocab esteja como deseja e inicie o treinamento :repeat:.
  - Inicie o treinamento:
