@@ -139,7 +139,7 @@ termo                |  peticao (64%)            |  inepcia (63%)
 - Uma sugestão de avaliação do modelo é colocar arquivos com indicadores de grupos para avaliar pelos nomes se estão sendo agrupados como esperado.
 - Por exemplo, colocando no nome do arquivo `grupo1`, `grupo2` etc, pode-se avaliar se os arquivos estão sendo agrupados por similaridade da forma que é desejado. Com isso pode-se ajustar os parâmetros do modelo para avaliar se está se aproximando mais ou menos do que se espera. 
 - O resultado de comparação será colocado no arquivo `comparar_arquivos.log` como no exemplo abaixo.
-- Como a comparação de arquivos pode exigir mais processamento, ela aguarda pelo menos 5 minutos para ser atualizada. Se o arquivo for excluído, ela será realizada após o final da próxima época.
+- Como a comparação de arquivos pode exigir mais processamento, ela aguarda pelo menos 5 minutos para ser atualizada. Se o arquivo for excluído, ela será realizada após o final da próxima época. A comparação de arquivos também será realizada ao usar o parâmetro `-teste` para testar o modelo.
 ![exemplo arquivo comparar_arquivos.log](./exemplos/img_comparar_arquivos.png?raw=true "comparar arquivos.log")
 > :bulb: <sub>Nota: Essa rotulação não faz o treinamento ser supervisionado, apenas auxilia a avaliação do modelo, já que os rótulos não são levados em consideração no treinamento.</sub>
 
