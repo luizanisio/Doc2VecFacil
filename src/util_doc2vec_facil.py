@@ -627,7 +627,7 @@ class UtilDoc2VecFacil():
     # retorno_str = True retorna as linhas que seriam gravadas no arquivo (para print por exemplo)
     # retorna o json das comparações
     # se receber um arquivo de saída, grava ele
-    def comparar_arquivos(self, pasta, menor_sim=0.6, retorno_str = False, arquivo_saida = None):
+    def comparar_arquivos(self, pasta, menor_sim=0.7, retorno_str = False, arquivo_saida = None):
         # verifica se recebeu percentual
         _menor_sim = menor_sim/100 if menor_sim>1 else menor_sim
         arquivos = listar_arquivos(pasta)
@@ -642,16 +642,16 @@ class UtilDoc2VecFacil():
         map_thread(_vetorizar, range(len(vetores)))
         arquivos = [nome_arquivo(_).replace('.txt','') for _ in arquivos] 
         # busca os mais similares de cada vetor
-        foi = [] # arquivos já incluídos em grupos
+        #foi = [] # arquivos já incluídos em grupos
         for arq, vetor in zip(arquivos, vetores):
-            if arq in foi:
-                # o arquivo já entrou em um grupo
-                continue
+            #if arq in foi:
+            #    # o arquivo já entrou em um grupo
+            #    continue
             sims = self.similaridade_vetores(vetor, vetores)
             # guarda os mais similares
             arq_sim = [(a,s) for a,s in zip(arquivos,sims) if a!=arq and s>=_menor_sim]
             arq_sim.sort(key = lambda k:k[1], reverse=True)
-            foi.extend([_[0] for _ in arq_sim])
+            #foi.extend([_[0] for _ in arq_sim])
             res[arq] = arq_sim
         # grava o resultado se receber um arquivo de saída
         if arquivo_saida or retorno_str:
