@@ -61,13 +61,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 - Veja o [`passo a passo`](passo_a_passo_facil.md) para criar o vocabulário de treinamento de acordo com o cenário desejado e realizar o treinamento propriamente dito.
 
 ### Exemplo de arquivo `curadoria_planilha_vocab.xlsx` de curadoria de termos:
-| TERMO                  | PREFIXO  | SUFIXO |  TFIDF   | TAMANHO |  QTD  | QTD_DOCS | VOCAB             | ESTRANHO |
-|------------------------|----------|--------|:--------:|:-------:|:-----:|:--------:|:-----------------:|:--------:|
-| acao_penal             |          |        | 0,37127  |    30	  |  178  |   	44	 |  	TERMO          |    N     |
-| adaptacao              | adaptaca | o      | 0,30105  |    10   |   91  |    28    |    TERMO          |    N     |
-| advogado               | advog    | ado    | 0,49000  |    7    |  1736 |    810   |    PREFIXO+SUFIXO |    N     |
-| custas                 | cust     | as     | 0,41286  |    6    |  740  |    417   |    PREFIXO        |    N     |
-| materia_constitucional |          |        | 0,20749  |    22	  |   8   |    	2	   |    NÃO            |    N     |
+![recorte curadoria_planilha_vocab.xlsx](./exemplos/img_corte_plan_curadoria.png?raw=true "Title")
 
 > 💡 Notas sobre as colunas: 
 > - `TFIDF` - contém a média dos pesos que o termo teve nos documentos - [Saiba mais sobre `TFIDF`](https://www.ti-enxame.com/pt/python/interpretar-um-resumo-das-pontuacoes-das-palavras-do-tf-idf-nos-documentos/829990829/)
