@@ -29,7 +29,7 @@ import random
 
 STEMMER = SnowballStemmer('portuguese')
 
-CST_LIMITE_TOKENS = 10000
+CST_LIMITE_TOKENS = 0 #10000 limite de tokens treinados por documento - o doc2vec limita internamente a 10mil tokens
 CST_MAX_BUILD_VOCAB = 0 #500000 # para erros de alocação de memória para o BuildVocab
 
 # função simples de carga de arquivos que tenta descobrir o tipo de arquivo (utf8, ascii, latin1)
