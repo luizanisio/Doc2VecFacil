@@ -61,7 +61,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 - Veja o [`passo a passo`](passo_a_passo_facil.md) para criar o vocabulário de treinamento de acordo com o cenário desejado e realizar o treinamento propriamente dito.
 
 ### Exemplo de arquivo `curadoria_planilha_vocab.xlsx` de curadoria de termos:
-![recorte curadoria_planilha_vocab.xlsx](./exemplos/img_corte_plan_curadoria.png?raw=true "Title")
+![recorte curadoria_planilha_vocab.xlsx](./exemplos/img_corte_plan_curadoria.png?raw=true "Recorte planilha curadoria")
 
 > 💡 Notas sobre as colunas: 
 > - `TFIDF` - contém a média dos pesos que o termo teve nos documentos - [Saiba mais sobre `TFIDF`](https://www.ti-enxame.com/pt/python/interpretar-um-resumo-das-pontuacoes-das-palavras-do-tf-idf-nos-documentos/829990829/)
@@ -133,6 +133,14 @@ julga                |  julgou (71%)             |  julgando (53%)
 parcelas             |  prestacoes (60%)         |  despesas (55%)           |  quantias (52%)          
 termo                |  peticao (64%)            |  inepcia (63%)           
 ```
+
+### Arquivos comparados para acompanhar a evolução do modelo:
+- Semelhante a comparação de termos, pode-se criar uma pasta `textos_teste` com alguns arquivos para comparação durante o treinamento. 
+- Uma sugestão de avaliação do modelo é colocar arquivos com indicadores de grupos para avaliar pelos nomes se estão sendo agrupados como esperado.
+- Por exemplo, colocando no nome do arquivo `grupo1`, `grupo2` etc, pode-se avaliar se os arquivos estão sendo agrupados por similaridade da forma que é desejado. Com isso pode-se ajustar os parâmetros do modelo para avaliar se está se aproximando mais ou menos do que se espera. 
+- O resultado de comparação a cada época será colocado no arquivo `comparar_arquivos.log` como no exemplo abaixo.
+![exemplo arquivo comparar_arquivos.log](./exemplos/img_comparar_arquivos.png?raw=true "comparar arquivos.log")
+> :bulb: <sub>Nota: Essa rotulação não faz o treinamento ser supervisionado, apenas auxilia a avaliação do modelo, já que os rótulos não são levados em consideração no treinamento.</sub>
 
 ## Usando o modelo:
 O que precisa ser disponibilizado para o modelo funcionar:<br>
