@@ -15,8 +15,9 @@ from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import os
 import logging
 from timeit import default_timer as timer
+import time
+import datetime
 from datetime import datetime
-from gensim.utils import tokenize
 from scipy.spatial import distance
 from unicodedata import normalize
 import re
@@ -27,6 +28,9 @@ from numpy import linalg
 import random
 
 STEMMER = SnowballStemmer('portuguese')
+
+CST_LIMITE_TOKENS = 10000
+CST_MAX_BUILD_VOCAB = 0 #500000 # para erros de alocação de memória para o BuildVocab
 
 # função simples de carga de arquivos que tenta descobrir o tipo de arquivo (utf8, ascii, latin1)
 def carregar_arquivo(arq, limpar=False, juntar_linhas=False, retornar_tipo=False):
@@ -55,6 +59,16 @@ def carregar_arquivo(arq, limpar=False, juntar_linhas=False, retornar_tipo=False
     else:
         return linhas
 
+# retorna o datetime do arquivo ou o tempo em segundos da última alteração se dif_segundos=True
+# retorna None se o arquivo não existir
+def data_arquivo(arquivo, dif_segundos = False):
+    if not os.path.isfile(arquivo):
+        return None
+    dthr = datetime.fromtimestamp(os.path.getmtime(arquivo))
+    if dif_segundos:
+        return (datetime.today() - dthr).total_seconds()
+    return dthr
+
 def listar_arquivos(pasta, extensao='txt', inicio=''):
     if not os.path.isdir(pasta):
         msg = f'Não foi encontrada a pasta "{pasta}" para listar os arquivos "{extensao}"'
@@ -69,6 +83,18 @@ def listar_arquivos(pasta, extensao='txt', inicio=''):
             elif file_name.lower().endswith(f"{_extensao}") and file_name.lower().startswith(f"{_inicio}"):
                 res.append(os.path.join(path,file_name))
     return res
+
+def nome_arquivo(nome_completo):
+    dir_nome = os.path.split(nome_completo)
+    return dir_nome[1] if len(dir_nome)>1 else ''
+
+from multiprocessing.dummy import Pool as ThreadPool
+def map_thread(func, lista, n_threads=5):
+    # print('Iniciando {} threads'.format(n_threads))
+    pool = ThreadPool(n_threads)
+    pool.map(func, lista)
+    pool.close()
+    pool.join()  
 
 # essa classe recebe uma pasta onde estão as configurações de tokenização
 # pasta_vocab: pasta com os arquivos de tokenização
@@ -391,7 +417,8 @@ class Documentos:
                                                     fragmentar = fragmentar)
         self.retornar_tokens = retornar_tokens
         self.ignorar_cache = ignorar_cache
-        if maximo_documentos:
+        if maximo_documentos and maximo_documentos>0:
+           random.shuffle(self.documentos)
            self.documentos=self.documentos[:maximo_documentos]
         self.high = len(self.documentos)
         self.qtd_processados = 0
@@ -417,6 +444,9 @@ class Documentos:
         if self.current < self.high:
             #print('Documento: ',self.current)
             tokens = self.get_tokens_doc(self.documentos[self.current])
+            if CST_LIMITE_TOKENS>0 and len(tokens)>CST_LIMITE_TOKENS:
+                print(f'AVISO: documento com {len(tokens)} truncado para {CST_LIMITE_TOKENS} tokens.')
+                tokens = tokens[:CST_LIMITE_TOKENS]
             if self.retornar_tokens:
                 return tokens
             return TaggedDocument(tokens, [self.current]) 
@@ -519,8 +549,14 @@ class UtilDoc2VecFacil():
             return self.normalizar( self.model.infer_vector(self.tokens_sentenca(sentenca)) )
         return self.model.infer_vector(self.tokens_sentenca(sentenca)) 
 
+    @classmethod
     def similaridade_vetor(self, vetor1,vetor2):
         return 1- distance.cosine(vetor1,vetor2)
+
+    @classmethod
+    def similaridade_vetores(self, vetor,vetores):
+        _v = vetor.reshape(1, -1)
+        return ( 1- distance.cdist(vetores, _v, 'cosine').reshape(-1) ) 
 
     def similaridade(self, sentenca1,sentenca2):
         vetor1 = self.vetor_sentenca(str(sentenca1))
@@ -586,6 +622,53 @@ class UtilDoc2VecFacil():
             res_txt.append(f'{termo.ljust(20)} | {ms}')
         return res_txt
 
+    # lista os arquivos de uma pasta e retorna os mais similares entre eles
+    # dict {'nome_arq' : [(arquivo, sim ), (arquivo, sim)]
+    # retorno_str = True retorna as linhas que seriam gravadas no arquivo (para print por exemplo)
+    # retorna o json das comparações
+    # se receber um arquivo de saída, grava ele
+    def comparar_arquivos(self, pasta, menor_sim=0.6, retorno_str = False, arquivo_saida = None):
+        # verifica se recebeu percentual
+        _menor_sim = menor_sim/100 if menor_sim>1 else menor_sim
+        arquivos = listar_arquivos(pasta)
+        res = {}
+        if len(arquivos)<2:
+            res[arquivos[0]] = []
+            return res
+        # vetoriza todos os conteúdos - não normaliza para manter como array
+        vetores = [None for _ in arquivos]
+        def _vetorizar(i):
+            vetores[i] = self.vetor_sentenca(carregar_arquivo(arquivos[i], juntar_linhas=True), normalizado=False)
+        map_thread(_vetorizar, range(len(vetores)))
+        arquivos = [nome_arquivo(_).replace('.txt','') for _ in arquivos] 
+        # busca os mais similares de cada vetor
+        foi = [] # arquivos já incluídos em grupos
+        for arq, vetor in zip(arquivos, vetores):
+            if arq in foi:
+                # o arquivo já entrou em um grupo
+                continue
+            sims = self.similaridade_vetores(vetor, vetores)
+            # guarda os mais similares
+            arq_sim = [(a,s) for a,s in zip(arquivos,sims) if a!=arq and s>=_menor_sim]
+            arq_sim.sort(key = lambda k:k[1], reverse=True)
+            foi.extend([_[0] for _ in arq_sim])
+            res[arq] = arq_sim
+        # grava o resultado se receber um arquivo de saída
+        if arquivo_saida or retorno_str:
+            linhas = []
+            for arq, sims in res.items():
+                sims = ', '.join([f'{a}({int(s*100)}%)' for a,s in sims])
+                linhas.append(f'{arq}: {sims}')
+            if arquivo_saida:
+                # grava o resultado no arquivo de saída
+                with open(arquivo_saida,'w') as f:
+                    f.writelines('\n'.join(linhas))
+            if retorno_str:
+                # retorna o resultado como string
+               return linhas
+        # retorna o json do resultado
+        return res
+
     # carrega uma lista de termos de comparação de um arquivo - em geral é preparado para testes
     # caso tenha o =, a comparação será feita entre duas frases ou dois termos pré-definidos
     def carregar_lista_termos_comparacao(self):
@@ -636,6 +719,7 @@ class UtilDoc2VecFacil_Treinamento():
         self.nome_log = self.doc2vec.nome_log
         self.pasta_textos = pasta_textos
         self.nome_log_comparacao = os.path.join(self.pasta_modelo,'comparar_termos.log')
+        self.nome_log_comparacao_arqs = os.path.join(self.pasta_modelo,'comparar_arquivos.log')
         self.nome_vocab_treino = os.path.join(self.pasta_modelo,'vocab_treino.txt')
         # parâmetros de treino
         self.workers = workers if workers else 10
@@ -664,6 +748,8 @@ class UtilDoc2VecFacil_Treinamento():
                 os.remove(self.nome_vocab_treino)
             if os.path.isfile(self.nome_log_comparacao):
                 os.remove(self.nome_log_comparacao)
+            if os.path.isfile(self.nome_log_comparacao_arqs):
+                os.remove(self.nome_log_comparacao_arqs)
             if os.path.isfile(self.nome_log):
                 os.remove(self.nome_log)
             self.criar_modelo()
@@ -674,7 +760,8 @@ class UtilDoc2VecFacil_Treinamento():
             documentos_treino = Documentos(pasta_textos = self.pasta_textos, 
                                            pasta_vocab = self.doc2vec.pasta_modelo, 
                                            registrar_oov = True,
-                                           ignorar_cache = True)
+                                           ignorar_cache = True,
+                                           maximo_documentos=CST_MAX_BUILD_VOCAB)
             if len(documentos_treino.documentos) ==0:
                 raise Exception(str(f'Não foram encontrados documentos para treinamento em: {self.pasta_textos}' ))
             inicio_treino = timer()
@@ -747,6 +834,19 @@ class UtilDoc2VecFacil_Treinamento():
         print('\tTermos de comparação: ', len(self.comparar_termos), len(res))
         with open(self.nome_log_comparacao,'w') as f:
             [f.write(f'{c}\n') for c in res ]
+        # comparação de arquivos
+        # verifica um caminho anterior para saber se a pasta de testes está lá
+        pasta_teste = self.pasta_textos[:-1] if self.pasta_textos[-1] in ('/','\\') else self.pasta_textos
+        pasta_teste = os.path.split(pasta_teste)[0] # pasta anterior a pasta de textos
+        pasta_teste = os.path.join(pasta_teste,'textos_teste')
+        if os.path.isdir(pasta_teste):
+            _tempo = data_arquivo(self.nome_log_comparacao_arqs,dif_segundos=True)
+            # compara a cada 5 minutos
+            if _tempo is None or _tempo>300:
+               print('\tArquivos de comparação encontrados: ', pasta_teste)
+               self.doc2vec.comparar_arquivos(pasta=pasta_teste, arquivo_saida = self.nome_log_comparacao_arqs)
+        else:
+            print('sem comparação de arquivos: ', pasta_teste)
 
     def criar_modelo(self):
         print('UtilDoc2VecFacil_Treinamento: CRIANDO NOVO MODELO')
@@ -761,8 +861,6 @@ class UtilDoc2VecFacil_Treinamento():
                     dm=dm, hs = hs)
         print('Novo Modelo iniciado')
         self.doc2vec.model = _model
-
-
 
 if __name__ == "__main__":
     import argparse
@@ -780,6 +878,7 @@ if __name__ == "__main__":
     PASTA_BASE = args.pasta if args.pasta else './meu_modelo'
     PASTA_MODELO = os.path.join(PASTA_BASE,'doc2vecfacil')
     PASTA_TEXTOS_TREINO = os.path.join(PASTA_BASE,'textos_treino')
+    PASTA_TEXTOS_TESTE = os.path.join(PASTA_BASE,'textos_teste')
     teste_modelo = args.testar
     treinar = args.treinar
     reiniciar = str(args.reiniciar).lower() if args.reiniciar else ''
@@ -801,6 +900,10 @@ if __name__ == "__main__":
        dv = UtilDoc2VecFacil(pasta_modelo=PASTA_MODELO)
        dv.teste_modelo()
        dv.teste_termos()
+       if os.path.isdir(PASTA_TEXTOS_TESTE):
+            comp_arquivos = dv.comparar_arquivos(pasta=PASTA_TEXTOS_TESTE, retorno_str = True)
+            print('Comparação dos arquivos:')
+            [ print(f'- {_}') for _ in comp_arquivos ]
        exit()
 
     if not os.path.isdir(PASTA_BASE):

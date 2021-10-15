@@ -11,7 +11,7 @@
 from gensim.models import TfidfModel
 from gensim.corpora import Dictionary
 
-from util_doc2vec_facil import Documentos, TokenizadorInteligente, carregar_arquivo, UtilDoc2VecFacil
+from util_doc2vec_facil import Documentos, TokenizadorInteligente, carregar_arquivo
 from collections import Counter
 import os
 import re
@@ -54,13 +54,6 @@ def boxplot_str(valores, ignorar_zeros = True):
           vls.append('  |---[---]---| o')
    return vls
 
-from multiprocessing.dummy import Pool as ThreadPool
-def map_thread(func, lista, n_threads=5):
-    # print('Iniciando {} threads'.format(n_threads))
-    pool = ThreadPool(n_threads)
-    pool.map(func, lista)
-    pool.close()
-    pool.join()  
 
 def progress_bar(current_value, total, msg=''):
     increments = 25
