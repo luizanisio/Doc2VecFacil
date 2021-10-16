@@ -11,7 +11,7 @@
 from gensim.models import TfidfModel
 from gensim.corpora import Dictionary
 
-from util_doc2vec_facil import Documentos, TokenizadorInteligente, carregar_arquivo
+from util_doc2vec_facil import Documentos, TokenizadorInteligente, carregar_arquivo, map_thread
 from collections import Counter
 import os
 import re
@@ -63,7 +63,9 @@ def progress_bar(current_value, total, msg=''):
     print('{} {}           '.format(text, msg), end="\n" if percentual == 100 else "")
 
 # gera os arquivos e retorna uma lista dos tokens (token, estava no vocab, estava no vocab quebrado)
+
 def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
+    cache_extensao = '.plan' # nome do cache do arquivo de curadoria
     # definição dos arquivos de curadoria
     arquivo_saida = os.path.join(pasta_vocab,'curadoria_planilha_vocab.xlsx')
     ####################################################################################################
@@ -74,20 +76,21 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
     print('\t - carregando documentos para criar vocabulário')
     # recria o cache tokenizando tudo sem fragmentos
     docs = Documentos(pasta_vocab=pasta_vocab, pasta_textos=pasta_textos, retornar_tokens=True, 
-                      tokenizar_tudo=True, ignorar_cache=True, fragmentar=False) 
+                      tokenizar_tudo=True, ignorar_cache=True, fragmentar=False, cache_extensao = cache_extensao) 
     vocab_base = set(docs.tokenizer.vocab)
+    vocab_removido = set(docs.tokenizer.vocab_removido)
     # recupera a lista de tokens que entraram depois de quebrados para incluir na análise
     print(f'\t - processando documentos e compilando dicionário')
     dicionario = Dictionary(docs)
     ####################################################################################################
     print('\t - calculando pesos dos termos em cada documento')
     docs = Documentos(pasta_vocab=pasta_vocab, pasta_textos=pasta_textos, retornar_tokens=True, 
-                      tokenizar_tudo=True, ignorar_cache=False, fragmentar=False)
+                      tokenizar_tudo=True, ignorar_cache=False, fragmentar=False, cache_extensao = cache_extensao)
     print('\t - calculando modelo TFIDF')
     modelo_tfidf = TfidfModel((dicionario.doc2bow(d) for d in docs), normalize = True)
     print('\t - calculando quantidades e maior peso de cada termo nos documentos')
     docs = Documentos(pasta_vocab=pasta_vocab, pasta_textos=pasta_textos, retornar_tokens=True, 
-                      tokenizar_tudo=True, ignorar_cache=False, fragmentar=False)
+                      tokenizar_tudo=True, ignorar_cache=False, fragmentar=False, cache_extensao = cache_extensao)
     pesos_medios = dict({})
     contadores = Counter()
     contadores_docs = Counter()
@@ -144,6 +147,7 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
             ok_vocab = 'TERMO (composto)' if c in vocab_base else 'NÃO (composto)'
         else:
             ok_vocab = 'TERMO' if c in vocab_base else ''
+        ok_vocab = 'REMOVIDO' if c in vocab_removido else ok_vocab
         estranho = 'N' if ok_vocab else _estranho(c)
         quebrado = TOKENIZADOR.quebrar_token_simples(c)
         quebrado = '' if quebrado == c else quebrado
@@ -178,6 +182,27 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
 
     print('Análise concluída: ', pasta_textos, ' para ',arquivo_saida)
     print('=============================================================')
+    print('ARQUIVO DE CURADORIA CRIADO!!! ')
+    print( ' - arquivo: ', arquivo_saida)
+    print( ' - pasta analisada: ', pasta_textos)
+    _nome_arq = os.path.split(arquivo_saida)[1]
+    print(f' - você já pode abrir o arquivo {_nome_arq} no Excel')
+    print('...')
+    print(f'Removendo arquivos de cache da curadoria ')
+    lst_remover = docs.listar_documentos(cache_extensao)
+    print(f' - removendo {len(lst_remover)} arquivos ... ', end='')
+    apagar_arquivos(lst_remover)
+    print(' Finalizado o/')
+    
+def apagar_arquivos(lista_de_arquivos):
+    def _apagar(arquivo):
+        try:
+          os.remove(arquivo)
+        except:
+            # não tem motivo para poluir a tela com erro de exclusão
+            # ou o arquivo está aberto, protegido ou o antivírus impediu tantas exclusões
+            pass
+    map_thread(_apagar, lista_de_arquivos, n_threads=3)
 
 def pesos_documento(modelo_tfidf, dicionario, texto):
   tks = TOKENIZADOR.tokenizar(texto) if type(texto) is str else texto
@@ -255,10 +280,5 @@ if __name__ == "__main__":
     print('# >> incluindo textos da pasta "{pasta}" para a curadoria')
     criar_arquivo_curadoria_termos(pasta_textos = pasta, 
                                    pasta_vocab=PASTA_MODELO)
-    print('#---------------------------------------------------------#')
-    print('# Arquivos de curadoria criados                           #')
-    print('# - pasta analisada: ', pasta)
-    print('# Abra o arquivo curadoria_planilha_vocab.xlsx no Excel   #')
-    print('###########################################################')
 
     

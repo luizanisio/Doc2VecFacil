@@ -132,7 +132,9 @@ class TokenizadorInteligente():
         self.ok_quebrados = set()               # palavras localizadas após quebradas - token quebrado prefixo sufixo/oov
         self.ok_quebrados_tokens = set()        # palavras inteiras que foram localizadas após quebradas
         self.registrar_oov = registrar_oov      # registra as listas de oov durante a tokenização (usado na geração do vocab, não usar em treinamento)
-        self.vocab_final = set()                # palavras encontradas no vocab
+        self.vocab_final = set()                # palavras encontradas no vocab dos textos
+        self.vocab = set()                      # palavras que ficaram no vocab após a remoção
+        self.vocab_removido = set()             # palavras removidas - apenas para consultra pois já são retiradas do vocab
         self.vocab_tradutor_termos = set()      # termos simples ou compostos para substituição ou remoção
         self.tradutor_termos = None             # tradutor de termos compostos
         if registrar_oov and self.pasta_vocab:
@@ -248,6 +250,7 @@ class TokenizadorInteligente():
             vocab = set()
             self.vocab_vazio = True
         self.vocab = vocab
+        self.vocab_removido = vocab_removido
 
     @classmethod
     def remover_acentos(self,txt):
@@ -400,13 +403,17 @@ class Documentos:
     # - bom para testes e criação de vocab
     # retornar_tokens: retorna a lista de tokens no lugar de um TaggedDocument para Doc2Vec
     # registrar_oov: grava um arquivo tokens_fora.txt com os tokens não encontrados no vocab
+    # cache_extensao é alterado na curadoria para não atrapalhar o cache do treinamento
     def __init__(self, pasta_textos, maximo_documentos=None, 
                     pasta_vocab=None, 
                     registrar_oov = False, 
                     retornar_tokens = False,
                     ignorar_cache = False,
                     tokenizar_tudo = False,
-                    fragmentar = True):
+                    fragmentar = True,
+                    cache_extensao = '.clr'):
+        if not cache_extensao:
+            cache_extensao = '.clr' # garante que tem alguma extensão para o cache
         self.current = -1
         self.pasta = pasta_textos
         self.documentos = self.listar_documentos()
@@ -423,15 +430,17 @@ class Documentos:
         self.high = len(self.documentos)
         self.qtd_processados = 0
         self.timer = timer()
+        self.cache_extensao = cache_extensao
         print(f'Documentos: Lista criada com {self.high} documentos')
 
-    def listar_documentos(self):
+    def listar_documentos(self, extensao_extra = ""):
+        extensao = f'.txt{extensao_extra}'
         documentos = []
         pastas_documentos = [self.pasta] if type(self.pasta) is str else list(self.pasta)
         for pasta_doc in pastas_documentos:
             for path, dir_list, file_list in os.walk(pasta_doc):      
                 for file_name in file_list:
-                    if file_name.lower().endswith(".txt"):
+                    if file_name.lower().endswith(extensao):
                         file_name = os.path.join(path,file_name)
                         documentos.append(file_name)
         return documentos
@@ -467,8 +476,8 @@ class Documentos:
 
         # existe o arquivo limpo - ignorar o cache se solicitado
         if not self.ignorar_cache:
-            if os.path.isfile(f'{arquivo}.clr'):
-                texto = carregar_arquivo(arq=f'{arquivo}.clr', juntar_linhas=True, limpar=True) 
+            if os.path.isfile(f'{arquivo}{self.cache_extensao}'):
+                texto = carregar_arquivo(arq=f'{arquivo}{self.cache_extensao}', juntar_linhas=True, limpar=True) 
                 if self.ignorar_cache:
                     _print_progresso(True)
                 return texto.split(' ')
@@ -476,7 +485,7 @@ class Documentos:
         texto = carregar_arquivo(arq=f'{arquivo}', juntar_linhas=True, limpar=True) 
         tokens = self.tokenizer.tokenizar(texto)
         # grava o cache - se ignorou o cache, o novo cache será criado
-        with open(f'{arquivo}.clr', 'w',encoding='ISO-8859-1') as writer:
+        with open(f'{arquivo}{self.cache_extensao}', 'w',encoding='ISO-8859-1') as writer:
             writer.writelines(' '.join(tokens))
         if self.ignorar_cache:
             _print_progresso(False)
@@ -882,6 +891,8 @@ if __name__ == "__main__":
     teste_modelo = args.testar
     treinar = args.treinar
     reiniciar = str(args.reiniciar).lower() if args.reiniciar else ''
+    if reiniciar:
+        treinar = False
     
     # sem parâmetros, faz apenas o teste
     if teste_modelo or not (reiniciar or treinar):
