@@ -69,7 +69,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 > - `QTD` - é a quantidade de vezes que o termo apareceu no corpus
 > - `QTD_DOCS` - é a quantidade de documentos onde o termo apareceu
 > - `COMPOSTO` Sim / Não - indica se o termo é composto 
-> - `VOCAB` - indica se o termo está presente no vocab principal, se es´ta presente quando fragmentado, se é composto ou se não está presente.
+> - `VOCAB` - indica se o termo está presente no vocab principal, se está presente quando fragmentado, se é composto, se é removido do vocab ou se não está presente no vocab.
 > - `ESTRANHO` Sim / Não - termos sem vogais ou com consoantes/vogais com várias repetições
 > - Ao final são incluídas algumas colunas indicando a posição das colunas `TFIDF`, `TAMANHO`, `QTD` e `QTD_DOCS` no BoxPlot de cada coluna.
 
