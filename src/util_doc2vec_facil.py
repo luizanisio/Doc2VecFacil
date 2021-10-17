@@ -553,10 +553,10 @@ class UtilDoc2VecFacil():
     def normalizar(self, v):
         return [float(f) for f in v / linalg.norm(v)]    
 
-    def vetor_sentenca(self, sentenca, normalizado = True):
+    def vetor_sentenca(self, sentenca, normalizado = True, epocas = None):
         if normalizado:
             return self.normalizar( self.model.infer_vector(self.tokens_sentenca(sentenca)) )
-        return self.model.infer_vector(self.tokens_sentenca(sentenca)) 
+        return self.model.infer_vector(self.tokens_sentenca(sentenca), epochs = epocas) 
 
     @classmethod
     def similaridade_vetor(self, vetor1,vetor2):
@@ -567,18 +567,22 @@ class UtilDoc2VecFacil():
         _v = vetor.reshape(1, -1)
         return ( 1- distance.cdist(vetores, _v, 'cosine').reshape(-1) ) 
 
-    def similaridade(self, sentenca1,sentenca2):
-        vetor1 = self.vetor_sentenca(str(sentenca1))
-        vetor2 = self.vetor_sentenca(str(sentenca2))
+    def similaridade(self, sentenca1,sentenca2, epocas = None):
+        vetor1 = self.vetor_sentenca(str(sentenca1), epocas=epocas)
+        vetor2 = self.vetor_sentenca(str(sentenca2), epocas=epocas)
         return self.similaridade_vetor(vetor1,vetor2)    
 
     def teste_modelo(self):
         frase1 = 'EXECUÇÃO POR TÍTULO EXTRAJUDICIAL DE HONORÁRIO ADVOCATÍCIO EMBARGOS ADJUDICAÇÃO PENHORAS'
         frase2 = 'EMENTA SEGUROs de VIDA COBRANÇA CUMULADA C PRETENSÃO INDENIZATÓRIA PRESCRIÇÃO RECONHECIDA'
         frase3 = 'ATENDIAM A TESTEMUNHA SEU DEPOIMENTO APESAR DE TRAZER ALGUMAS IMPRECISÕES SOBRE OS FATOS ATENDO-SE OS JURADOS ÀS PROVAS PRODUZIDAS EM PLENÁRIOS'
-        frase3 += ' frase removida 1 abcdef 2 frase também removida 3 frase também 4'
-        print('Frase1: ', frase1, '\nFrase2: ', frase2, '\n\t - Similaridade: ', self.similaridade(frase1,frase2))
-        print('Frase1: ', frase1, '\nFrase3: ', frase3, '\n\t - Similaridade: ', self.similaridade(frase1,frase3))        
+        print('Similaridade entre frases:')
+        print('- Frase1: ', frase1, '\n- Frase2: ', frase2, '\n\t - Similaridade: ', self.similaridade(frase1,frase2))
+        print('- Frase1: ', frase1, '\n- Frase3: ', frase3, '\n\t - Similaridade: ', self.similaridade(frase1,frase3))        
+        print('\nSimilaridade padrão:')
+        print('- Frase1 com Frase1 - Similaridade: ', self.similaridade(frase1,frase1))
+        print('- Frase2 com Frase2 - Similaridade: ', self.similaridade(frase2,frase2))
+        print('- Frase3 com Frase3 - Similaridade: ', self.similaridade(frase3,frase3))
         print('\nTokens frase 3: ', self.tokens_sentenca(frase3))
 
     def teste_termos(self, termos=None):
