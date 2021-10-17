@@ -185,4 +185,4 @@ Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario
 - gravar os vetores, textos e metadadosno [`SingleStore`](https://www.singlestore.com/)
   - criar views de similaridade para consulta em tempo real dos documentos inseridos na base, incluindo filtros de metadados e textuais.
 
-> :thumbsup: agradecimentos ao Miguel Ângelo Neto do PR pelos testes e feedbacks desse componente.
+
