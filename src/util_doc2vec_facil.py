@@ -24,7 +24,7 @@ import re
 import json
 from nltk.stem.snowball import SnowballStemmer
 from util_tradutor_termos import TradutorTermos
-from numpy import linalg
+from numpy import linalg, array as np_array
 import random
 
 STEMMER = SnowballStemmer('portuguese')
@@ -641,15 +641,23 @@ class UtilDoc2VecFacil():
         _menor_sim = menor_sim/100 if menor_sim>1 else menor_sim
         arquivos = listar_arquivos(pasta)
         res = {}
-        if len(arquivos)<2:
-            res[arquivos[0]] = []
+        if not any(arquivos):
             return res
+        arquivos.sort()
+        # arquivo para análise de vetores dele mesmo - se tiver algum com "igual" no nome é ele, ou o primeiro da lista
+        arq_igual = [_ for _ in arquivos if _.lower().find('igual')>=0]
+        arq_igual = arq_igual[0] if any(arq_igual) else arquivos[0]
         # vetoriza todos os conteúdos - não normaliza para manter como array
         vetores = [None for _ in arquivos]
         def _vetorizar(i):
             vetores[i] = self.vetor_sentenca(carregar_arquivo(arquivos[i], juntar_linhas=True), normalizado=False)
         map_thread(_vetorizar, range(len(vetores)))
         arquivos = [nome_arquivo(_).replace('.txt','') for _ in arquivos] 
+        # compara um arquivo com ele mesmo 3 vezes para analisar a variabilidade
+        igual_conteudo = carregar_arquivo(arq_igual, juntar_linhas=True)
+        igual_vetores = [ self.vetor_sentenca(igual_conteudo, normalizado=False) for _ in range(4) ]
+        igual_sims = self.similaridade_vetores(igual_vetores[0], igual_vetores[1:])
+        res[f' IGUAL: {nome_arquivo(arq_igual).replace(".txt","")}'] = [('',s) for s in igual_sims]
         # busca os mais similares de cada vetor
         #foi = [] # arquivos já incluídos em grupos
         for arq, vetor in zip(arquivos, vetores):
@@ -665,7 +673,9 @@ class UtilDoc2VecFacil():
         # grava o resultado se receber um arquivo de saída
         if arquivo_saida or retorno_str:
             linhas = []
-            for arq, sims in res.items():
+            arq_sims = list(res.items())
+            arq_sims.sort(key= lambda k:k[0])
+            for arq, sims in arq_sims:
                 sims = ', '.join([f'{a}({int(s*100)}%)' for a,s in sims])
                 linhas.append(f'{arq}: {sims}')
             if arquivo_saida:
