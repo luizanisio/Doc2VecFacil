@@ -235,7 +235,6 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Pasta do modelo')
     parser.add_argument('-pasta', help='pasta raiz contendo as pastas do modelo e dos textos', required=False)
-    parser.add_argument('-epocas', help='número de épocas para treinamento - padrão 5000 ', required=False, action='store_const', const=5000)
     parser.add_argument('-min_count', help='número de ocorrências para usar um termo - padrão 10 ', required=False)
     parser.add_argument('-threshold', help='threshold para aceitar termos como compostos - padrão 20 ', required=False)
     parser.add_argument('-treino', help='gera a curadoria com os textos de', required=False, action='store_const', const=1)
