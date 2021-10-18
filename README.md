@@ -184,5 +184,18 @@ Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario
   - usar os recursos de pesquisas: More Like This, vetoriais e por proximidade de termos como disponibilizado no componente [`PesquisaElasticFacil`](https://github.com/luizanisio/PesquisaElasticFacil).
 - gravar os vetores, textos e metadadosno [`SingleStore`](https://www.singlestore.com/)
   - criar views de similaridade para consulta em tempo real dos documentos inseridos na base, incluindo filtros de metadados e textuais.
+  - exemplo de view:
+```sql
+    create VIEW testes.vw_similares as
+    select v1.seq_documento as seq_documento_1, v2.seq_documento as seq_documento_2, v1.pagina as pagina_1, v2.pagina as pagina_2,
+           v1.dthr as dthr_1, v2.dthr as dthr_2, dot_product(v1.vetor,v2.vetor) as sim, round(dot_product(v1.vetor,v2.vetor) * 100,2) as sim_100
+    from testes.vetores v1, testes.vetores v2 where v1.seq_documento <> v2.seq_documento and dot_product(v1.vetor,v2.vetor)> 0.7
+```
+  - usando a view: buscando os documentos mais similares ao documento 42, com similaridade acima de 80%
+```sql
+    select seq_documento_1, pagina_1, seq_documento_2, pagina_2, sim_100
+    from testes.vw_similares where sim>0.8 and seq_documento_1=42 
+    order by sim desc
+```
 
 
