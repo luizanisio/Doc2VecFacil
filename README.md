@@ -2,13 +2,13 @@
 Componente python que simplifica o processo de criação de um modelo `Doc2Vec` [`Gensim 4.0.1`](https://radimrehurek.com/gensim/models/doc2vec.html) com facilitadores para geração de um vocab personalizado e com a geração de arquivos de curadoria.
 - se você não sabe o que é um modelo de similaridade, em resumo é um algoritmo não supervisionado para criar um modelo que transforma frases ou documentos em vetores matemáticos que podem ser comparados retornando um valor equivalente à similaridade semântica dos documentos. Nesse contexto a máquina 'aprende' o vocabulário treinado e o contexto em que as palavras aparecem, permitindo identificar a similaridade entre os termos, as frases e os documentos. 
   - alguns links para saber mais: [`me Amilar 2018`](https://repositorio.idp.edu.br/handle/123456789/2635), [`Gensim 4.0.1 Doc2Vec`](https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html), [`ti-exame`](https://www.ti-enxame.com/pt/python/como-calcular-similaridade-de-sentenca-usando-o-modelo-word2vec-de-gensim-com-python/1045257495/)
-- Com essa comparação vetorial, é possível encontrar documentos semelhantes a um indicado, agrupar documentos semelhantes entre si de uma lista de documentos, e também monitorar documentos que entram na base ao compará-los com os documentos rotulados para monitoramento, como uma classificação rápida. Pode-se armazenar os vetores no `SingleStore` ou `Elasticsearch` como nas dicas ao final deste documento.
+- Com essa comparação vetorial, é possível encontrar documentos semelhantes a um indicado, agrupar documentos semelhantes entre si de uma lista de documentos, e também monitorar documentos que entram na base ao compará-los com os documentos rotulados para monitoramento, como uma classificação rápida. Pode-se armazenar os vetores no `SingleStore` ou `Elasticsearch` como nas dicas ao final deste documento [aqui](#dicas).
 - O core desse componente é o uso de um Tokenizador Inteligente que usa as configurações dos arquivos contidos na pasta do modelo para tokenizar os arquivos de treinamento e os arquivos novos para comparação no futuro.
 - Esse é um repositório de estudos, analise, ajuste, corrija e use os códigos como desejar.
 > :warning: A quantidade de termos treinados e de épocas de treinamento são valores que dependem do objetivo e do tipo de texto de cada projeto. Quanto mais termos, mais detalhes e mais diferenças serão destacadas entre os textos e o modelo vai realçar as particularidades da escrita. Escolhendo menos termos mais relacionados com o domínio analisado, e compondo ngramas, há uma chance maior do modelo realçar a temática geral dos textos.
 
 ### Esse componente `Doc2VecFacil` trabalha em duas etapas:
- - criação/configuração de um vocab personalizado para o Tokenizador Inteligente.
+ - criação/configuração de um [vocab](#vocab) personalizado para o [Tokenizador Inteligente](#tokenizador).
    - `python util_doc2vec_vocab_facil.py -pasta ./meu_modelo`
  - treinamento do modelo usando a estrutura de tokenização criada 
    - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
@@ -25,11 +25,11 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 
 `EM BREVE`: Será disponibilizado um serviço exemplo em conjunto com o componente [PesquisaElasticFacil](https://github.com/luizanisio/PesquisaElasticFacil) para criação de modelos de similaridade textual, agregando valor às pesquisas do ElasticSearch de forma simples com um modelo treinado no corpus específico de cada projeto.
 
-## Criação do vocab personalizado
+## Criação do vocab personalizado <a name="vocab">
 
 O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil` e serve para facilitar a criação de arquivos que configuram o `TokenizadorInteligente`. A ideia é trabalhar com termos importantes para o modelo, adicionados a termos complementares compostos por fragmentos de termos `stemmer` + `sufixo`. Com isso novos documentos que possuam termos fora do vocab principal podem ter o stemmer e o sufixo dentro do vocab do modelo, criando um vocab mais flexível e menor. É possível também transformar termos ou conjunto de termos durante o processamento, como criar n-gramas, reduzir nomes de organizações em sigla, remover termos simples ou compostos etc.
 
-## Como funciona o Tokenizador Inteligente
+## Como funciona o Tokenizador Inteligente <a name="tokenizador">
   - Ao ser instanciado, o tokenizador busca os termos do vocab de treinamento contidos nos arquivos com padrão `VOCAB_BASE*.txt` (não importa o case).
   - Você pode criar listas de termos que serão excluídos do treinamento, basta esteram em arquivos com o padrão `VOCAB_REMOVIDO*.txt`.
   - Há um singularizador de termos automático. Dependendo da terminação do termo, ele será singularizado por regras simples de singularização e caso o resultado desse processamento esteja no vocab, o termo ficará no singular. A ideia é reduzir um pouco mais o vocab nesse passo. Exemplo: o termo `humanos` será convertido em `humano` se o termo `humano` estiver no vocab.
@@ -178,7 +178,8 @@ Frase3:  DE HONORÁRIOS ADVOCATÍCIOS EMBARGOS ADJUDICAÇÃO PENHORA EXECUÇÃO 
 
 Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario', 'advocaticio', 'embargos', 'adjudicacao', 'penhoras'] 
  ```
-
+<a name="dicas">
+  
 ## Dicas de uso:
 - gravar os vetores, textos e metadados dos documentos no [`ElasticSearch`](https://www.elastic.co/pt/), e usar os recursos de pesquisas: More Like This, vetoriais e por proximidade de termos como disponibilizado no componente [`PesquisaElasticFacil`](https://github.com/luizanisio/PesquisaElasticFacil).
 - gravar os vetores, textos e metadadosno [`SingleStore`](https://www.singlestore.com/) e criar views de similaridade para consulta em tempo real dos documentos inseridos na base, incluindo filtros de metadados e textuais como nos exemplos disponíveis aqui: [`dicas SingleStore`](readme_dicas.md).
