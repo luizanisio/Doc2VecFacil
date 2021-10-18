@@ -9,6 +9,7 @@
            v1.dthr as dthr_1, v2.dthr as dthr_2, dot_product(v1.vetor,v2.vetor) as sim, round(dot_product(v1.vetor,v2.vetor) * 100,2) as sim_100
     from testes.vetores v1, testes.vetores v2 where v1.seq_documento <> v2.seq_documento and dot_product(v1.vetor,v2.vetor)> 0.7
 ```
+> 💡 <sub> é possível criar uma procedure de clusterização de documentos no SingleStore, em breve vou disponibilizar um exemplo aqui.</sub>
 
 - usando a view: buscando os documentos mais similares ao documento 42, com similaridade acima de 80%
 ```sql
