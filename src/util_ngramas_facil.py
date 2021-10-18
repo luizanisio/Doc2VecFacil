@@ -52,7 +52,7 @@ def listar_arquivos(pasta, mascara):
 def IterarArquivos(pasta, mascara, realizar_split = True):
     current = 0
     arquivos = listar_arquivos(pasta=pasta, mascara=mascara)
-    while current < len(arquivos)-1:
+    while current < len(arquivos):
         nome = os.path.split(arquivos[current])[1]
         conteudo = conteudo_arquivo(arquivos[current], realizar_split=realizar_split)
         yield (nome,conteudo)

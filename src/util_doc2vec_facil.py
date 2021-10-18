@@ -499,9 +499,10 @@ class Documentos:
 class UtilDoc2VecFacil():
     NOME_ARQ_MODELO = "doc2vec.model"
     NOME_ARQ_MODELO_LOG = "doc2vec.log"
+    NOME_PASTA_MODELO = "doc2vecfacil"
 
     def __init__(self, pasta_modelo) -> None:
-        self.pasta_modelo = str(pasta_modelo)
+        self.pasta_modelo = self.get_pasta_modelo(str(pasta_modelo))
         self.nome_modelo = self.get_nome_arquivo_modelo(self.pasta_modelo)
         self.nome_log = os.path.join(self.pasta_modelo,self.NOME_ARQ_MODELO_LOG)
         self.log_treino = dict({})  
@@ -514,6 +515,13 @@ class UtilDoc2VecFacil():
     def modelo_existe(self, pasta_modelo):
         nome_modelo = self.get_nome_arquivo_modelo(pasta_modelo=pasta_modelo)
         return os.path.isfile(nome_modelo)
+
+    @classmethod
+    def get_pasta_modelo(self, pasta_modelo):
+        pasta = os.path.join(pasta_modelo,self.NOME_PASTA_MODELO) 
+        if os.path.isdir(pasta):
+           return os.path.join(pasta_modelo,self.NOME_PASTA_MODELO)
+        return str(pasta_modelo)
 
     @classmethod
     def get_nome_arquivo_modelo(self, pasta_modelo):

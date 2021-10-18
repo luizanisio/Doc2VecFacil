@@ -29,10 +29,12 @@ TAMANHO_MAXIMO_TOKEN = 50
 # cria o posicionamento do valor no boxplot
 def boxplot_str(valores, ignorar_zeros = True):
    vls = valores if not ignorar_zeros else [_ for _ in valores if _>0]
-   q1, q2i, q2f, q3 = np.percentile(vls,[25,49.5,50.5,75])
-   irq = q3-q1
-   lw = q1 - 1.5*irq
-   uw = q3 + 1.5*irq
+   q1, q2i, q2f, q3, irq, lw, uw = 0,0,0,0,0,0,0
+   if any(vls):
+        q1, q2i, q2f, q3 = np.percentile(vls,[25,49.5,50.5,75])
+        irq = q3-q1
+        lw = q1 - 1.5*irq
+        uw = q3 + 1.5*irq
    vls = []
    #print(f'  {lw}|---[{q1}  {q3} ]---|{uw}  ')
    for v in valores:
@@ -113,7 +115,10 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
     for c,v in pesos_medios.items():
         pesos_medios[c] = mean(v)
 
-    for t in vocab_base:
+    print('\t - incluindo termos sem contabilização dos pesos')
+    termos_sem_peso = list(set(list(contadores.keys()) + list(vocab_base)))
+
+    for t in termos_sem_peso:
         if not t in pesos_medios:
            pesos_medios[t] = 0
            contadores_docs[t] = 0
@@ -138,7 +143,8 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
     print('\t - preparando dataframe')
     dados_saida = []    
     for c,v in pesos_medios.items():
-        if len(c) > TAMANHO_MAXIMO_TOKEN:
+        # tokens muito gandes são ignorados (exceto compostos)
+        if len(c) > TAMANHO_MAXIMO_TOKEN and c.find('_') < 0:
             continue
         v = round(v,5)
         c = c.replace('#','')
@@ -165,6 +171,13 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
                  'QTD_DOCS' : contadores_docs[c],
                  'VOCAB': ok_vocab, 'ESTRANHO': estranho}
         dados_saida.append(linha)
+    if not any(dados_saida):
+        print('===================================================================')
+        print('ERRO: nenhum termo encontrado para criação da planilha de curadoria')
+        print('Pasta do modelo: ', pasta_vocab)
+        print('Pasta de textos: ', pasta_textos)
+        print('===================================================================')
+        exit()
     dados_saida = pd.DataFrame(dados_saida)
     print('\t - calculando boxplot tfidf')
     dados_saida['TFIDF Bp'] = boxplot_str(dados_saida['TFIDF'])
@@ -277,7 +290,7 @@ if __name__ == "__main__":
     print('# Criando arquivo de curadoria                            #')
     
     pasta = PASTA_TEXTOS_TREINO if pasta_treino else PASTA_TEXTOS_VOCAB
-    print('# >> incluindo textos da pasta "{pasta}" para a curadoria')
+    print(f'# >> incluindo textos da pasta "{pasta}" para a curadoria')
     criar_arquivo_curadoria_termos(pasta_textos = pasta, 
                                    pasta_vocab=PASTA_MODELO)
 
