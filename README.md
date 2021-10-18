@@ -13,7 +13,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
  - treinamento do modelo usando a estrutura de tokenização criada 
    - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
 
- - Aqui tem um passo a passo simplificado para criação/configuração do vocab e realização do treinamento: [`Passo a Passo`](passo_a_passo_facil.md)
+ - Aqui tem um passo a passo simplificado para criação/configuração do vocab e realização do treinamento: [`Passo a Passo`](./docs/passo_a_passo_facil.md)
  
  - Logo abaixo estão as explicações detalhadas de como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente (por vetores) e/ou textualmente (por termos), como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
 
@@ -21,7 +21,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
   - [`Criação de vocab`](./src/util_doc2vec_vocab_facil.py)
   - [`UtilDoc2VecFacil`](./src/util_doc2vec_facil.py) e [`UtilDoc2VecFacil_Treinamento`](./src/util_doc2vec_facil.py) 
   - [`TradutorTermos`](./src/util_tradutor_termos.py)
-  - [`Criação de ngramas`](./src/util_ngramas_facil.py) dicas aqui [NGramasFacil](readme_ngramas.md)
+  - [`Criação de ngramas`](./src/util_ngramas_facil.py) dicas aqui [NGramasFacil](./docs/readme_ngramas.md)
 
 `EM BREVE`: Será disponibilizado um serviço exemplo em conjunto com o componente [PesquisaElasticFacil](https://github.com/luizanisio/PesquisaElasticFacil) para criação de modelos de similaridade textual, agregando valor às pesquisas do ElasticSearch de forma simples com um modelo treinado no corpus específico de cada projeto.
 
@@ -33,13 +33,13 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
   - Ao ser instanciado, o tokenizador busca os termos do vocab de treinamento contidos nos arquivos com padrão `VOCAB_BASE*.txt` (não importa o case).
   - Você pode criar listas de termos que serão excluídos do treinamento, basta esteram em arquivos com o padrão `VOCAB_REMOVIDO*.txt`.
   - Há um singularizador de termos automático. Dependendo da terminação do termo, ele será singularizado por regras simples de singularização e caso o resultado desse processamento esteja no vocab, o termo ficará no singular. A ideia é reduzir um pouco mais o vocab nesse passo. Exemplo: o termo `humanos` será convertido em `humano` se o termo `humano` estiver no vocab.
-  - Podem existir transformadores de termos nos arquivos com o padrão `VOCAB_TRADUTOR*.txt` que podem conter termos simples ou compostos que serão convertidos em outros termos simples ou compostos, como ngramas por exempo. Veja [`NGramasFacil`](readme_ngramas.md) para mais detalhes.
+  - Podem existir transformadores de termos nos arquivos com o padrão `VOCAB_TRADUTOR*.txt` que podem conter termos simples ou compostos que serão convertidos em outros termos simples ou compostos, como ngramas por exempo. Veja [`NGramasFacil`](./docs/readme_ngramas.md) para mais detalhes.
   - Os tradutores funcionam após a limpeza do texto e transformam termos de acordo com a configuração no arquivo:
     - `termo1 => termo2` - converte o `termo1` em `termo2` quando encontrado no texto (ex. `min => ministro`)
     - `termo1 termo2 => termo1_termo2` - converte o termo composto `termo1 termo2` em um termo único `termo1_termo2` (Ex. `processo penal => processo_penal`)
     - `termo1 termo2` - remove o termo composto `termo1 termo2` (Ex. `documento digital => ` ou `documento digital`)
   - Os tradutores podem ser usados para converter nomes de organizações em suas siglas, termos compostos em um termo únicos (ngramas) e até termos conhecidos como idênticos em sua forma mais usual. É importante ressaltar que quanto maior o número de termos para transformação, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação (veja a classe `TradutorTermos` no arquivo [`util_tradutor_termos.py`](./src/util_tradutor_termos.py) ). 
-    - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
+    - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](./docs/readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
   - Os tradutores são processados antes da singularização, então termos transformados em termos compostos não serão afetados pela singularização.
 
 > 💡 A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo `VOCAB_BASE portugues.txt` com termos que farão parte de vários modelos, um arquivo `VOCAB_BASE direito.txt` com termos do direito que serão somados ao primeiro no treinamento, um arquivo `VOCAB_BASE direito fragmentos.txt` com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante. Facilitando evoluções futuras dos vocabulários.
@@ -58,7 +58,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
    ['atendiam_testemunha', 'seu', 'depoimento', 'apesar', 'de', 'trazer', 'algumas', 'impreciso', '#es', 'sobre', 'os', 'fatos', 'atend', '#o', 'se', 'os', 'jurados', 'as', 'provas', 'produzidas', 'em', 'plenari', '#os']
    ```
 
-- Veja o [`passo a passo`](passo_a_passo_facil.md) para criar o vocabulário de treinamento de acordo com o cenário desejado e realizar o treinamento propriamente dito.
+- Veja o [`passo a passo`](./docs/passo_a_passo_facil.md) para criar o vocabulário de treinamento de acordo com o cenário desejado e realizar o treinamento propriamente dito.
 
 ### Exemplo de arquivo `curadoria_planilha_vocab.xlsx` de curadoria de termos:
 ![recorte curadoria_planilha_vocab.xlsx](./exemplos/img_corte_plan_curadoria.png?raw=true "Recorte planilha curadoria")
@@ -81,7 +81,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 
 ## Treinando o modelo doc2vec: 
  Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.<br>
- Siga os passos do cenário que atende à sua necessidade: [`passo a passo`](passo_a_passo_facil.md)
+ Siga os passos do cenário que atende à sua necessidade: [`passo a passo`](./docs/passo_a_passo_facil.md)
 
 ### Parâmetros
  - `python util_doc2vec_facil.py`
@@ -181,4 +181,4 @@ Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario
  
 ## Dicas de uso: <a name="dicas">
 - gravar os vetores, textos e metadados dos documentos no [`ElasticSearch`](https://www.elastic.co/pt/), e usar os recursos de pesquisas: More Like This, vetoriais e por proximidade de termos como disponibilizado no componente [`PesquisaElasticFacil`](https://github.com/luizanisio/PesquisaElasticFacil).
-- gravar os vetores, textos e metadadosno [`SingleStore`](https://www.singlestore.com/) e criar views de similaridade para consulta em tempo real dos documentos inseridos na base, incluindo filtros de metadados e textuais como nos exemplos disponíveis aqui: [`dicas SingleStore`](readme_dicas.md).
+- gravar os vetores, textos e metadadosno [`SingleStore`](https://www.singlestore.com/) e criar views de similaridade para consulta em tempo real dos documentos inseridos na base, incluindo filtros de metadados e textuais como nos exemplos disponíveis aqui: [`dicas SingleStore`](./docs/readme_dicas.md).
