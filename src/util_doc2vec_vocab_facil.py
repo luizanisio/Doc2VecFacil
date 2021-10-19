@@ -66,14 +66,13 @@ def progress_bar(current_value, total, msg=''):
 
 # gera os arquivos e retorna uma lista dos tokens (token, estava no vocab, estava no vocab quebrado)
 
-def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
+def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, complemento_arq_saida='', vocab_treino = False):
     cache_extensao = '.plan' # nome do cache do arquivo de curadoria
     # definição dos arquivos de curadoria
-    arquivo_saida = os.path.join(pasta_vocab,'curadoria_planilha_vocab.xlsx')
+    arquivo_saida = os.path.join(pasta_vocab,f'curadoria_planilha_vocab{complemento_arq_saida}.xlsx')
     ####################################################################################################
     print('=============================================================')
     print(f'Análise iniciada: ', pasta_textos, ' para ',arquivo_saida)
-
 
     print('\t - carregando documentos para criar vocabulário')
     # recria o cache tokenizando tudo sem fragmentos
@@ -81,6 +80,13 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None):
                       tokenizar_tudo=True, ignorar_cache=True, fragmentar=False, cache_extensao = cache_extensao) 
     vocab_base = set(docs.tokenizer.vocab)
     vocab_removido = set(docs.tokenizer.vocab_removido)
+    if vocab_treino:
+        arq_vocab_treino = os.path.join(pasta_vocab,'vocab_treino.txt')
+        if os.path.isfile(arq_vocab_treino):
+            with open(arq_vocab_treino,'r') as f:
+                vocab_base = {_.strip().replace('#','') for _ in f.read().split('\n') if _.strip()}
+                 
+
     # recupera a lista de tokens que entraram depois de quebrados para incluir na análise
     print(f'\t - processando documentos e compilando dicionário')
     dicionario = Dictionary(docs)
@@ -254,12 +260,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Pasta do modelo')
     parser.add_argument('-pasta', help='pasta raiz contendo as pastas do modelo e dos textos', required=False)
     parser.add_argument('-testar', help='realiza a carga do tokenizador para teste - não processa documentos', required=False, action='store_const', const=1)
-    parser.add_argument('-treino', help='gera a curadoria com os textos de', required=False, action='store_const', const=1)
+    parser.add_argument('-treino', help='gera a curadoria com os textos de treino', required=False, action='store_const', const=1)
+    parser.add_argument('-teste', help='gera a curadoria com os textos de teste', required=False, action='store_const', const=1)
+    parser.add_argument('-vocab_treino', help='gera a curadoria com os termos do vocab de treinamento', required=False, action='store_const', const=1)
     args = parser.parse_args()
 
     PASTA_BASE = args.pasta if args.pasta else './meu_modelo'
     teste_tokenizar = args.testar
     pasta_treino = args.treino
+    pasta_teste = args.teste and not pasta_treino
+    vocab_treino = args.vocab_treino
 
     if not os.path.isdir(PASTA_BASE):
         msg = f'Não foi encontrada a pasta "{PASTA_BASE}" para criação dos vocabulários'
@@ -283,15 +293,27 @@ if __name__ == "__main__":
 
     PASTA_TEXTOS_VOCAB = os.path.join(PASTA_BASE,'textos_vocab')  
     PASTA_TEXTOS_TREINO = os.path.join(PASTA_BASE,'textos_treino')  
+    PASTA_TEXTOS_TESTE = os.path.join(PASTA_BASE,'textos_teste')  
     PASTA_MODELO = os.path.join(PASTA_BASE,'doc2vecfacil')  
     os.makedirs(PASTA_MODELO, exist_ok=True)
 
     print('###########################################################')
     print('# Criando arquivo de curadoria                            #')
     
-    pasta = PASTA_TEXTOS_TREINO if pasta_treino else PASTA_TEXTOS_VOCAB
-    print(f'# >> incluindo textos da pasta "{pasta}" para a curadoria')
+    _vocab = ' - VOCAB TREINO' if vocab_treino else ''
+    if pasta_treino:
+        pasta = PASTA_TEXTOS_TREINO
+        complemento_arq = f' (TREINO{_vocab})'
+    elif pasta_teste:
+        pasta = PASTA_TEXTOS_TESTE
+        complemento_arq = f' (TESTE{_vocab})'
+    else:
+        pasta = PASTA_TEXTOS_VOCAB
+        complemento_arq = f'{_vocab}'
+    print(f'# >> incluindo textos da pasta "{pasta}" para a curadoria{complemento_arq}')
     criar_arquivo_curadoria_termos(pasta_textos = pasta, 
-                                   pasta_vocab=PASTA_MODELO)
+                                   pasta_vocab=PASTA_MODELO,
+                                   complemento_arq_saida = complemento_arq,
+                                   vocab_treino=vocab_treino)
 
     
