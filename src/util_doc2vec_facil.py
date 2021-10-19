@@ -117,6 +117,8 @@ class TokenizadorInteligente():
     SINGULARIZACAO = [['s',''], ['aes','ao'], ['ais','al'], ['oes','ao'],
                      ['eis','el'],  ['ois','ol'], ['is','il'],   ['ns','m'],
                      ['les','l'],   ['res','r'],  ['zes', 'z'] ]
+    # tenta a singularização do maior para o menor
+    SINGULARIZACAO.sort(key=lambda k:len(k[0]), reverse=True)
 
     def __init__(self, pasta_vocab, registrar_oov = False, tokenizar_tudo = False, fragmentar = True):
         self.pasta_vocab = str(pasta_vocab) if pasta_vocab else '' # pasta vocab vazia indica que o vocab é criado pelo texto
@@ -725,7 +727,7 @@ class UtilDoc2VecFacil():
                 lista.append(linha.strip())
             else:
                 tokens = re.sub(r'\s+',' ',linha).split(' ')
-                lista.extend([self.tokenizer.singularizar(t) for t in tokens])
+                lista.extend([t for t in tokens if t])
         return [_ for _ in lista if _]
 
 # Classe para treinamento do modelo usando o tokenizador inteligente, o modelo é gravado a cada época
