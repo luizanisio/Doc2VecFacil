@@ -106,7 +106,8 @@ class TokenizadorInteligente():
     REGEX_SIGLAS = re.compile(r"(?<=\W[a-z])\.(?=[a-z]\W)" )
     RE_ESPACOS_QUEBRAS = re.compile(r'(\s|<br>|\\n)+')
     RE_ESPACOS_QUEBRAS_COMPOSTO = re.compile(r'(\s|<br>|\\n|_)+')
-    NUMEROS = {_ for _ in ' zero um dois tres quatro cinco seis sete oito nove '.split(' ') if _}
+    NUMEROS = [_ for _ in ' zero um dois tres quatro cinco seis sete oito nove '.split(' ') if _]
+    NUMEROS_SET = {_ for _ in NUMEROS}
 
     RE_URL = re.compile(r'\b(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})\b')
     RE_EMAIL = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
@@ -368,7 +369,7 @@ class TokenizadorInteligente():
     #singulariza se não for composto 
     @classmethod
     def singularizar(self, token):
-        if len(token)<=1 or token.find('_')>=0 or token in self.NUMEROS:
+        if len(token)<=1 or token.find('_')>=0 or token in self.NUMEROS_SET:
             return token
         for de, por in self.SINGULARIZACAO:
             if de == token[-1*len(de):]:
