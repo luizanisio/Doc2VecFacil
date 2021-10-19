@@ -31,6 +31,7 @@ STEMMER = SnowballStemmer('portuguese')
 
 CST_LIMITE_TOKENS = 0 #10000 limite de tokens treinados por documento - o doc2vec limita internamente a 10mil tokens
 CST_MAX_BUILD_VOCAB = 0 #500000 # para erros de alocação de memória para o BuildVocab
+CST_NUM_EPOCAS_TESTES = 3
 
 # função simples de carga de arquivos que tenta descobrir o tipo de arquivo (utf8, ascii, latin1)
 def carregar_arquivo(arq, limpar=False, juntar_linhas=False, retornar_tipo=False):
@@ -628,7 +629,7 @@ class UtilDoc2VecFacil():
                 sents = sents.split('=')
                 sents = [_.strip() for _ in sents]
                 if sents[0] and sents[1]:
-                    sim = self.similaridade(sents[0],sents[1])
+                    sim = self.similaridade(sents[0],sents[1], epocas = CST_NUM_EPOCAS_TESTES)
                     res[sents[0]] = [(f'{sents[1]}',int(round(sim*100)))]
                     #print('Sentenças: ',termo, sents[0], sents[1], sim)
         if not retorno_string:
@@ -663,12 +664,12 @@ class UtilDoc2VecFacil():
         # vetoriza todos os conteúdos - não normaliza para manter como array
         vetores = [None for _ in arquivos]
         def _vetorizar(i):
-            vetores[i] = self.vetor_sentenca(carregar_arquivo(arquivos[i], juntar_linhas=True), normalizado=False)
+            vetores[i] = self.vetor_sentenca(carregar_arquivo(arquivos[i], juntar_linhas=True), normalizado=False, epocas = CST_NUM_EPOCAS_TESTES)
         map_thread(_vetorizar, range(len(vetores)))
         arquivos = [nome_arquivo(_).replace('.txt','') for _ in arquivos] 
         # compara um arquivo com ele mesmo 3 vezes para analisar a variabilidade
         igual_conteudo = carregar_arquivo(arq_igual, juntar_linhas=True)
-        igual_vetores = [ self.vetor_sentenca(igual_conteudo, normalizado=False) for _ in range(4) ]
+        igual_vetores = [ self.vetor_sentenca(igual_conteudo, normalizado=False, epocas = CST_NUM_EPOCAS_TESTES) for _ in range(4) ]
         igual_sims = self.similaridade_vetores(igual_vetores[0], igual_vetores[1:])
         res[f' IGUAL: {nome_arquivo(arq_igual).replace(".txt","")}'] = [('',s) for s in igual_sims]
         # busca os mais similares de cada vetor
