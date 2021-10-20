@@ -37,8 +37,19 @@
    insert into testes.vetores(seq_documento, pagina, vetor) values 
    (1,1522,JSON_ARRAY_PACK("[0.29622436059440654, 0.3295083520338847, 0.03051693646308954, 0.33317335819453725, 0.11752939155710365, 0.1427171700446146, 0.17068415021818217, 0.28603840476043374, 0.10785501747400973, 0.1591158711405065, 0.3110699766574472, 0.09797969933472601, 0.10708984600425096, 0.27178365054099046, 0.01997878240363319, 0.3408928615842041, 0.27572629407004984, 0.3336592503497728, 0.014973387837642078, 0.11735723579858952]")),
 ```
-> :bulb: <sub>Veja a documentação [aqui](https://docs.singlestore.com/db/v7.5/en/reference/sql-reference/vector-functions/json_array_pack.html)</sub>
-
+- Para gerar o vetor de um documento com o `Doc2VecFacil`, use o médodo:
+```python
+   from util_doc2vec_facil import UtilDoc2VecFacil
+   dv = UtilDoc2VecFacil(pasta_modelo='meu_modelo')
+   vetor = dv.vetor_sentenca('texto original a ser vetorizado', normalizado=True, epocas = 3)
+   seq_doc = 123
+   numpagina = 1175
+   string_insert_memsql = f'insert into testes.vetores(seq_documento, pagina, vetor) values ({seqdoc},{numpagina},JSON_ARRAY_PACK("{vetor}") ) '
+   
+   cliente.execsql(string_insert_memsql)
+```
+> :bulb: <sub>Veja a documentação do SingleStore [aqui](https://docs.singlestore.com/db/v7.5/en/reference/sql-reference/vector-functions/json_array_pack.html)</sub>
+> <sub>O SingleStore não é um banco derivado do MySQL, mas é compatível com o cliente MySQL para simplificar o seu uso, conforme informado na documentação.</sub>
 
 - Inserindo alguns vetores para teste da view
 ```sql
