@@ -1,2 +1,3 @@
 gensim==4.0.1  
 pandas
+nltk
