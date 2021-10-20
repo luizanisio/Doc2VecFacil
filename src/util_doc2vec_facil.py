@@ -372,8 +372,13 @@ class TokenizadorInteligente():
     #singulariza se não for composto 
     @classmethod
     def singularizar(self, token):
-        if len(token)<=1 or token.find('_')>=0 or token in self.NUMEROS_SET:
+        if len(token)<=1 or token in self.NUMEROS_SET:
             return token
+        # composto
+        if token.find('_')>=0:
+            tokens = [self.singularizar(_) for _ in token.split('_') if _]
+            return '_'.join(tokens)
+        # simples
         for de, por in self.SINGULARIZACAO:
             if de == token[-1*len(de):]:
                 return token[0: -1*len(de)] + por

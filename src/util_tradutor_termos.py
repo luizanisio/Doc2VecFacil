@@ -60,7 +60,7 @@ class TradutorTermos(dict):
         self.termos = [(f' {c} ',f' {v} ') for c,v in self.termos]
 
     def sub(self, texto):
-        """ Aplica a tradução/remoção de cada termo """
+        """ Aplica a tradução/remoção de cada termo  """
         _texto = f' {texto} '
         for composto, novo in self.termos:
             _texto = _texto.replace(composto, novo)
