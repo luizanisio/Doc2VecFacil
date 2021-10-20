@@ -1,6 +1,6 @@
 # Doc2VecFacil
 Componente python que simplifica o processo de criação de um modelo `Doc2Vec` [`Gensim 4.0.1`](https://radimrehurek.com/gensim/models/doc2vec.html) com facilitadores para geração de um vocab personalizado e com a geração de arquivos de curadoria.
-- se você não sabe o que é um modelo de similaridade, em resumo é um algoritmo não supervisionado para criar um modelo que transforma frases ou documentos em vetores matemáticos que podem ser comparados retornando um valor equivalente à similaridade semântica dos documentos. Nesse contexto a máquina 'aprende' o vocabulário treinado e o contexto em que as palavras aparecem, permitindo identificar a similaridade entre os termos, as frases e os documentos. 
+- se você não sabe o que é um modelo de similaridade, em resumo é um algoritmo não supervisionado para criar um modelo que transforma frases ou documentos em vetores matemáticos que podem ser comparados retornando um valor equivalente à similaridade semântica de documentos do mesmo contexto/domínio dos documentos usados no treinamento do modelo. Nesse cenário a máquina 'aprende' o vocabulário treinado e o contexto em que as palavras aparecem, permitindo identificar a similaridade entre os termos, as frases e os documentos. 
   - alguns links para saber mais: [`me Amilar 2018`](https://repositorio.idp.edu.br/handle/123456789/2635), [`Gensim 4.0.1 Doc2Vec`](https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html), [`ti-exame`](https://www.ti-enxame.com/pt/python/como-calcular-similaridade-de-sentenca-usando-o-modelo-word2vec-de-gensim-com-python/1045257495/)
 - Com essa comparação vetorial, é possível encontrar documentos semelhantes a um indicado, agrupar documentos semelhantes entre si de uma lista de documentos, e também monitorar documentos que entram na base ao compará-los com os documentos rotulados para monitoramento, como uma classificação rápida. Pode-se armazenar os vetores no `SingleStore` ou `Elasticsearch` como nas dicas ao final deste documento [aqui](#dicas).
 - O core desse componente é o uso de um Tokenizador Inteligente que usa as configurações dos arquivos contidos na pasta do modelo para tokenizar os arquivos de treinamento e os arquivos novos para comparação no futuro.
@@ -31,29 +31,29 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 
 ## Como funciona o Tokenizador Inteligente <a name="tokenizador">
   - Ao ser instanciado, o tokenizador busca os termos do vocab de treinamento contidos nos arquivos com padrão `VOCAB_BASE*.txt` (não importa o case).
-  - Você pode criar listas de termos que serão excluídos do treinamento, basta esteram em arquivos com o padrão `VOCAB_REMOVIDO*.txt`.
-  - Há um singularizador de termos automático. Dependendo da terminação do termo, ele será singularizado por regras simples de singularização e caso o resultado desse processamento esteja no vocab, o termo ficará no singular. A ideia é reduzir um pouco mais o vocab nesse passo. Exemplo: o termo `humanos` será convertido em `humano` se o termo `humano` estiver no vocab.
+  - Você pode criar listas de termos que serão excluídos do treinamento, basta estaram em arquivos com o padrão `VOCAB_REMOVIDO*.txt` - aqui geralmente ficam 'stopwords' ou termos que não ajudam na diferenciação dos documentos.
+  - Há um singularizador de termos automático. Dependendo da terminação do termo, ele será singularizado por regras simples de singularização e caso o resultado desse processamento esteja no vocab, o termo ficará no singular - funciona para termos compostos também. A ideia é reduzir um pouco mais o vocab nesse passo. Exemplo: o termo `humanos` será convertido em `humano` se o termo `humano` estiver no vocab.
   - Podem existir transformadores de termos nos arquivos com o padrão `VOCAB_TRADUTOR*.txt` que podem conter termos simples ou compostos que serão convertidos em outros termos simples ou compostos, como ngramas por exempo. Veja [`NGramasFacil`](./docs/readme_ngramas.md) para mais detalhes.
-  - Os tradutores funcionam após a limpeza do texto e transformam termos de acordo com a configuração no arquivo:
+  - Os tradutores funcionam após a limpeza do texto, antes do split da tokenização, e transformam termos de acordo com a configuração no arquivo:
     - `termo1 => termo2` - converte o `termo1` em `termo2` quando encontrado no texto (ex. `min => ministro`)
     - `termo1 termo2 => termo1_termo2` - converte o termo composto `termo1 termo2` em um termo único `termo1_termo2` (Ex. `processo penal => processo_penal`)
     - `termo1 termo2` - remove o termo composto `termo1 termo2` (Ex. `documento digital => ` ou `documento digital`)
-  - Os tradutores podem ser usados para converter nomes de organizações em suas siglas, termos compostos em um termo únicos (ngramas) e até termos conhecidos como idênticos em sua forma mais usual. É importante ressaltar que quanto maior o número de termos para transformação, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação (veja a classe `TradutorTermos` no arquivo [`util_tradutor_termos.py`](./src/util_tradutor_termos.py) ). 
+  - Os tradutores podem ser usados para converter nomes de organizações em suas siglas, termos compostos em um termo únicos (ngramas), correções ortográficas de termos importantes, e até termos conhecidos como idênticos convertendo para a sua forma mais usual. É importante ressaltar que quanto maior o número de termos para transformação, maior o tempo de processamento, mesmo usando recursos otimizados para essa transformação (veja a classe `TradutorTermos` no arquivo [`util_tradutor_termos.py`](./src/util_tradutor_termos.py) ). 
     - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](./docs/readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
-  - Os tradutores são processados antes da singularização, então termos transformados em termos compostos não serão afetados pela singularização.
-
+  
 > 💡 A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo `VOCAB_BASE portugues.txt` com termos que farão parte de vários modelos, um arquivo `VOCAB_BASE direito.txt` com termos do direito que serão somados ao primeiro no treinamento, um arquivo `VOCAB_BASE direito fragmentos.txt` com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante. Facilitando evoluções futuras dos vocabulários.
 
 ### Arquivo de curadoria para criação do vocab
  Ao rodar o código `python util_doc2vec_vocab_facil.py -pasta ./meu_modelo`, será criado um arquivo de curadoria de termos `curadoria_planilha_vocab.xlsx` com os termos encontrados nos textos da pasta `textos_vocab`. 
- - coloque na pasta `textos_vocab` textos que contenham boas palavras, limpas de preferência. Podem ser listas retiradas de algum documento, não importa o contexto delas, apenas as palavras nessa primeira etapa. Então listas de palavras e documentos como gramáticas e dicionários de português digitais parecem uma boa opção. Coloque também documentos com palavras relacionadas ao corpus desejado (psicologia, medicina, legislação, administração, etc). Esse site permite uma análise muito boa de termos e suas características, bem como encontrar novos termos derivados de outros termos [`Dicio`](https://www.dicio.com.br/).
- - Alguns termos podem não ser tão importantes para o domínio escolhido, mas podem ser importantes para o contexto. Esses termos podem compor o dicionário em forma de `stemmer` + `sufixo`. Aos termos não encontrados no dicionário durante a tokenização para treinamento, será aplicado o stemmer com o sufixo após o stemmer. Caso o stemmer esteja no vocab de treinamento, este será usado. O sufixo é opcional e será incluído se estiver no vocab de treinamento também.
- - Essa combinação de termos completos e fragmentos (stemmer + sufixo) possibilita criar palavras por combinação ao submeter um documento novo ao modelo que contenha termos fora do vocam de treinamento.
+ - coloque na pasta `textos_vocab` textos que contenham boas palavras, limpas de preferência. Podem ser listas retiradas de algum documento, não importa o contexto delas, apenas as palavras nessa primeira etapa. Então listas de palavras e documentos como gramáticas e dicionários de português digitais parecem uma boa opção. Coloque também documentos com palavras relacionadas ao corpus desejado (psicologia, medicina, legislação, administração, etc). Esse site permite uma análise muito boa de termos e suas características, bem como encontrar novos termos derivados de outros termos [`Dicio`](https://www.dicio.com.br/), aqui temos [`Leis`](http://www4.planalto.gov.br/legislacao/portal-legis/legislacao-1/codigos-1) e documentos Jurídicos nos sites do [`STF`](https://www.stf.jus.br) ou [`STJ`](https://www.stj.jus.br).
+ - Alguns termos podem não ser tão importantes para o domínio escolhido, mas podem ser importantes para o contexto. Esses termos podem compor o dicionário em forma de `stemmer` + `sufixo`. Aos termos não encontrados no dicionário durante a tokenização para treinamento, será aplicado o [`stemmer`](https://www.nltk.org/_modules/nltk/stem/snowball.html)  com o sufixo após o stemmer. Caso o stemmer esteja no vocab de treinamento, este será usado. O sufixo é opcional e será incluído se estiver no vocab de treinamento também.
+ - Essa combinação de termos completos e fragmentos (stemmer + sufixo) possibilita criar palavras por combinação ao submeter um documento novo ao modelo que contenha termos fora do vocam de treinamento. Pode ser interessante manter o stemmer apenas dos termos mais relevantes para o contexto do treinamento.
  - Opcionalmente pode-se usar o parâmetro `-treino` para gerar o arquivo de curadoria com base nos arquivos da pasta `texto_treino`, ou o parâmetro `-teste` para os arquivos da pasta `texto_teste`. O parâmetro `-vocab_treino` pode ser útil para comparar os termos dos textos com os termos realmente treinados no vocab após o início do treinamento. Pode-se combinar os parâmetros `-treino -vocab_treino` ou `-teste -vocab_treino`. Com isso é possível avaliar rapidamente o comportamento do vocabulário selecionado para tokenização até o vocabulário utilizado pelo `Gensim` no treinamento.
+> :bulb: <sub> Nota: é importante ressaltar que após modelo ser gerado, apenas os termos contidos no vocabulário do modelo serão usados na vetorização. Os termos realmente treinados podem ser visualizados no arquivo `vocab_treino.txt` gerado após a primeira época de treinamento.</sub>  
    
  - <b>Exemplo</b>: `engloba` pode ser composta por `englob` `#a`, e outras formações podem ocorrer como `englob` `#ada`, `englob` `#adamente`, `englob` `#adas` caso esses  fragmentos estejam disponíveis no vocabulário de treinamento.
    - O vocab de treinamento não precisa do `#` antes do sufixo, apenas dos fragmentos. Mas durante o treinamento os fragmentos usados como sufixo iniciarão com `#` para facilitar sua identificação e diferenciar dos termos principais no modelo final.
- - <b>Exemplo de tokenização com termos simples, compostor e fragmentos</b>: 
+ - <b>Exemplo de tokenização com termos simples, compostos e fragmentos</b>: 
    ```
    ['atendiam_testemunha', 'seu', 'depoimento', 'apesar', 'de', 'trazer', 'algumas', 'impreciso', '#es', 'sobre', 'os', 'fatos', 'atend', '#o', 'se', 'os', 'jurados', 'as', 'provas', 'produzidas', 'em', 'plenari', '#os']
    ```
@@ -74,10 +74,10 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
 > - Ao final são incluídas algumas colunas indicando a posição das colunas `TFIDF`, `TAMANHO`, `QTD` e `QTD_DOCS` no BoxPlot de cada coluna.
 
 ## Conferindo o processamento dos textos
-- Pode-se conferir os arquivos `.clr` criados nas pastas `texto_treino` pois eles são o resultado do processamento dos textos originais com o `TokenizadorInteligente`.
-- Nesse arquivo é possível identificar os fragmentos, os tokens principais e os termos compostos, e verificar se a tokenização está de acordo com o esperado. O treinamento do modelo será feito com esse arquivo. 
+- Durante o treinamento são criados arquivos com a extensão `.clr` para cada arquivo `.txt` da pasta `texto_treino`, eles são o resultado do processamento dos textos originais com o `TokenizadorInteligente`.
+- Nesses arquivos é possível identificar os fragmentos, os tokens principais e os termos compostos, e verificar se a tokenização está de acordo com o esperado. O treinamento do modelo será feito com esse arquivo e o vocab de treinamento é o resultado da análise desses termos. O objetivo do `TokenizadorInteligente` é preparar o texto que será treinado e fazer o mesmo processo em textos novos para vetorização usando o modelo no futuro. 
 - No início do treinamento os arquivos `.clr` serão atualizados para garantir que novos termos incluídos ou alterados manualmente sejam refletidos na tokenização.
-- Os arquivos `.clr` são necessários durante todo o treinamento e serão recriados se não forem encontrados, isso acelera o treinamento para não haver necessidade de reprocessar o texto cada vez que o treinamento passar por ele.
+- Os arquivos `.clr` são necessários durante todo o treinamento e serão recriados se não forem encontrados, isso acelera o treinamento para não haver necessidade de reprocessar os textos cada vez que o treinamento passar por eles.
 
 ## Treinando o modelo doc2vec: 
  Com os arquivos de vocab prontos, criados automaticamente ou manualmente, pode-se treinar o modelo.<br>
@@ -87,17 +87,18 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
  - `python util_doc2vec_facil.py`
     - `-pasta` - nome da pasta de treinamento que contém a pasta do modelo e as pastas de textos, o padrão é `meu_modelo` se não for informada.
     - `-treinar`' - iniciar o treinamento do modelo
-    - `-reiniciar sim` - remove o modeo atual, se existir, e inicia um novo treinamento (o sim é para garantir que se quer apagar o modelo e reiniciar)
-    - `-testar` - carrega o modelo atual, se existir, e atualiza o arquivo `comparar_termos.log` com os termos encontrados no arquivo `termos_comparacao_treino.txt`
+    - `-reiniciar sim` - remove o modeo atual, se existir, e inicia um novo treinamento (o sim é para garantir que se quer apagar o modelo e reiniciar). Pode-se também apagar manualmente os arquivos `doc2vec.*` para reiniciar o modelo.
+    - `-testar` - carrega o modelo atual, se existir, e apresenta no console a comparação de termos encontrados no arquivo `termos_comparacao_treino.txt` e o agrupamento de textos da pasta `textos_teste`.
     - `-epocas` - define o número de épocas que serão treinadas, o padrão é 5000 e pode ser interrompido ou acrescido a qualquer momento.
-    - `-dimensoes` - define o número de dimensões dos vetores de treinamento (não pode ser alterado depois de iniciado o treinamento).
+    - `-dimensoes` - define o número de dimensões dos vetores de treinamento (não pode ser alterado depois de iniciado o treinamento). Não sabe como escolher, o padrão é 200 mas o número 300 parece ser um bom número para menos épocas de treinamento.
     - `-workers` - número de threads de treinamento, padrão 100
 
  - `python util_doc2vec_vocab_facil.py`
     - `-pasta` - nome da pasta de treinamento que contém as pastas de textos, o padrão é `meu_modelo` se não for informada.
     - `-treino` - cria a planilha de curadoria com a pasta `textos_treino`, sem esse parâmtro a planilha é criada com a pasta `textos_vocab`.
-    - `-teste` - carrega o `TokenizadorInteligente` para verificar se os arquivos que serão usados para o processamento no treino estão ok.
-
+    - `-teste` - cria a planilha de curadoria com a pasta `textos_teste`, sem esse parâmtro a planilha é criada com a pasta `textos_vocab`.
+  > :bulb: <sub>Nota: são muitas opções de uso da curadoria para criação de um bom vocab. Se não sabe por onde começar, copie todos os termos listados na planilha para um arquivo `VOCAB_BASE.txt` e crie um arquivo `VOCAB_REMOVIDO.txt` com stopwords.</sub>
+  
 ### Termos comparados para acompanhar a evolução do modelo:
 - Exemplo de saída do arquivo `comparar_termos.log` atualizado a cada época.
 - Esse log é gerado com os termos ou frases disponíveis no arquivo `termos_comparacao_treino.txt` que é carregado no início do treino e pode ser alterado sempre que desejado.
@@ -140,7 +141,7 @@ termo                |  peticao (64%)            |  inepcia (63%)
 - Por exemplo, colocando no nome do arquivo `grupo1`, `grupo2` etc, pode-se avaliar se os arquivos estão sendo agrupados por similaridade da forma que é desejado. Com isso pode-se ajustar os parâmetros do modelo para avaliar se está se aproximando mais ou menos do que se espera. 
 - O resultado de comparação será colocado no arquivo `comparar_arquivos.log` como no exemplo abaixo.
 - Um dos arquivos é escolhido para ser comparado com ele mesmo para ter mais uma informação para avaliação do modelo. Como informado na documentação do Doc2Vec, chamadas subsequentes de um mesmo conteúdo podem inferir vetores diferentes. Essa diferença diminui aumentando o número de épocas na inferência do vetor. 
-- Como a comparação de arquivos pode exigir mais processamento, ela aguarda pelo menos 5 minutos para ser atualizada. Se o arquivo for excluído, ela será realizada após o final da próxima época. A comparação de arquivos também será realizada ao usar o parâmetro `-teste` para testar o modelo.
+- Como a comparação de arquivos pode exigir mais processamento, ela aguarda pelo menos 5 minutos para ser atualizada. Se o arquivo for excluído, ela será realizada após o final da próxima época. A comparação de arquivos também será realizada ao usar o parâmetro `-testar` para testar o modelo.
 ![exemplo arquivo comparar_arquivos.log](./exemplos/img_comparar_arquivos.png?raw=true "comparar arquivos.log")
 > :bulb: <sub>Nota: Essa rotulação não faz o treinamento ser supervisionado, apenas auxilia a avaliação do modelo, já que os rótulos não são levados em consideração no treinamento.</sub>
 
@@ -149,7 +150,7 @@ O que precisa ser disponibilizado para o modelo funcionar:<br>
  :file_folder: `modelo_teste` <br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_BASE*.txt` - arquivo com termos e fragmentos que compõem o vocab <br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_TRADUTOR*.txt` - arquivo de transformações do tokenizados <br>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_REMOVER*.txt` - arquivo de exclusões do tokenizados <br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_REMOVER*.txt` - arquivo de exclusões do tokenizados (stopwords por exemplo) <br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `doc2vec*` - arquivos do modelo treinado <br>
  
  Coloque tudo em uma pasta com o nome que desejar e pronto. Esse é um pacote do seu modelo. <br>
