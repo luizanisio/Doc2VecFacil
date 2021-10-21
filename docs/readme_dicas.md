@@ -48,7 +48,7 @@
    
    cliente.execsql(string_insert_memsql)
 ```
-> :bulb: <sub>Pode-se definir o número de épocas para gerar cada vetor inferido ao usar o modelo em novos documentos.</sub>
+> :bulb: <sub>Pode-se definir o número de épocas para gerar cada vetor inferido ao usar o modelo em novos documentos.</sub><br>
 > <sub>Veja a documentação do SingleStore [aqui](https://docs.singlestore.com/db/v7.5/en/reference/sql-reference/vector-functions/json_array_pack.html)</sub><br>
 > <sub>O SingleStore não é um banco derivado do MySQL, mas é compatível com o cliente MySQL para simplificar o seu uso, conforme informado na documentação.</sub>
 
