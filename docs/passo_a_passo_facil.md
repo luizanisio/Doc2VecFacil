@@ -83,7 +83,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_vocab`
    - Coloque nesta pasta documentos relevantes para a criação do vocab extra
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo`
- - Siga o passo `4.1` até ter o vocab desejado
+ - Siga o passo [`4.1`](#41-realize-o-ciclo-de-curadoria-repeat) até ter o vocab desejado
  - Inicie o treinamento:
     - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
 
@@ -92,7 +92,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_treino`
  - Crie uma subpasta `meu_modelo/doc2vecfacil` e coloque o arquivo `VOCAB_BASE meus termos PTBR.txt` contendo todos os termos em português que tiver. 
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo -treino`
- - Siga o passo `4.1` até ter o vocab desejado
+ - Siga o passo [`4.1`](#41-realize-o-ciclo-de-curadoria-repeat) até ter o vocab desejado
  - Remova ou renomeie o arquivo `VOCAB_BASE meus termos PTBR.txt` e crie um arquivo `VOCAB_BASE meus termos para treino.txt` com todos os termos da planilha que interessar e que possuírem mais de 4 ocorrências no corpus (o modelo treina com 5 ocorrências ou mais). Os termos limpos vão ajudar a reduzir plurais para seus singulares.
  - Inicie o treinamento:
     - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
