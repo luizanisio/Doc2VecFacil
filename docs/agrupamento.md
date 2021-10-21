@@ -1,6 +1,6 @@
 # Dicas de uma forma rápida de agrupar os documentos vetorizados
 - Com vetores que possibilitam a comparação de similaridade de documentos, pode-se agrupar por similaridade um conjunto de arquivos, por exemplo.
-- O código abaixo permite o uso do modelo treinado para gerar uma planilha excel com o nome dos arquivos e os grupos formados pela similaridade entre eles.
+- O código abaixo permite o uso do modelo treinado com o [`Doc2VecFacil`](../README.md) para gerar uma planilha excel com o nome dos arquivos e os grupos formados pela similaridade entre eles.
   
 - [`UtilAgrupamentoFacil`](./src/util_agrupamento_facil.py)  
 
