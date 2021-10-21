@@ -85,13 +85,17 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, complemento
         if os.path.isfile(arq_vocab_treino):
             with open(arq_vocab_treino,'r') as f:
                 vocab_base = {_.strip().replace('#','') for _ in f.read().split('\n') if _.strip()}
+        else:
+            print('=============================================================')
+            print(f'ERRO: não foi possível encontrar o arquivo {arq_vocab_treino} para a carga do vocab')
+            exit()
                  
 
     # recupera a lista de tokens que entraram depois de quebrados para incluir na análise
     print(f'\t - processando documentos e compilando dicionário')
     dicionario = Dictionary(docs)
     ####################################################################################################
-    print('\t - calculando pesos dos termos em cada documento')
+    print('\t - calculando pesos dos termos em cada documento processando todos os documentos')
     docs = Documentos(pasta_vocab=pasta_vocab, pasta_textos=pasta_textos, retornar_tokens=True, 
                       tokenizar_tudo=True, ignorar_cache=False, fragmentar=False, cache_extensao = cache_extensao)
     print('\t - calculando modelo TFIDF')
@@ -123,7 +127,7 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, complemento
 
     print('\t - incluindo termos sem contabilização dos pesos')
     termos_sem_peso = list(set(list(contadores.keys()) + list(vocab_base)))
-
+    
     for t in termos_sem_peso:
         if not t in pesos_medios:
            pesos_medios[t] = 0

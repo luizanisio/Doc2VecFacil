@@ -163,6 +163,14 @@ class TokenizadorInteligente():
         else:
             print(f'\t Pasta do vocab não definida, todos os termos serão tokenizados', flush=True)
 
+    # recebe o modelo
+    def aplicar_vocab_do_modelo(self, model):
+        if type(model) is Doc2Vec:
+           self.vocab = {_.replace('#','') for _ in model.wv.key_to_index if _ != '#OOV'}
+           print(f'\tVocab do modelo aplicado ao TokenizadorInteligente com {len(self.vocab)} termos', flush=True)
+        else:
+            raise Exception(str(f'Tipo de objeto inválido, esperando um modelo Doc2Vec e recebido {type(model)}'))
+
     def carregar_vocabs(self):
         vocab = ''
         vocab_removido = ''
@@ -172,7 +180,7 @@ class TokenizadorInteligente():
             for path, dir_list, file_list in os.walk(self.pasta_vocab):
                 for file_name in file_list:
                     if file_name.lower().endswith(".txt"):
-                        if file_name.lower()[:10]=='vocab_base' or file_name.lower()[:11]=='vocab_extra':
+                        if file_name.lower()[:10]=='vocab_base':
                             pathfile_name = os.path.join(path,file_name)        
                             vocab += (' ' + carregar_arquivo(pathfile_name,limpar=False,juntar_linhas=True))
                             print(f'\t - vocab: {file_name} carregado o/')
@@ -247,14 +255,29 @@ class TokenizadorInteligente():
         vocab += f' {_txt_numeros} '
         vocab = self.remover_acentos( vocab.replace('\t',' ').replace('\n',' ').lower() )
         vocab = {_ for _ in vocab.split(' ') if _ and (_ not in vocab_removido) }
+        # quando um termo no singular é removido, o plural deve ser removido também
+        removidos_plurais = self.listar_plurais_removidos(vocab, vocab_removido)
+        if any(removidos_plurais):
+           vocab = {_ for _ in vocab if _ not in removidos_plurais}
         if self.vocab_vazio:
             if self.pasta_vocab:
                 # o alerta aparece apenas se a pasta foi definida e não foram encontrados os arquivos
-                print(f'TokenizadorInteligente: ATENÇÃO ARQUIVOS VOCAB_BASE*.txt ou VOCAB_EXTRA*.txt NÃO ENCONTRADOS', flush=True)
+                print(f'TokenizadorInteligente: ATENÇÃO ARQUIVOS VOCAB_BASE*.txt NÃO ENCONTRADOS', flush=True)
             vocab = set()
             self.vocab_vazio = True
         self.vocab = vocab
         self.vocab_removido = vocab_removido
+        self.vocab_removido.update(removidos_plurais)
+        # gera um log dos termos removidos
+        if self.pasta_vocab:
+            arq_removido_log = os.path.join(self.pasta_vocab,'vocab_removido.log')
+            with open(arq_removido_log,'w') as f:
+                f.writelines('#######################')             
+                f.writelines('\n### Termos removidos: \n')             
+                f.writelines('\n'.join(vocab_removido))
+                f.writelines('\n#######################')             
+                f.writelines('\n### Plurais removidos: \n')             
+                f.writelines('\n'.join(removidos_plurais))
 
     @classmethod
     def remover_acentos(self,txt):
@@ -384,6 +407,16 @@ class TokenizadorInteligente():
                 return token[0: -1*len(de)] + por
         return token
 
+    # dada uma lista de termos removidos, retorna os plurais que são reduzidos a eles
+    def listar_plurais_removidos(self, termos_vocab, termos_removidos):
+        res = []
+        _removidos = set(termos_removidos) if type(termos_removidos) is not set else termos_removidos
+        for termo in termos_vocab:
+            _singular = self.singularizar(termo)
+            if _singular != termo and _singular in _removidos:
+                res.append(termo)
+        return {_ for _ in res}
+
     @classmethod
     def retornar_vocab_texto(self, texto):
         # verifica se é texto ou lista
@@ -413,6 +446,8 @@ class Documentos:
     # retornar_tokens: retorna a lista de tokens no lugar de um TaggedDocument para Doc2Vec
     # registrar_oov: grava um arquivo tokens_fora.txt com os tokens não encontrados no vocab
     # cache_extensao é alterado na curadoria para não atrapalhar o cache do treinamento
+    # modelo_carregado: caso receba um modelo Doc2Vec, 
+    #                   aplica o vocab dele ao tokenizador para otimizar a tokenização aos termos do modelo
     def __init__(self, pasta_textos, maximo_documentos=None, 
                     pasta_vocab=None, 
                     registrar_oov = False, 
@@ -420,7 +455,8 @@ class Documentos:
                     ignorar_cache = False,
                     tokenizar_tudo = False,
                     fragmentar = True,
-                    cache_extensao = '.clr'):
+                    cache_extensao = '.clr',
+                    modelo_carregado = None):
         if not cache_extensao:
             cache_extensao = '.clr' # garante que tem alguma extensão para o cache
         self.current = -1
@@ -441,6 +477,8 @@ class Documentos:
         self.timer = timer()
         self.cache_extensao = cache_extensao
         print(f'Documentos: Lista criada com {self.high} documentos')
+        if modelo_carregado:
+            self.tokenizer.aplicar_vocab_do_modelo(modelo_carregado)
 
     def listar_documentos(self, extensao_extra = ""):
         extensao = f'.txt{extensao_extra}'
@@ -559,6 +597,7 @@ class UtilDoc2VecFacil():
         else:
             self.log_treino = dict({})
         print('\tModelo carregado: ', self.nome_modelo, ' épocas: ', self.log_treino.get('opochs',0), ' termos: ', len(_model.wv))
+        self.tokenizer.aplicar_vocab_do_modelo(self.model)
         print('\tTermos: ', list(_model.wv.key_to_index)[:10],'...')
         print('\tModelo e tokenizador carregados o/')  
 
@@ -741,8 +780,9 @@ class UtilDoc2VecFacil():
 # workers = número de threads usadas no treinamento
 # epocas = número de épocas 
 # min_count = número mínimos de termos encontrados nos documentos para o termo ser incluído no vocabulário
+#             entendendo que a curadoria já foi realizada, o min_count pode ser 1 como padrão
 # janela_termos = número de termos usados no treinamento do contexto de cada termo
-# dimensoes = número de dimensões dos vetores treinados
+# dimensoes = número de dimensões dos vetores treinados - padrão 300 dá um bom resultado com menos épocas
 # comparar_termos = lista de termos para comparações entre termos a cada época treinada
 #                   gera o arquivo comparar_termos.txt 
 #                   se existir o arquivo termos_comparacao_treino.txt, usa esses termos para a comparação
@@ -751,7 +791,7 @@ class UtilDoc2VecFacil():
 # dvt.treinar()
 
 class UtilDoc2VecFacil_Treinamento():
-    def __init__(self, pasta_modelo, pasta_textos, workers=10, epocas=10, min_count = 5, janela_termos = 10, dimensoes = 200) -> None:
+    def __init__(self, pasta_modelo, pasta_textos, workers=10, epocas=100, min_count = 1, janela_termos = 10, dimensoes = 300) -> None:
         self.doc2vec = UtilDoc2VecFacil(pasta_modelo=pasta_modelo)
         # facilitadores
         self.nome_modelo = self.doc2vec.nome_modelo
@@ -783,6 +823,8 @@ class UtilDoc2VecFacil_Treinamento():
             if self.doc2vec.model is None:
                 self.doc2vec.carregar_modelo()
             self.epocas_anteriores = self.doc2vec.model.epochs
+            qtd = len(listar_arquivos(self.pasta_textos))
+            documentos_treino = None
         else:
             if os.path.isfile(self.nome_vocab_treino):
                 os.remove(self.nome_vocab_treino)
@@ -810,17 +852,22 @@ class UtilDoc2VecFacil_Treinamento():
             documentos_treino.tokenizer.gravar_oov()
             print('\t - Vocab criado em ', timer() - inicio_treino, ' segundos', flush=True)
             self.epocas_anteriores = 0
+            qtd = documentos_treino.high
 
-        print(f'Carregando lista de documentos para o treino ... ')
-        documentos_treino = Documentos(self.pasta_textos, pasta_vocab = self.doc2vec.pasta_modelo)
-        print(f'\t - Treinando com {documentos_treino.high} documentos ')
-        print('\t - inicio_treino:', datetime.today().strftime('%Y-%m-%d %H:%M:%S%z'), flush=True)
+        print(f'\t - Treinando com {qtd} documentos ')
+        print( '\t - inicio_treino:', datetime.today().strftime('%Y-%m-%d %H:%M:%S%z'), flush=True)
         for i in range(self.n_epocas):
             inicio_treino = timer()
             print(f'\t - Treinando época número ', self.epocas_treinadas+1, flush=True)
             # recria o iterator a cada época
             if not documentos_treino:
-                documentos_treino = Documentos(self.pasta_textos, pasta_vocab = self.doc2vec.pasta_modelo)
+                # informar o modelo carregado otimiza o tokenizador pois são usados apenas os termos do modelo
+                # durante a limpeza do texto
+                documentos_treino = Documentos(self.pasta_textos, 
+                                               pasta_vocab = self.doc2vec.pasta_modelo, 
+                                               modelo_carregado=self.doc2vec.model,
+                                               ignorar_cache=False)
+
             self.doc2vec.model.train(documentos_treino, epochs=1, total_examples=documentos_treino.high)
             documentos_treino = None
             self.epocas_treinadas += 1
@@ -840,7 +887,6 @@ class UtilDoc2VecFacil_Treinamento():
             self.doc2vec.log_treino['min_count'] = self.min_count
             self.doc2vec.log_treino['nome_modelo'] = self.nome_modelo
             self.gravar_modelo()
-
     # 
     def carregar_lista_termos_comparacao(self):
         lista = self.doc2vec.carregar_lista_termos_comparacao()
@@ -910,7 +956,7 @@ if __name__ == "__main__":
     parser.add_argument('-treinar', help='inicia ou continua o treinamento', required=False, action='store_const', const=1)
     parser.add_argument('-reiniciar', help='use "-reiniciar sim" >> apaga o modelo e inicia um novo treinamento', required=False)
     parser.add_argument('-epocas', help='número de épocas para treinamento - padrão 5000 ', required=False)
-    parser.add_argument('-dimensoes', help='número de dimensões para treinamento - padrão 200 ', required=False)
+    parser.add_argument('-dimensoes', help='número de dimensões para treinamento - padrão 300 ', required=False)
     parser.add_argument('-janela', help='janela de termos para treinamento - padrão 10 ', required=False)
     parser.add_argument('-workers', help='threads de treinamento - padrão 100 ', required=False)
     args = parser.parse_args()
@@ -967,7 +1013,7 @@ if __name__ == "__main__":
                os.remove(arq)
 
     # treinamento
-    dimensoes = int(args.dimensoes) if args.dimensoes else 200
+    dimensoes = int(args.dimensoes) if args.dimensoes else 300
     epocas = int(args.epocas) if args.epocas else 5000
     workers = int(args.workers) if args.workers else 100
     janela_termos = int(args.janela) if args.workers else 10
@@ -975,7 +1021,7 @@ if __name__ == "__main__":
                                                     pasta_textos= PASTA_TEXTOS_TREINO,
                                                     epocas=epocas,
                                                     dimensoes=dimensoes,
-                                                    min_count=5,
+                                                    min_count=1,
                                                     workers=workers,
                                                     janela_termos=janela_termos)
     doc2vecTreina.treinar()
