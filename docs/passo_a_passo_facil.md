@@ -33,7 +33,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `vocab_treino.txt`: será criado após a primeira época e contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento após a tokenização). Quando o modelo for carregado, esses termos serão carregados pelo tokenizador pois são os únicos que o modelo 'enxerga'.
 
 ## 1) Quero treinar sem preparar um vocab: 
- - Crie a pasta `meu_modelo`
+ - Crie a pasta `meu_modelo` - baixe o [`exemplo de estrutura`](../exemplos/modelo_cenario1.zip)
  - Crie uma subpasta `meu_modelo/textos_treino`
  - Opcionalmente crie uma subpasta `meu_modelo/doc2vecfacil` e coloque os stopwords e/ou termos muito comuns no arquivo `VOCAB_REMOVIDO.txt`. 
  - Rode o treinamento do modelo:
