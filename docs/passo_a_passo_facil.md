@@ -39,8 +39,8 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
   > 💡 <sub>Nota: todos os tokens serão treinados (exceto os do arquivo de remoção), será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente</sub><br>
-  > <sub> O singular dos termos será aplicado caso nos textos tenha a forma singular da palavra analisada.</sub>
-  > <sub> Você pode rodar a [`curadoria`](#) `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias para atualizar o aruqivo de remoção de termos antes do treinamento.</sub>
+  > <sub> - O singular dos termos será aplicado caso nos textos tenha a forma singular da palavra analisada.</sub><br>
+  > <sub> - Você pode rodar a [`curadoria`](#4-quero-criar-meu-vocab-do-zero-fazer-curadoria-e-depois-treinar) `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias para atualizar o aruqivo de remoção de termos antes do treinamento.</sub>
 
 ## 2) Quero usar as palavras sugeridas ou já tenho as minhas:
  - Crie a pasta `meu_modelo`
@@ -55,7 +55,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
  > 💡 <sub>Nota: os termos compostos são agrupados após a limpeza do texto e suas formas compostas serão incluídas automaticamente no vocab de treino.</sub>  
- > <sub>É difícil dizer que o uso de ngramas impacta positiva ou negativamente no modelo, é sempre bom testar. Mas é bom lembrar que os termos são treinados com seus contextos, ou seja, com termos ao redor dele. Então de certa forma os ngramas já fazem parte do treinamento.</sub>  
+ > <sub> - É difícil dizer que o uso de ngramas impacta positiva ou negativamente no modelo, é sempre bom testar. Mas é bom lembrar que os termos são treinados com seus contextos, ou seja, com termos ao redor dele. Então de certa forma os ngramas já fazem parte do treinamento.</sub>  
 
 ## 4) Quero criar meu vocab do zero, fazer curadoria e depois treinar:
  - Crie a pasta `meu_modelo`
@@ -64,8 +64,8 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
    - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo`
 
  > 💡 <sub>Nota: Será criado o arquivo `curadoria_planilha_vocab.xlsx` com todos os termos encontrados nos textos da pasta `textos_vocab`, suas frequências, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.</sub><br>
- > <sub> opcionalmente pode-se usar o parâmetro `-treino` para que a planilha de curadoria seja criada com os textos da pasta `textos_treino`, ou `-teste` para ser criada a planilha com os arquivos da pasta `textos_teste`.<sub>
- > <sub> a curadoria pode ser feita para refinar o cenário `1` na busca de termos muito frequentes e pouco relevantes para os documentos.<sub>
+ > <sub> - opcionalmente pode-se usar o parâmetro `-treino` para que a planilha de curadoria seja criada com os textos da pasta `textos_treino`, ou `-teste` para ser criada a planilha com os arquivos da pasta `textos_teste`.<sub>
+ > <sub> - a curadoria pode ser feita para refinar o cenário `1` na busca de termos muito frequentes e pouco relevantes para os documentos.<sub>
 
 #### 4.1 realize o ciclo de curadoria :repeat::
  - Abra o arquivo `curadoria_planilha_vocab.xlsx` e avalie os termos que deseja treinar.
