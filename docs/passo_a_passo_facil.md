@@ -32,14 +32,15 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `comparar_arquivos.log`: com intervalos de pelo menos 5 minutos, os arquivos da pasta `textos_teste` são comparados entre si e os resultados com mais de 70% de similaridade são mostrados para cada arquivo. Como sugestão, pode-se colocar no nome do arquivo o tema ou grupo de interesse e se o modelo aproximar os grupos iguais, indica que o modelo está indo na direção desejada. Mais informações clique [aqui](../README.md#arquivos-comparados-para-acompanhar-a-evolu%C3%A7%C3%A3o-do-modelo).<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `vocab_treino.txt`: será criado após a primeira época e contém os termos realmente treinados (os disponíveis no vocab e que foram encontrados nos textos de treinamento após a tokenização). Quando o modelo for carregado, esses termos serão carregados pelo tokenizador pois são os únicos que o modelo 'enxerga'.
 
-## 1) Quero treinar sem preparar um vocab:
+## 1) Quero treinar sem preparar um vocab: 
  - Crie a pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_treino`
- - Opcionalmente crie uma subpasta `meu_modelo/doc2vecfacil` e coloque os stopwords no arquivo `VOCAB_REMOVIDO.txt`. 
+ - Opcionalmente crie uma subpasta `meu_modelo/doc2vecfacil` e coloque os stopwords e/ou termos muito comuns no arquivo `VOCAB_REMOVIDO.txt`. 
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
-  > 💡 <sub>Nota: todos os tokens serão treinados (exceto os do arquivo de remoção), será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente</sub>
-  > <sub> você pode rodar `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias antes do treinamento.</sub>
+  > 💡 <sub>Nota: todos os tokens serão treinados (exceto os do arquivo de remoção), será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente</sub><br>
+  > <sub> O singular dos termos será aplicado caso nos textos tenha a forma singular da palavra analisada.</sub>
+  > <sub> Você pode rodar a [`curadoria`](#) `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias para atualizar o aruqivo de remoção de termos antes do treinamento.</sub>
 
 ## 2) Quero usar as palavras sugeridas ou já tenho as minhas:
  - Crie a pasta `meu_modelo`
@@ -50,10 +51,10 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  > 💡 <sub>Nota: serão treinados apenas os termos encontrados nos arquivos `VOCAB_BASE*.txt` ou no caso de um termo não ser encontrado, o `stemmer` e `sufixo` dele serão treinados se estiverem no vocab. Caso o singular do termo esteja no vocab, o termo será convertido para o singular para redução de vocab de treino.</sub>
 
 ## 3) Quero criar ngramas ou limpar o texto com termos que não devem ser treinados:
- - Além dos arquivos do cenário `2`, acrescente o arquivo `VOCAB_TRADUTOR_COMPOSTOS_PTBR.txt` e crie outros arquivos se desejar com seus ngramas (veja [NGramasFacil](readme_ngramas.md) ) ou termos compostos para remoção. Crie também um ou mais arquivos `VOCAB_REMOVIDO*.txt` com suas listas de exclusões.
+ - Escolha o cenário `1` ou `2`, acrescente o arquivo `VOCAB_TRADUTOR_COMPOSTOS_PTBR.txt` e crie outros arquivos se desejar com seus ngramas (veja [NGramasFacil](readme_ngramas.md) ) ou termos compostos para remoção. Crie também um ou mais arquivos `VOCAB_REMOVIDO*.txt` com suas listas de exclusões.
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
- > 💡 <sub>Nota: os termos compostos são agrupados após a tokenização e limpeza e serão incluídos automaticamente no vocab de treino.</sub>  
+ > 💡 <sub>Nota: os termos compostos são agrupados após a limpeza do texto e suas formas compostas serão incluídas automaticamente no vocab de treino.</sub>  
  > <sub>É difícil dizer que o uso de ngramas impacta positiva ou negativamente no modelo, é sempre bom testar. Mas é bom lembrar que os termos são treinados com seus contextos, ou seja, com termos ao redor dele. Então de certa forma os ngramas já fazem parte do treinamento.</sub>  
 
 ## 4) Quero criar meu vocab do zero, fazer curadoria e depois treinar:
@@ -64,6 +65,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
 
  > 💡 <sub>Nota: Será criado o arquivo `curadoria_planilha_vocab.xlsx` com todos os termos encontrados nos textos da pasta `textos_vocab`, suas frequências, tfidf, tamanho, dentre outros atributos para permitir uma análise e curadoria dos termos. Esse arquivo pode ser aberto no Excel para facilitar a análise/curadoria do vocabulário que será treinado.</sub><br>
  > <sub> opcionalmente pode-se usar o parâmetro `-treino` para que a planilha de curadoria seja criada com os textos da pasta `textos_treino`, ou `-teste` para ser criada a planilha com os arquivos da pasta `textos_teste`.<sub>
+ > <sub> a curadoria pode ser feita para refinar o cenário `1` na busca de termos muito frequentes e pouco relevantes para os documentos.<sub>
 
 #### 4.1 realize o ciclo de curadoria :repeat::
  - Abra o arquivo `curadoria_planilha_vocab.xlsx` e avalie os termos que deseja treinar.
@@ -88,12 +90,3 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Inicie o treinamento:
     - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
 
-## 6) Não quero trabalho, tenho um arquivo com milhares de termos em português e quero usar ele para limpar os meus textos e reduzir plurais:
- - Crie a pasta `meu_modelo`
- - Crie uma subpasta `meu_modelo/textos_treino`
- - Crie uma subpasta `meu_modelo/doc2vecfacil` e coloque o arquivo `VOCAB_BASE meus termos PTBR.txt` contendo todos os termos em português que tiver. 
-   - Rode: `python util_doc2vec_vocab_facil.py -pasta meu_modelo -treino`
- - Siga o passo [`4.1`](#41-realize-o-ciclo-de-curadoria-repeat) até ter o vocab desejado
- - Remova ou renomeie o arquivo `VOCAB_BASE meus termos PTBR.txt` e crie um arquivo `VOCAB_BASE meus termos para treino.txt` com todos os termos da planilha que interessar e que possuírem mais de 4 ocorrências no corpus (o modelo treina com 5 ocorrências ou mais). Os termos limpos vão ajudar a reduzir plurais para seus singulares.
- - Inicie o treinamento:
-    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
