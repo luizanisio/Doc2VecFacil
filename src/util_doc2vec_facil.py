@@ -322,6 +322,9 @@ class TokenizadorInteligente():
         for t in tokens:
             if not t:
                 continue
+            # está no removido, não quebra
+            if t in self.vocab_removido: 
+                continue
             _quebrados = self.quebrar_tokens(t) 
             if (self.vocab_vazio or self.tokenizar_tudo) and len(_quebrados) ==0:
                _quebrados = [t]  # sem vocab, o vocab é criado mas os oov são registrados
