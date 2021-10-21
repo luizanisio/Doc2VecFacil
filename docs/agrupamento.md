@@ -16,13 +16,18 @@
   - `-sim` é a similaridade mínima para que um ou mais arquivos sejam agrupados
  
 - será criado um arquivo com o nome da pasta de textos e a similaridade informada `agrupamento {pasta de textos} sim {similaridade}.xlsx` 
-- exemplo de resultado do agrupamento:<br>
+- exemplo de resultado do agrupamento:
+
 ![exemplo de agrupamento de arquivos](../exemplos/img_agrupamento.png?raw=true "agrupamento de arquivos") 
- 
+
+> :bulb: <sub>Nota: o arquivo usado como principal para capturar outros arquivos similares terá a similaridade 100 na planilha.</sub>
  
 ## Como funciona o agrupamento
 1. cada arquivo é vetorizado 
 2. inicia-se o agrupamento pegando um vetor e buscando todos os com a similaridade mínima e cria-se um grupo
-3. pega-se o próximo vetor sem grupo e busca os vetores sem grupo com similaridade mínima e cria-se outro grupo
-4. se um vetor não tiver vetores similares, fica no grupo `-1` que é o grupo de órfãos
+3. pega-se o próximo vetor sem grupo e é feita a busca dos vetores sem grupo com similaridade mínima e cria-se outro grupo
+4. o item 3 é repetido até acabarem os vetores carregados
+5. se um vetor não tiver vetores similares, fica no grupo `-1` que é o grupo de órfãos
 
+> :bulb: <sub>Nota: Como toda a vetorização é feita no momento do agrupamento, o processo pode ser demorado, principalmente com muitas épocas na inferência do vetor.</sub><br>
+> <sub>- Em uma situação de serviço em produção, os vetores já estariam disponíveis em um banco de dados, elasticsearch ou outra forma de armazenamento, ficando um processo muito rápido de agrupamento.</sub><br>
