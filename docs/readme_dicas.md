@@ -48,7 +48,8 @@
    
    cliente.execsql(string_insert_memsql)
 ```
-> :bulb: <sub>Veja a documentação do SingleStore [aqui](https://docs.singlestore.com/db/v7.5/en/reference/sql-reference/vector-functions/json_array_pack.html)</sub>
+> :bulb: <sub>Pode-se definir o número de épocas para gerar cada vetor inferido ao usar o modelo em novos documentos.</sub>
+> <sub>Veja a documentação do SingleStore [aqui](https://docs.singlestore.com/db/v7.5/en/reference/sql-reference/vector-functions/json_array_pack.html)</sub>
 > <sub>O SingleStore não é um banco derivado do MySQL, mas é compatível com o cliente MySQL para simplificar o seu uso, conforme informado na documentação.</sub>
 
 - Inserindo alguns vetores para teste da view
