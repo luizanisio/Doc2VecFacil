@@ -35,9 +35,10 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
 ## 1) Quero treinar sem preparar um vocab:
  - Crie a pasta `meu_modelo`
  - Crie uma subpasta `meu_modelo/textos_treino`
+ - Opcionalmente crie uma subpasta `meu_modelo/doc2vecfacil` e coloque os stopwords no arquivo `VOCAB_REMOVIDO.txt`. 
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
-  > 💡 <sub>Nota: todos os tokens serão treinados, será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente</sub>
+  > 💡 <sub>Nota: todos os tokens serão treinados (exceto os do arquivo de remoção), será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente</sub>
   > <sub> você pode rodar `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias antes do treinamento.</sub>
 
 ## 2) Quero usar as palavras sugeridas ou já tenho as minhas:
