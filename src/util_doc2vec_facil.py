@@ -599,9 +599,9 @@ class UtilDoc2VecFacil():
             self.log_treino = json.loads(self.log_treino) if len(self.log_treino)>5 else dict({})
         else:
             self.log_treino = dict({})
-        print('\tModelo carregado: ', self.nome_modelo, ' épocas: ', self.log_treino.get('opochs',0), ' termos: ', len(_model.wv))
+        print('\tModelo carregado: ', self.nome_modelo, ' épocas: ', self.log_treino.get('epochs',0), ' termos: ', len(_model.wv))
         self.tokenizer.aplicar_vocab_do_modelo(self.model)
-        print('\tTermos: ', list(_model.wv.key_to_index)[:10],'...')
+        print('\tAlguns termos: ', ', '.join(list(_model.wv.key_to_index)[:10]),'...')
         print('\tModelo e tokenizador carregados o/')  
 
     def tokens_sentenca(self, sentenca):
