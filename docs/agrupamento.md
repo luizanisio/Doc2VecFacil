@@ -34,3 +34,31 @@
 
 > :bulb: <sub>Nota: Como toda a vetorização é feita no momento do agrupamento, o processo pode ser demorado, principalmente com muitas épocas na inferência do vetor.</sub><br>
 > <sub>- Em uma situação de serviço em produção, os vetores já estariam disponíveis em um banco de dados, elasticsearch ou outra forma de armazenamento, ficando um processo muito rápido de agrupamento.</sub><br>
+
+## Como rodar o agrupamento pelo código
+- usando o código para criar a planilha:
+```python
+    from util_agrupamento_facil import UtilAgrupamentoFacil
+    PASTA_MODELO = 'meu_modelo'
+    PASTA_TEXTOS = 'meus_textos'
+    similaridade = 85
+    epocas = 3
+    
+    UtilAgrupamentoFacil.agrupar_arquivos(pasta_modelo=PASTA_MODELO, 
+                                          pasta_arquivos=PASTA_TEXTOS, 
+                                          similaridade=similaridade,
+                                          epocas = epocas)
+```
+
+- usando o código para agrupar vetores carregados do banco de dados, elasticsearch etc.
+```python
+    from util_agrupamento_facil import UtilAgrupamentoFacil
+    similaridade = 85
+    vetores, ids = carregar_vetores_do_banco(...)
+    # retorna uma lista de tuplas na mesma ordem com [(grupo,similaridade), ...]
+    grupos_sim = UtilAgrupamentoFacil.agrupar_vetores_similares(vetores,similaridade)
+    
+    for id, (grupo, sim) in zip(ids, grupos_sim):
+        if grupo>=0: 
+           print('Grupo: ', grupo, 'ID: ', id, 'Similaridade: ', sim)
+```
