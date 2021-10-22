@@ -23,7 +23,7 @@
 
 ![exemplo de agrupamento de arquivos](../exemplos/img_agrupamento.png?raw=true "agrupamento de arquivos") 
 
-> :bulb: <sub>Nota: o arquivo usado como principal para capturar outros arquivos similares terá a similaridade 100 na planilha.</sub>
+> :bulb: <sub>Nota: o arquivo usado como principal para capturar outros arquivos similares terá a similaridade 100 na planilha, pode ser considerado o centróide do grupo.</sub>
  
 ## Como funciona o agrupamento
 1. cada arquivo é vetorizado 
