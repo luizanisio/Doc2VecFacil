@@ -15,7 +15,7 @@
 - os parâmetros de `util_agrupamento_facil.py` são:
   - `-modelo` é a pasta do modelo treinado, podendo ser a pasta com pacote de treinamento ou a pasta final só com o modelo
   - `-textos` é a pasta contendo os arquivos `.txt` que serão agrupados
-  - `-sim` é a similaridade mínima para que um ou mais arquivos sejam agrupados
+  - `-sim` é a similaridade mínima para que um ou mais arquivos sejam agrupados, se não informado será usada a similaridade 90%
   - `-epocas` é a quantidade de épocas para a inferência do vetor de cada arquivo, se não informado será inferido com `3` épocas.
  
 - será criado um arquivo com o nome da pasta de textos e a similaridade informada `agrupamento {pasta de textos} sim {similaridade}.xlsx` 
