@@ -25,7 +25,7 @@
 
 ![exemplo de agrupamento de arquivos](../exemplos/img_agrupamento.png?raw=true "agrupamento de arquivos") 
 
-- Exemplo do plot de um agrupamento de 50mil vetores 2d randômicos para ter uma ideia de como os grupos são formados (esquerda). Com um plot de 2mil vetores 300d reduzidos para 2d com a criação de 28 grupos (em cores) para 82 vetores e os outros ficaram órfãos. Cada cor representa um grupo formado.
+- Exemplo do plot de um agrupamento de 50mil vetores 2d randômicos para ter uma ideia de como os grupos são formados (esquerda). Com um plot de 2mil vetores 300d reduzidos para 2d com a criação de 28 grupos (em cores) para 82 vetores e os outros ficaram órfãos (modelo de teste treinado com 100 épocas apenas). Cada cor representa um grupo formado.
 
 ![exemplo plot agrupamento](../exemplos/img_agrupamento_50k_2k.png?raw=true "Exemplo de agrupamento de 50mil vetores 2d randômicos e 2mil vetores 300d de textos")
 
