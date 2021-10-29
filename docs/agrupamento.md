@@ -25,8 +25,8 @@
 
 ![exemplo de agrupamento de arquivos](../exemplos/img_agrupamento.png?raw=true "agrupamento de arquivos") 
 
-- exemplo do plot de um agrupamento de 50mil vetores 2d randômicos para ter uma ideia de como os grupos são formados.
-![exemplo plot agrupamento](./exemplos/img_agrupamento_50k.png?raw=true "Exemplo de agrupamento de 50mil vetores 2d randômicos")
+- Exemplo do plot de um agrupamento de 50mil vetores 2d randômicos para ter uma ideia de como os grupos são formados (esquerda). Com um plot de 2mil vetores 300d reduzidos para 2d com a criação de 28 grupos (em cores) para 82 vetores e os outros ficaram órfãos. Cada cor representa um grupo formado.
+![exemplo plot agrupamento](../exemplos/img_agrupamento_50k.png?raw=true "Exemplo de agrupamento de 50mil vetores 2d randômicos e 2mil vetores 300d de textos")
 
 > :bulb: <sub>Nota: o arquivo usado como principal para capturar outros arquivos similares terá a similaridade 100 na planilha, pode ser considerado o centróide do grupo.</sub>
  
