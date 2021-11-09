@@ -41,7 +41,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Opcionalmente crie uma subpasta `meu_modelo/doc2vecfacil` e coloque os stopwords e/ou termos muito comuns no arquivo `VOCAB_REMOVIDO.txt`. 
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
-  > 💡 <sub>Nota: todos os tokens serão treinados (exceto os do arquivo de remoção), será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente</sub><br>
+  > 💡 <sub>Nota: todos os tokens serão treinados (exceto os do arquivo de remoção), será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente. Também será aplicado o MIN_COUNT=5 (padrão) quando não existirem arquivos `VOCAB_BASE*.txt`</sub><br>
   > <sub> - O singular dos termos será aplicado caso nos textos tenha a forma singular da palavra analisada.</sub><br>
   > <sub> - Você pode rodar a [`curadoria`](#4-quero-criar-meu-vocab-do-zero-fazer-curadoria-e-depois-treinar) `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias para atualizar o aruqivo de remoção de termos antes do treinamento.</sub>
 
