@@ -255,18 +255,30 @@ if __name__ == "__main__":
         print(f'ERRO: pasta do modelo com vocab não encontrada em "{PASTA_MODELO}"')
         exit()
 
+    # sem parâmetro da pasta de agrupamento, busca as pastas prováveis
     PASTA_TEXTOS = args.textos 
     if not PASTA_TEXTOS:
-       if os.path.isdir(os.path.join(PASTA_BASE,'textos_treino')):
-           PASTA_TEXTOS = os.path.join(PASTA_BASE,'textos_treino')
-       elif os.path.isdir(os.path.join(PASTA_BASE,'textos_teste')):
-           PASTA_TEXTOS = os.path.join(PASTA_BASE,'textos_teste')
-       elif os.path.isdir('./textos'):
+       testar_pastas = ['./',PASTA_BASE,PASTA_MODELO]
+       for pasta in testar_pastas:
+            if os.path.isdir(os.path.join(pasta,'textos_grupos')):
+                PASTA_TEXTOS = os.path.join(pasta,'textos_grupos')
+            elif os.path.isdir(os.path.join(pasta,'textos_treino')):
+                PASTA_TEXTOS = os.path.join(pasta,'textos_treino')
+            elif os.path.isdir(os.path.join(pasta,'textos_teste')):
+                PASTA_TEXTOS = os.path.join(pasta,'textos_teste')
+            if PASTA_TEXTOS:
+                break
+       if not PASTA_TEXTOS and os.path.isdir('./textos'):
            PASTA_TEXTOS = './textos'
     if (not PASTA_TEXTOS) or (not os.path.isdir(PASTA_TEXTOS)):
         print(f'ERRO: pasta de textos não encontrada em "{PASTA_TEXTOS}"')
         exit()
 
+    print(f'######################################################################')
+    print(f'# Agrupando textos da pasta: {PASTA_TEXTOS}')
+    _plotar = 'SIM' if plotar else 'NÃO'
+    print(f'# Épocas: {epocas} - Similaridade: {similaridade} - Plotar: {_plotar}')
+    print(f'######################################################################')
     util = UtilAgrupamentoFacil.agrupar_arquivos(pasta_modelo=PASTA_MODELO, 
                                           pasta_arquivos=PASTA_TEXTOS, 
                                           similaridade=similaridade,

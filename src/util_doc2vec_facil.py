@@ -451,6 +451,10 @@ class Documentos:
     # cache_extensao é alterado na curadoria para não atrapalhar o cache do treinamento
     # modelo_carregado: caso receba um modelo Doc2Vec, 
     #                   aplica o vocab dele ao tokenizador para otimizar a tokenização aos termos do modelo
+    # OBS: caso no nome do arquivo tenha tag ou tags, o que seguir esse token será considerado tag para o documento
+    #      caso contrário, a tag será o nome do documento
+    #      para facilitar renomer um lote de arquivos, o texto (\d+) no nome será ignorado
+    RE_TAGS = re.compile(r'(.*\btags?\b)|(\(\d+\))', re.IGNORECASE)
     def __init__(self, pasta_textos, maximo_documentos=None, 
                     pasta_vocab=None, 
                     registrar_oov = False, 
@@ -508,9 +512,21 @@ class Documentos:
                 tokens = tokens[:CST_LIMITE_TOKENS]
             if self.retornar_tokens:
                 return tokens
-            return TaggedDocument(tokens, [self.current]) 
+            # verifica se no nome do arquivo tem alguma tag do documento
+            tags = self.get_tags_doc(self.documentos[self.current])
+            #print('TAG: ', tags , self.documentos[self.current])
+            return TaggedDocument(tokens, tags) 
         print(f' [{round(timer()-self.timer)}s] o/') # finaliza o progresso de iterações
         raise StopIteration    
+
+    def get_tags_doc(self, arquivo):
+        nm = os.path.split(arquivo)[1]
+        nm = os.path.splitext(nm)[0]
+        tags = self.RE_TAGS.sub(' ', nm).strip()
+        tags = [_ for _ in tags.split(' ') if _]
+        if any(tags):
+            return tags
+        return [nm.replace(' ','_').replace('-','_')]
 
     def get_tokens_doc(self, arquivo):
         self.qtd_processados +=1
@@ -794,7 +810,7 @@ class UtilDoc2VecFacil():
 # dvt.treinar()
 
 class UtilDoc2VecFacil_Treinamento():
-    def __init__(self, pasta_modelo, pasta_textos, workers=10, epocas=100, min_count = 1, janela_termos = 10, dimensoes = 300) -> None:
+    def __init__(self, pasta_modelo, pasta_textos, workers=10, epocas=100, min_count = None, janela_termos = 10, dimensoes = 300) -> None:
         self.doc2vec = UtilDoc2VecFacil(pasta_modelo=pasta_modelo)
         # facilitadores
         self.nome_modelo = self.doc2vec.nome_modelo
@@ -810,6 +826,10 @@ class UtilDoc2VecFacil_Treinamento():
         self.epocas_treinadas = self.doc2vec.log_treino.get('epochs',0)
         self.n_epocas = epocas
         self.min_count = self.doc2vec.log_treino.get('min_count',min_count) 
+        # sem vocab base, o mincount é o padrão 5
+        if self.min_count == None or self.min_count<1:
+            self.min_count = 1 if any(self.doc2vec.tokenizer.vocab) else 5
+            print('MIN_COUNT AUTOMÁTICO = ', self.min_count)
         self.janela_termos = self.doc2vec.log_treino.get('window',janela_termos) 
         if self.doc2vec.model:
             self.dimensoes = self.doc2vec.model.vector_size
@@ -1024,7 +1044,7 @@ if __name__ == "__main__":
                                                     pasta_textos= PASTA_TEXTOS_TREINO,
                                                     epocas=epocas,
                                                     dimensoes=dimensoes,
-                                                    min_count=1,
+                                                    min_count=None,
                                                     workers=workers,
                                                     janela_termos=janela_termos)
     doc2vecTreina.treinar()
