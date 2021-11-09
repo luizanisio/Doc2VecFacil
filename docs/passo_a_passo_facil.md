@@ -2,6 +2,8 @@
 Logo abaixo estão descritos alguns cenários de criação de vocab e treinamento e os seus passos.<br>
 As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`, mas pode criar a pasta com o nome que quiser, basta passar esse nome no parêmtro.
   
+- <b>Tags</b>: é possível aproximar vetores nos treinamentos para documentos de um mesmo assunto, por exemplo. Para isso, coloque no nome do arquivo ` tag ` seguido das tags do arquivo. Exemplo: `arquivo 1 tag civil honorarios.txt`. Neste exemplo, as duas tags `civil` e `honorarios` serão aplicadas ao documento ao ser treinado. Saiba mais [`aqui`](https://groups.google.com/g/gensim/c/h5iftGRFF18).
+  
 #### Estrutura de pastas:  
 :file_folder: `Pasta raiz` (informada no parâmetro da chamada - padrão = "meu_modelo")<br>
 &nbsp;&nbsp;\_:file_folder: `doc2vecfacil` (pasta do modelo e dos vocabs): ao disponibilizar o modelo para uso, pode-se renomear essa pasta livremente<br>
@@ -10,17 +12,18 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
 &nbsp;&nbsp;\_:file_folder: `textos_teste`: textos que serão comparados na fase de treinamento para avaliação do modelo.<br>
 
 > 💡 <sub>Nota: é difícil definir um número de épocas para o treinamento, pode ter 1000 ou 5000. Esse número depende de vários fatores, entre eles o número de termos e documentos treinados.</sub>
-        
+
 #### Estrutura de arquivos:
- Os arquivos necessários para o treino que serão usados para a tokenização são:<br>
+ Os arquivos de configuração para o treino que serão usados para a tokenização são:<br>
  :file_folder: `meu_modelo` <br>
  &nbsp;&nbsp;\_:file_folder: `doc2vecfacil`<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_BASE_*.txt`: arquivos com termos que serão treinados <br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_REMOVIDO*.txt`: arquivos com termos que serão ignorados, stopwords por exemplo (opcional)<br>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - `VOCAB_TRADUTOR*.txt`: arquivos com termos ou frases que serão removidas ou transformadas (opcional)<br>
 
-> 💡 <sub>Nota: baixe os [`exemplos`](../exemplos) de configurações do tokenizador. Analise, ajuste os termos, termos compostos e remoções, gere a planilha de curadoria e adapte ao seu contexto. São termos muito usados, mas não estão completos, pode iniciar com eles, mas não considere eles prontos para uso em modelos mais complexos.<br></sub> 
-> 📑 <sub> O exemplo `modelo_legislacoes` já possui alguns textos para o vocab e diversos termos, fragmentos e ngramas configurados, bastando apenas incluir seus documentos para gerar uma planilha de curadoria ou iniciar o treinamento de uma primeira versão do seu modelo. Os textos foram baixados de links públicos, os links estão na pasta de exemplo.</sub> 
+> 💡 <sub>Nota: baixe os [`exemplos`](../exemplos) de configurações do tokenizador. Analise, ajuste os termos, termos compostos e remoções, gere a planilha de curadoria e adapte ao seu contexto. São termos muito usados, mas não estão completos, pode iniciar com eles, mas não considere eles prontos para uso em modelos mais complexos.</sub><br> 
+> 📑 <sub> O exemplo `modelo_legislacoes` já possui alguns textos para o vocab e diversos termos, fragmentos e ngramas configurados, bastando apenas incluir seus documentos para gerar uma planilha de curadoria ou iniciar o treinamento de uma primeira versão do seu modelo. Os textos foram baixados de links públicos, os links estão na pasta de exemplo.</sub> <br>
+> :bangbang: <sub>Todos os arquivos de configuração são opcionais. Caso não exista nenhuma configuração `VOCAB_BASE*.txt`, o treinamento será feito com MIN_COUNT=5 e todos os tokens encontrados nos documentos.</sub>
 
 #### Durante o treino:
  Arquivos para acompanhar durante o treinamento:<br>
