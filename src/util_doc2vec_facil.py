@@ -454,7 +454,8 @@ class Documentos:
     # OBS: caso no nome do arquivo tenha tag ou tags, o que seguir esse token será considerado tag para o documento
     #      caso contrário, a tag será o nome do documento
     #      para facilitar renomer um lote de arquivos, o texto (\d+) no nome será ignorado
-    RE_TAGS = re.compile(r'(.*\btags?\b)|(\(\d+\))', re.IGNORECASE)
+    RE_TAGS = re.compile(r'\btags?.*', re.IGNORECASE)
+    RE_TAGS_SUB = re.compile(r'\(\d+\)|\btags?\b')
     def __init__(self, pasta_textos, maximo_documentos=None, 
                     pasta_vocab=None, 
                     registrar_oov = False, 
@@ -522,11 +523,24 @@ class Documentos:
     def get_tags_doc(self, arquivo):
         nm = os.path.split(arquivo)[1]
         nm = os.path.splitext(nm)[0]
-        tags = self.RE_TAGS.sub(' ', nm).strip()
-        tags = [_ for _ in tags.split(' ') if _]
+        arq_tag = os.path.splitext(arquivo)[0] + '.tag'
+        # verifica se as tags estão no nome do arquivo - tag ou tags ....
+        tags = self.RE_TAGS.findall(nm)
         if any(tags):
+           tags = ' '.join(tags)
+           tags = self.RE_TAGS_SUB.sub(' ',tags)
+           tags = [_ for _ in tags.split(' ') if _]
+        if not any(tags):
+            # verifica se existe o arquivo de tags [nome_arquivo.tag para] para o texto analisado
+            if os.path.isfile(arq_tag):
+                with open(arq_tag,'r') as f:
+                    tags = ' '.join(f.readlines())
+                tags = [_ for _ in tags.split(' ') if _]
+        if any(tags):
+            #print('Tags: ', tags)
             return tags
-        return [nm.replace(' ','_').replace('-','_')]
+        # retorna o hash do nome do texto como tag única se não existir tag
+        return [str(hash(nm))]
 
     def get_tokens_doc(self, arquivo):
         self.qtd_processados +=1
@@ -1048,4 +1062,3 @@ if __name__ == "__main__":
                                                     workers=workers,
                                                     janela_termos=janela_termos)
     doc2vecTreina.treinar()
-
