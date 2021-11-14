@@ -95,14 +95,15 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
     - `-reiniciar sim` - remove o modeo atual, se existir, e inicia um novo treinamento (o sim é para garantir que se quer apagar o modelo e reiniciar). Pode-se também apagar manualmente os arquivos `doc2vec.*` para reiniciar o modelo.
     - `-testar` - carrega o modelo atual, se existir, e apresenta no console a comparação de termos encontrados no arquivo `termos_comparacao_treino.txt` e o agrupamento de textos da pasta `textos_teste`.
     - `-epocas` - define o número de épocas que serão treinadas, o padrão é 5000 e pode ser interrompido ou acrescido a qualquer momento.
-    - `-dimensoes` - define o número de dimensões dos vetores de treinamento (não pode ser alterado depois de iniciado o treinamento). Não sabe como escolher, o padrão é 200 mas o número 300 parece ser um bom número para menos épocas de treinamento.
+    - `-dimensoes` - define o número de dimensões dos vetores de treinamento (não pode ser alterado depois de iniciado o treinamento). Não sabe como escolher use o padrão 300.
     - `-workers` - número de threads de treinamento, padrão 100
 
  - `python util_doc2vec_vocab_facil.py`
     - `-pasta` - nome da pasta de treinamento que contém as pastas de textos, o padrão é `meu_modelo` se não for informada.
     - `-treino` - cria a planilha de curadoria com a pasta `textos_treino`, sem esse parâmtro a planilha é criada com a pasta `textos_vocab`.
     - `-teste` - cria a planilha de curadoria com a pasta `textos_teste`, sem esse parâmtro a planilha é criada com a pasta `textos_vocab`.
-  > :bulb: <sub>Nota: são muitas opções de uso da curadoria para criação de um bom vocab. Se não sabe por onde começar, copie todos os termos listados na planilha para um arquivo `VOCAB_BASE.txt` e crie um arquivo `VOCAB_REMOVIDO.txt` com stopwords.</sub>
+  > :bulb: <sub>Nota: são muitas opções de uso da curadoria para criação de um bom vocab. Se não sabe por onde começar, copie todos os termos listados na planilha para um arquivo `VOCAB_BASE.txt` e crie um arquivo `VOCAB_REMOVIDO.txt` com stopwords.</sub><br>
+  <sub>Caso os seus documentos sejam limpos (não sejam ocerizados), preocupe-se inicialmente apenas com o arquivo `VOCAB_REMOVIDO.txt` para um treino mais simples sem prefixos e sufixos treinando todo o vocabulário e removendo apenas stopwords.</sub>
   
 ### Termos comparados para acompanhar a evolução do modelo:
 - Exemplo de saída do arquivo `comparar_termos.log` atualizado a cada época.
