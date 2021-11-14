@@ -2,7 +2,9 @@
 Logo abaixo estão descritos alguns cenários de criação de vocab e treinamento e os seus passos.<br>
 As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`, mas pode criar a pasta com o nome que quiser, basta passar esse nome no parêmtro.
   
-- <b>Tags</b>: é possível aproximar vetores nos treinamentos para documentos de um mesmo assunto, por exemplo. Para isso, coloque no nome do arquivo ` tag ` seguido das tags do arquivo. Exemplo: `arquivo 1 tag civil honorarios.txt`. Neste exemplo, as duas tags `civil` e `honorarios` serão aplicadas ao documento ao ser treinado. Saiba mais [`aqui`](https://groups.google.com/g/gensim/c/h5iftGRFF18).
+- <b>Tags</b>: é possível aproximar vetores nos treinamentos para documentos de um mesmo assunto, por exemplo. Para isso, coloque no nome do arquivo ` tag ` seguido das tags do arquivo. Exemplo: `arquivo 1 tag civil honorarios.txt`. Neste exemplo, as duas tags `civil` e `honorarios` serão aplicadas ao documento ao ser treinado. Saiba mais [`aqui`](https://groups.google.com/g/gensim/c/h5iftGRFF18). 
+
+Acredito que o maior desafio é criar um teste automatizado para avaliar se o modelo está "caminhando" no sentido desejado, para isso é importante criar uma massa de testes para testar a similaridade de documentos conhecidos - veja como [`agrupar documentos semelhantes`](./docs/agrupamento.md).
   
 #### Estrutura de pastas:  
 :file_folder: `Pasta raiz` (informada no parâmetro da chamada - padrão = "meu_modelo")<br>
@@ -58,7 +60,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
  - Rode o treinamento do modelo:
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
  > 💡 <sub>Nota: os termos compostos são agrupados após a limpeza do texto e suas formas compostas serão incluídas automaticamente no vocab de treino.</sub>  
- > <sub> - É difícil dizer que o uso de ngramas impacta positiva ou negativamente no modelo, é sempre bom testar. Mas é bom lembrar que os termos são treinados com seus contextos, ou seja, com termos ao redor dele. Então de certa forma os ngramas já fazem parte do treinamento.</sub>  
+ > <sub> - É difícil dizer que o uso de ngramas impacta positiva ou negativamente no modelo, é sempre bom testar. Mas é bom lembrar que os termos são treinados com seus contextos, ou seja, com termos ao redor dele. Então de certa forma os ngramas já fazem parte do treinamento. Então o uso de ngramas pode não trazer muitas melhorias ao modelo.</sub>  
 
 ## 4) Quero criar meu vocab do zero, fazer curadoria e depois treinar:
  - Crie a pasta `meu_modelo`
