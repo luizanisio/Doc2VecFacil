@@ -46,7 +46,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
     - Está disponível um gerador de bigramas e quadrigramas aqui [`NGramasFacil`](./docs/readme_ngramas.md) para gerar sugestões automáticas de termos que podem ser unificados.
   
 > 💡 <sub>A ideia de criar vários arquivos é para organizar por domínios. Pode-se, por exemplo, criar um arquivo `VOCAB_BASE portugues.txt` com termos que farão parte de vários modelos, um arquivo `VOCAB_BASE direito.txt` com termos do direito que serão somados ao primeiro no treinamento, um arquivo `VOCAB_BASE direito fragmentos.txt` com fragmentos (`stemmer` + `sufixos`) de termos do direito, e assim por diante. Facilitando evoluções futuras dos vocabulários.</sub><br>
-  <sub>Pode-se realizar o treinamento sem nenhuma configuração de vocab, então todos os termos serão treinados. A ideia de criar um vocab é poder ter algum controle do que será treinado e limpar textos ocerizados que possuem muitos erros epodem aumentar muito o vocab de treinamento com ruídos.</sub>
+  <sub>Pode-se realizar o treinamento sem nenhuma configuração de vocab, então todos os termos serão treinados. A ideia de criar um vocab é poder ter algum controle do que será treinado e limpar textos ocerizados que possuem muitos erros e podem aumentar muito o vocab de treinamento com ruídos.</sub>
 
 ## Arquivo de curadoria para criação do vocab
  Ao rodar o código `python util_doc2vec_vocab_facil.py -pasta ./meu_modelo`, será criado um arquivo de curadoria de termos `curadoria_planilha_vocab.xlsx` com os termos encontrados nos textos da pasta `textos_vocab`. 
