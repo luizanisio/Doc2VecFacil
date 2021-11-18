@@ -14,6 +14,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
    - `python util_doc2vec_vocab_facil.py -pasta ./meu_modelo`
  - treinamento do modelo usando a estrutura de tokenização criada 
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
+> 💡 <sub>Nota: para interromper o treino sem correr o risco corromper o modelo durante a gravação, basta criar um arquivo `parar.txt` na pasta do modelo que o treinamento será interrompido ao final da iteração em andamento.</sub>
 
  - Aqui tem um passo a passo simplificado para criação/configuração do vocab e realização do treinamento: [`Passo a Passo`](./docs/passo_a_passo_facil.md)
  
