@@ -13,7 +13,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
  - criação/configuração e curadoria de um [vocab](#vocab) personalizado para o [Tokenizador Inteligente](#tokenizador).
    - `python util_doc2vec_vocab_facil.py -pasta ./meu_modelo`
  - treinamento do modelo usando a estrutura de tokenização criada 
-   - `python util_doc2vec_facil.py -pasta ./meu_modelo` -treinar
+   - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
 
  - Aqui tem um passo a passo simplificado para criação/configuração do vocab e realização do treinamento: [`Passo a Passo`](./docs/passo_a_passo_facil.md)
  
