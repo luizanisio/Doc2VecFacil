@@ -45,7 +45,7 @@ Acredito que o maior desafio é criar um teste automatizado para avaliar se o mo
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
   > 💡 <sub>Nota: todos os tokens serão treinados (exceto os do arquivo de remoção), será feita apenas a limpeza simples dos textos para comparações simples já é o suficiente. Também será aplicado o MIN_COUNT=5 (padrão) quando não existirem arquivos `VOCAB_BASE*.txt`</sub><br>
   > <sub> - O singular dos termos será aplicado caso nos textos tenha a forma singular da palavra analisada.</sub><br>
-  > <sub> - Você pode rodar a [`curadoria`](#4-quero-criar-meu-vocab-do-zero-fazer-curadoria-e-depois-treinar) `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias para atualizar o aruqivo de remoção de termos antes do treinamento.</sub>
+  > <sub> - Você pode rodar a [`curadoria`](#4-quero-criar-meu-vocab-do-zero-fazer-curadoria-e-depois-treinar) `python util_doc2vec_vocab_facil.py -pasta meu_modelo` só para ter uma ideia dos termos e suas relevâncias para atualizar o arquivo de remoção de termos antes do treinamento.</sub>
 
 ## 2) Quero usar as palavras sugeridas ou já tenho as minhas:
  - Crie a pasta `meu_modelo`
