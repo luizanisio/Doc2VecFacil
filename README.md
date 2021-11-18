@@ -7,7 +7,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 ![exemplo recorte espaço vetorial](./exemplos/img_recorte_espaco_vetorial.png?raw=true "Exemplo recorte de espaço vetorial")
 
 - O core desse componente é o uso de um Tokenizador Inteligente que usa as configurações dos arquivos contidos na pasta do modelo para tokenizar os arquivos de treinamento e os arquivos novos para comparação no futuro (toda a configuração do tokenizador é opcional).
-- Esse é um repositório de estudos, analise, ajuste, corrija e use os códigos como desejar.
+- Esse é um repositório de estudos. Analise, ajuste, corrija e use os códigos como desejar.
 > :thumbsup: <sub> Agradecimentos especiais ao Miguel Angelo Neto do Paraná por vários feedbacks contribuindo para a correção de bugs e a melhoria da documentação.</sub><br>
 
 > :warning: <sub>A quantidade de termos treinados e de épocas de treinamento são valores que dependem do objetivo e do tipo de texto de cada projeto. Quanto mais termos, mais detalhes e mais diferenças serão destacadas entre os textos e o modelo vai realçar as particularidades da escrita. Escolhendo menos termos mais relacionados com o domínio analisado, e compondo ngramas, há uma chance maior do modelo realçar a temática geral dos textos.</sub>
