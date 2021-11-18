@@ -581,10 +581,12 @@ class UtilDoc2VecFacil():
     NOME_ARQ_MODELO_LOG = "doc2vec.log"
     NOME_PASTA_MODELO = "doc2vecfacil"
 
-    def __init__(self, pasta_modelo) -> None:
+    def __init__(self, pasta_modelo, criar_pasta=False) -> None:
         self.pasta_modelo = self.get_pasta_modelo(str(pasta_modelo))
         self.nome_modelo = self.get_nome_arquivo_modelo(self.pasta_modelo)
         self.nome_log = os.path.join(self.pasta_modelo,self.NOME_ARQ_MODELO_LOG)
+        if criar_pasta:
+            os.makedirs(self.pasta_modelo, False)
         self.log_treino = dict({})  
         self.model = None
         self.tokenizer = TokenizadorInteligente(pasta_vocab=pasta_modelo)
@@ -825,7 +827,7 @@ class UtilDoc2VecFacil():
 
 class UtilDoc2VecFacil_Treinamento():
     def __init__(self, pasta_modelo, pasta_textos, workers=10, epocas=100, min_count = None, janela_termos = 10, dimensoes = 300) -> None:
-        self.doc2vec = UtilDoc2VecFacil(pasta_modelo=pasta_modelo)
+        self.doc2vec = UtilDoc2VecFacil(pasta_modelo=pasta_modelo, criar_pasta=True)
         # facilitadores
         self.nome_modelo = self.doc2vec.nome_modelo
         self.pasta_modelo = self.doc2vec.pasta_modelo
