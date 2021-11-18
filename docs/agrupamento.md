@@ -43,7 +43,7 @@
 > <sub>- Em uma situação de serviço em produção, os vetores já estariam disponíveis em um banco de dados, elasticsearch ou outra forma de armazenamento, ficando um processo muito rápido de agrupamento.</sub><br>
 
 ## Como rodar o agrupamento pelo código
-- usando o código para criar a planilha:
+- usando o código para criar a planilha de agrupamento de arquivos de uma pasta:
 ```python
     from util_agrupamento_facil import UtilAgrupamentoFacil
     PASTA_MODELO = 'meu_modelo'
@@ -68,4 +68,20 @@
     grupos_sim = UtilAgrupamentoFacil.agrupar_vetores(vetores,similaridade)
     
     print(grupos_sim)
+```
+
+- usando o código para agrupar vetores de uma lista de dicionários de dados [{'vetor': ..., 'nome': 'xxx', ...}, ...].
+- é requisito ter uma coluna `vetor` com o vetor no formato list de floats.
+- opcionalmente o parâmetro `dados` pode ser uma lista de vetores [[0.24, 0.55, 0.23 ...], ...]
+- será retornado um DataFrame com os dados incluindo as colunas: `grupo`, `similaridade` e `centroide`.
+```python
+    from util_agrupamento_facil import UtilAgrupamentoFacil
+    similaridade = 85
+    # suponha que os dados carregados são [{'nome_documento': 'bla bla bla,'vetor': [0.23, 0.56, 0.44, ...], 'data_documento' : '2021-01-01', ...}, ..]
+    dados = carregar_vetores_do_banco(...)
+    util = UtilAgrupamentoFacil(dados, similaridade=similaridade)
+    # arredondando os dados - só para ilustrar
+    util.dados['similaridade'] = [round(s,2) for s in util.dados['similaridade']]
+    # dados é um DataFrame com os dados originais recebidos do banco incluindo as novas colunas
+    print(util.dados)
 ```
