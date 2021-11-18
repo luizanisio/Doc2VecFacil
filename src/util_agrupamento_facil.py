@@ -19,6 +19,8 @@ from matplotlib import pyplot as plt
 from collections import Counter
 from sklearn.manifold import TSNE
 
+CST_TAMANHO_COLUNA_TEXTO = 250
+
 ''' 
 > agrupar uma lista de vetores
   > retorna um objeto de agrupamento com um dataframe com os dados do agrupamento: grupo,centroide,similaridade,vetor
@@ -170,7 +172,8 @@ class UtilAgrupamentoFacil():
     # os arquivos são ordenados para permitir que os testes sejam menos randômicos.
     # pode-se, por exemplo, nomear os arquivos com a ordem que se espera de agrupamento
     # para avaliar se foram agrupados como desejado
-    def vetorizar_arquivos(self, pasta_arquivos, pasta_modelo, epocas = 3):
+    # coluna_texto - inclui o início do texto no retorno 
+    def vetorizar_arquivos(self, pasta_arquivos, pasta_modelo, epocas = 3, coluna_texto = False):
         assert os.path.isdir(pasta_modelo), 'A pasta do modelo não é válida'
         assert os.path.isdir(pasta_arquivos), 'A pasta de arquivos não e válida'
         print(f'\t - carregando lista de arquivos de {pasta_arquivos}')
@@ -184,15 +187,20 @@ class UtilAgrupamentoFacil():
             texto = carregar_arquivo(arq, juntar_linhas=True)
             vetor = modelo.vetor_sentenca(sentenca=texto, epocas=epocas) if texto else None
             # atualiza a lista com o nome do arquivo e o vetor
-            lista[i] = (lista[i], vetor)
+            if coluna_texto:
+                resumo = texto.replace('\n',' | ')
+                resumo = f'{resumo[:CST_TAMANHO_COLUNA_TEXTO]} [..]' if len(resumo)>CST_TAMANHO_COLUNA_TEXTO else resumo
+                lista[i] = (lista[i], vetor, resumo)
+            else:
+                lista[i] = (lista[i], vetor)
             if i % 10 ==0:
                 progresso[0] = max(progresso[0],i)
                 progress_bar(progresso[0],len(lista),f' vetorizando {os.path.split(arq)[-1]}' )
         # vetoriza os arquivos para o agrupamento
         map_thread(_vetorizar, lista = range(len(lista)), n_threads=10)
         progress_bar(1,1,' finalizado ')
-        # filtra os arquivos sem conteúdo
-        return [(t,v) for t,v in lista if v]
+        # filtra os arquivos sem vetor / texto
+        return [dados for dados in lista if dados[0] and dados[1]]
 
     # cria um dataframe com os grupos, exporta para o excel (arquivo_saida) e retorna o dataframe
     @classmethod
@@ -200,9 +208,10 @@ class UtilAgrupamentoFacil():
         return UtilAgrupamentoFacil(vetores, similaridade=similaridade)
 
     # cria um dataframe com os grupos, exporta para o excel (arquivo_saida) e retorna o dataframe
+    # textos = True/False - inclui uma parte do texto do documento no dataframe
     @classmethod
     def agrupar_arquivos(self, pasta_modelo, pasta_arquivos, arquivo_saida = '', 
-                         similaridade = 90, epocas = 3, plotar=True):
+                         similaridade = 90, epocas = 3, plotar=True, coluna_texto = False):
         assert os.path.isdir(pasta_modelo), 'A pasta do modelo não é válida'
         assert os.path.isdir(pasta_arquivos), 'A pasta de arquivos não e válida'
         if not arquivo_saida:
@@ -210,14 +219,22 @@ class UtilAgrupamentoFacil():
             arquivo_saida = f'./agrupamento {comp} sim {similaridade}.xlsx'
         lista = self.vetorizar_arquivos(pasta_modelo=pasta_modelo, 
                                         epocas = epocas, 
-                                        pasta_arquivos=pasta_arquivos)
+                                        pasta_arquivos=pasta_arquivos, 
+                                        coluna_texto=coluna_texto)
         #arquivos, vetores = zip(*lista)
-        _dados = [{'pasta':os.path.split(a)[0], 'arquivo': os.path.splitext(os.path.split(a)[1])[0], 'vetor':v} for a,v in lista]
+        if coluna_texto:
+            _dados = [{'pasta':os.path.split(a)[0], 'arquivo': os.path.splitext(os.path.split(a)[1])[0], 'vetor':v, 'texto':t} 
+                    for a,v,t in lista]
+        else:
+            _dados = [{'pasta':os.path.split(a)[0], 'arquivo': os.path.splitext(os.path.split(a)[1])[0], 'vetor':v} 
+                    for a,v in lista]
         util = UtilAgrupamentoFacil(_dados, similaridade=similaridade)
         util.dados['similaridade'] = [round(s,2) for s in util.dados['similaridade']]
         print('\t - construindo planilha de dados')
         print('\t - finalizando arquivo excel')
         colunas = ['pasta','arquivo', 'grupo', 'similaridade','centroide']
+        if coluna_texto:
+            colunas.append('texto')
         util.dados.to_excel(arquivo_saida,sheet_name=f'Agrupamento de arquivos',
                              index = False, columns=colunas)
         if plotar:
@@ -239,6 +256,7 @@ if __name__ == "__main__":
     parser.add_argument('-sim', help='similaridade padrão 90%', required=False)
     parser.add_argument('-epocas', help='épocas para inferir o vetor padrão 3', required=False)
     parser.add_argument('-plotar', help='plota um gráfico com a visão 2d do agrupamento', required=False, action='store_const', const=1)
+    parser.add_argument('-texto', help='inclui uma coluna com parte do texto no resultado', required=False, action='store_const', const=1)
 
     args = parser.parse_args()
 
@@ -247,6 +265,7 @@ if __name__ == "__main__":
     epocas = int(args.epocas or 3)
     epocas = 1 if epocas<1 else epocas
     plotar = args.plotar
+    coluna_texto = args.texto
 
     PASTA_BASE = args.modelo or './meu_modelo' or './doc2vecfacil'
     PASTA_MODELO = PASTA_BASE
@@ -277,7 +296,8 @@ if __name__ == "__main__":
                                           pasta_arquivos=PASTA_TEXTOS, 
                                           similaridade=similaridade,
                                           epocas = epocas,
-                                          plotar = plotar)
+                                          plotar = plotar,
+                                          coluna_texto = coluna_texto)
 
 
 
