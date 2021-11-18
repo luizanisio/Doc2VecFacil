@@ -895,7 +895,7 @@ class UtilDoc2VecFacil_Treinamento():
         print( '\t - inicio_treino:', datetime.today().strftime('%Y-%m-%d %H:%M:%S%z'), flush=True)
         for i in range(self.n_epocas):
             inicio_treino = timer()
-            print(f'\t - Treinando época número ', self.epocas_treinadas+1, flush=True)
+            print(f'\t - Treinando época número {self.epocas_treinadas+1} - {i}/{self.n_epocas}', flush=True)
             # recria o iterator a cada época
             if not documentos_treino:
                 # informar o modelo carregado otimiza o tokenizador pois são usados apenas os termos do modelo
@@ -924,11 +924,24 @@ class UtilDoc2VecFacil_Treinamento():
             self.doc2vec.log_treino['min_count'] = self.min_count
             self.doc2vec.log_treino['nome_modelo'] = self.nome_modelo
             self.gravar_modelo()
+            self.verificar_se_interrompe_treino()
     # 
     def carregar_lista_termos_comparacao(self):
         lista = self.doc2vec.carregar_lista_termos_comparacao()
         self.comparar_termos = list(set(lista))
         self.comparar_termos.sort()
+
+    # verifica se existe o arquivo parar.treino ou parar.txt
+    def verificar_se_interrompe_treino(self):
+        arqs = [os.path.join(self.pasta_modelo,'parar.treino'),
+                os.path.join(self.pasta_modelo,'parar.txt')]
+        for arq in arqs:
+           if os.path.isfile(arq):
+              os.remove(arq)
+              print('########################################')
+              print('# Treino interrompido: ', arq)
+              print('########################################')
+              exit(0)
 
     # grava um log do treino, um arquivo com o vocab de treino e o modelo
     def gravar_modelo(self):

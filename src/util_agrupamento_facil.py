@@ -167,11 +167,15 @@ class UtilAgrupamentoFacil():
 
     @classmethod
     # retorna tuplas com o nome dos arquivos e seus vetores (nome, vetor)
+    # os arquivos são ordenados para permitir que os testes sejam menos randômicos.
+    # pode-se, por exemplo, nomear os arquivos com a ordem que se espera de agrupamento
+    # para avaliar se foram agrupados como desejado
     def vetorizar_arquivos(self, pasta_arquivos, pasta_modelo, epocas = 3):
         assert os.path.isdir(pasta_modelo), 'A pasta do modelo não é válida'
         assert os.path.isdir(pasta_arquivos), 'A pasta de arquivos não e válida'
         print(f'\t - carregando lista de arquivos de {pasta_arquivos}')
         lista = listar_arquivos(pasta_arquivos)
+        lista.sort()
         modelo = UtilDoc2VecFacil(pasta_modelo=pasta_modelo)
         print(f'\t - vetorizando {len(lista)} arquivos com {epocas} época{"s" if epocas>1 else ""} cada ... ')
         progresso=[0]
@@ -255,30 +259,20 @@ if __name__ == "__main__":
         print(f'ERRO: pasta do modelo com vocab não encontrada em "{PASTA_MODELO}"')
         exit()
 
-    # sem parâmetro da pasta de agrupamento, busca as pastas prováveis
     PASTA_TEXTOS = args.textos 
     if not PASTA_TEXTOS:
-       testar_pastas = ['./',PASTA_BASE,PASTA_MODELO]
-       for pasta in testar_pastas:
-            if os.path.isdir(os.path.join(pasta,'textos_grupos')):
-                PASTA_TEXTOS = os.path.join(pasta,'textos_grupos')
-            elif os.path.isdir(os.path.join(pasta,'textos_treino')):
-                PASTA_TEXTOS = os.path.join(pasta,'textos_treino')
-            elif os.path.isdir(os.path.join(pasta,'textos_teste')):
-                PASTA_TEXTOS = os.path.join(pasta,'textos_teste')
-            if PASTA_TEXTOS:
-                break
-       if not PASTA_TEXTOS and os.path.isdir('./textos'):
+       if os.path.isdir(os.path.join(PASTA_BASE,'textos_grupos')):
+           PASTA_TEXTOS = os.path.join(PASTA_BASE,'textos_grupos')
+       elif os.path.isdir(os.path.join(PASTA_BASE,'textos_treino')):
+           PASTA_TEXTOS = os.path.join(PASTA_BASE,'textos_treino')
+       elif os.path.isdir(os.path.join(PASTA_BASE,'textos_teste')):
+           PASTA_TEXTOS = os.path.join(PASTA_BASE,'textos_teste')
+       elif os.path.isdir('./textos'):
            PASTA_TEXTOS = './textos'
     if (not PASTA_TEXTOS) or (not os.path.isdir(PASTA_TEXTOS)):
         print(f'ERRO: pasta de textos não encontrada em "{PASTA_TEXTOS}"')
         exit()
 
-    print(f'######################################################################')
-    print(f'# Agrupando textos da pasta: {PASTA_TEXTOS}')
-    _plotar = 'SIM' if plotar else 'NÃO'
-    print(f'# Épocas: {epocas} - Similaridade: {similaridade} - Plotar: {_plotar}')
-    print(f'######################################################################')
     util = UtilAgrupamentoFacil.agrupar_arquivos(pasta_modelo=PASTA_MODELO, 
                                           pasta_arquivos=PASTA_TEXTOS, 
                                           similaridade=similaridade,
