@@ -16,7 +16,11 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
    - `python util_doc2vec_facil.py -pasta ./meu_modelo -treinar`
 > 💡 <sub>Nota: para interromper o treino sem correr o risco corromper o modelo durante a gravação, basta criar um arquivo `meu_modelo/doc2vecfacil/parar.txt` na pasta do modelo que o treinamento será interrompido ao final da iteração em andamento.</sub>
 
- - Aqui tem um passo a passo simplificado para criação/configuração do vocab e realização do treinamento: [`Passo a Passo`](./docs/passo_a_passo_facil.md)
+ - Aqui tem um [`passo a passo simplificado`](./docs/passo_a_passo_facil.md) para alguns cenários de treinamento com a estrutura de pastas e arquivos.
+ - Alguns cenários:
+   - [Treino simples sem preparação de vocab](./docs/passo_a_passo_facil.md#1-quero-treinar-sem-preparar-um-vocab)
+   - [Treino com ngramas](./docs/passo_a_passo_facil.md#3-quero-criar-ngramas-ou-limpar-o-texto-com-termos-que-n%C3%A3o-devem-ser-treinados)
+   - [Treino com curadoria de termos](./docs/passo_a_passo_facil.md#4-quero-criar-meu-vocab-do-zero-fazer-curadoria-e-depois-treinar)
  
  - Logo abaixo estão as explicações detalhadas de como ele funciona e como usar o seu modelo para pesquisas de documentos semelhantes semanticamente (por vetores) e/ou textualmente (por termos), como realizar agrupamento de documentos por similaridade para auxiliar na organização de documentos usando o ElasticSearch e a pesquisa vetorial.
 
