@@ -158,7 +158,8 @@ termo                |  peticao (64%)            |  inepcia (63%)
 - Um dos arquivos é escolhido para ser comparado com ele mesmo para ter mais uma informação para avaliação do modelo. Como informado na documentação do Doc2Vec, chamadas subsequentes de um mesmo conteúdo podem inferir vetores diferentes. Essa diferença diminui aumentando o número de épocas na inferência do vetor. 
 - Como a comparação de arquivos pode exigir mais processamento, ela aguarda pelo menos 5 minutos para ser atualizada. Se o arquivo for excluído, ela será realizada após o final da próxima época. A comparação de arquivos também será realizada ao usar o parâmetro `-testar` para testar o modelo.
 ![exemplo arquivo comparar_arquivos.log](./exemplos/img_comparar_arquivos.png?raw=true "comparar arquivos.log")
-> :bulb: <sub>Nota: Essa rotulação não faz o treinamento ser supervisionado, apenas auxilia a avaliação do modelo, já que os rótulos não são levados em consideração no treinamento.</sub>
+> :bulb: <sub>Nota: Essa rotulação não faz o treinamento ser supervisionado, apenas auxilia a avaliação do modelo, já que os rótulos não são levados em consideração no treinamento.</sub><br>
+  > <sub>No [`passo a passo`](./docs/passo_a_passo_facil.md) tem dicas de como rotular os documentos para que o treinamento busque aproximar os vetores dos documentos com mesmos rótulos.</sub>  
 
 ## Usando o modelo:
 O que precisa ser disponibilizado para o modelo funcionar:<br>
