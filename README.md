@@ -5,7 +5,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
   - [`Paragraph Vector 2014`](https://cs.stanford.edu/~quocle/paragraph_vector.pdf) - a origem do Doc2Vec
   - [`Gensim 4.0.1 Doc2Vec`](https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html) - documentação do framework
   - [`me Amilar 2018`](https://repositorio.idp.edu.br/handle/123456789/2635) - Dissertação de Mestrado IDP - Doc2Vec em documentos jurídicos
-  - [`Representação Semântica Vetorial`](https://sol.sbc.org.br/index.php/erigo/article/view/7125) - Artiggo UFG
+  - [`Representação Semântica Vetorial`](https://sol.sbc.org.br/index.php/erigo/article/view/7125) - Artigo UFG
   - [`Word2Vec Explained`](https://www.youtube.com/watch?v=yFFp9RYpOb0) - vídeo no Youtube
   - [`Word Embedding Explained and Visualized`](https://www.youtube.com/watch?v=D-ekE-Wlcds) - vídeo no Youtube
   - [`ti-exame`](https://www.ti-enxame.com/pt/python/como-calcular-similaridade-de-sentenca-usando-o-modelo-word2vec-de-gensim-com-python/1045257495/) - Word2Vec
