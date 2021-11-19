@@ -4,7 +4,7 @@ As dicas vão levar em conta que o seu modelo será criado na pasta `meu_modelo`
   
 - <b>Tags</b>: é possível aproximar vetores nos treinamentos para documentos de um mesmo assunto, por exemplo. Para isso, coloque no nome do arquivo ` tag ` seguido das tags do arquivo. Exemplo: `arquivo 1 tag civil honorarios.txt`. Neste exemplo, as duas tags `civil` e `honorarios` serão aplicadas ao documento ao ser treinado. Saiba mais [`aqui`](https://groups.google.com/g/gensim/c/h5iftGRFF18). 
 
-Acredito que o maior desafio é criar um teste automatizado para avaliar se o modelo está "caminhando" no sentido desejado, para isso é importante criar uma massa de testes para testar a similaridade de documentos conhecidos - veja como [`agrupar documentos semelhantes`](./docs/agrupamento.md).
+Acredito que o maior desafio é criar um teste automatizado para avaliar se o modelo está "caminhando" no sentido desejado, para isso é importante criar uma massa de testes para testar a similaridade de documentos conhecidos - veja como [`agrupar documentos semelhantes`](./agrupamento.md).
   
 #### Estrutura de pastas:  
 :file_folder: `Pasta raiz` (informada no parâmetro da chamada - padrão = "meu_modelo")<br>
