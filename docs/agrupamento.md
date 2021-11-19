@@ -14,10 +14,10 @@
 
 - os parâmetros de `util_agrupamento_facil.py` são:
   - `-modelo` é a pasta do modelo treinado, podendo ser a pasta com pacote de treinamento ou a pasta final só com o modelo
-  - `-textos` é a pasta contendo os arquivos `.txt` que serão agrupados
+  - `-textos` é a pasta contendo os arquivos `.txt` que serão agrupados (se omitido, será procurada a pasta textos_grupos na pasta do pacote de treinamento)
   - `-sim` é a similaridade mínima para que um ou mais arquivos sejam agrupados, se não informado será usada a similaridade 90%
   - `-epocas` é a quantidade de épocas para a inferência do vetor de cada arquivo, se não informado será inferido com `3` épocas.
-  - `-plotar` faz a redução de dimensões dos vetores agrupados para 2d e plota um gráfico. É uma apresentação interessante, mas em 2d alguns vetores aparecem juntos no gráfico mesmo estando distantes, o que dá uma falsa impressão de proximidade.
+  - `-plotar` faz a redução de dimensões dos vetores agrupados para 2d e plota um gráfico. É uma apresentação interessante, mas em 2d alguns vetores aparecem juntos no gráfico mesmo estando distantes, o que dá uma falsa impressão de proximidade. Mas os vetores realmente próximos estarão representados com a mesma cor.
  
 - será criado um arquivo com o nome da pasta de textos e a similaridade informada `agrupamento {pasta de textos} sim {similaridade}.xlsx` 
 - se for usado o parâmetro `-plotar`, será criado o arquivo `agrupamento {pasta de textos} sim {similaridade}.png` também
@@ -64,10 +64,11 @@
     from util_agrupamento_facil import UtilAgrupamentoFacil
     similaridade = 85
     vetores, ids = carregar_vetores_do_banco(...)
-    # retorna uma lista de tuplas na mesma ordem com [(grupo,similaridade), ...]
+    # retorna uma lista de tuplas na mesma ordem da lista recebida com [(grupo,similaridade), ...]
     grupos_sim = UtilAgrupamentoFacil.agrupar_vetores(vetores,similaridade)
     
-    print(grupos_sim)
+    
+    [ print(id, grupo, sim) for id, (grupo, sim) in zip(ids, grupos_sim) ]
 ```
 
 - usando o código para agrupar vetores de uma lista de dicionários de dados [{'vetor': ..., 'nome': 'xxx', ...}, ...].
