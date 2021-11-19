@@ -586,7 +586,7 @@ class UtilDoc2VecFacil():
         self.nome_modelo = self.get_nome_arquivo_modelo(self.pasta_modelo)
         self.nome_log = os.path.join(self.pasta_modelo,self.NOME_ARQ_MODELO_LOG)
         if criar_pasta:
-            os.makedirs(self.pasta_modelo, False)
+            os.makedirs(self.pasta_modelo, exist_ok=True)
         self.log_treino = dict({})  
         self.model = None
         self.tokenizer = TokenizadorInteligente(pasta_vocab=pasta_modelo)
