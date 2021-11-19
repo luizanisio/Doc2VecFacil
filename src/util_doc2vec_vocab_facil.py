@@ -204,14 +204,14 @@ def criar_arquivo_curadoria_termos(pasta_textos, pasta_vocab = None, complemento
                          index = False, columns=colunas)
 
     print('Análise concluída: ', pasta_textos, ' para ',arquivo_saida)
-    print('=============================================================')
+    print('################################################################################')
     print('ARQUIVO DE CURADORIA CRIADO!!! ')
     print( ' - arquivo: ', arquivo_saida)
     print( ' - pasta analisada: ', pasta_textos)
     _nome_arq = os.path.split(arquivo_saida)[1]
     print(f' - você já pode abrir o arquivo {_nome_arq} no Excel')
-    print('...')
-    print(f'Removendo arquivos de cache da curadoria ')
+    print('################################################################################')
+    print(f'Removendo arquivos de cache da curadoria ...')
     lst_remover = docs.listar_documentos(cache_extensao)
     print(f' - removendo {len(lst_remover)} arquivos ... ', end='')
     apagar_arquivos(lst_remover)
@@ -301,8 +301,8 @@ if __name__ == "__main__":
     PASTA_MODELO = os.path.join(PASTA_BASE,'doc2vecfacil')  
     os.makedirs(PASTA_MODELO, exist_ok=True)
 
-    print('###########################################################')
-    print('# Criando arquivo de curadoria                            #')
+    print('################################################################################')
+    print('# Criando arquivo de curadoria                            ')
     
     _vocab = ' - VOCAB TREINO' if vocab_treino else ''
     if pasta_treino:
@@ -311,10 +311,15 @@ if __name__ == "__main__":
     elif pasta_teste:
         pasta = PASTA_TEXTOS_TESTE
         complemento_arq = f' (TESTE{_vocab})'
+    elif not (os.path.isdir(PASTA_TEXTOS_VOCAB)):
+        pasta = PASTA_TEXTOS_TREINO
+        complemento_arq = f' (TREINO{_vocab})'
     else:
         pasta = PASTA_TEXTOS_VOCAB
         complemento_arq = f'{_vocab}'
-    print(f'# >> incluindo textos da pasta "{pasta}" para a curadoria{complemento_arq}')
+    print(f'# Incluindo textos da pasta "{pasta}" para a curadoria{complemento_arq}')
+    print('################################################################################')
+      
     criar_arquivo_curadoria_termos(pasta_textos = pasta, 
                                    pasta_vocab=PASTA_MODELO,
                                    complemento_arq_saida = complemento_arq,
