@@ -218,5 +218,5 @@ Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario
  ```
  
 ## Dicas de uso: <a name="dicas">
-- gravar os vetores, textos e metadados dos documentos no [`ElasticSearch`](https://www.elastic.co/pt/), e usar os recursos de pesquisas: More Like This, vetoriais e por proximidade de termos como disponibilizado no componente [`PesquisaElasticFacil`](https://github.com/luizanisio/PesquisaElasticFacil).
+- gravar os vetores, textos e metadados dos documentos no [`ElasticSearch`](https://www.elastic.co/pt/), e usar os recursos de pesquisas: More Like This, vetoriais e por proximidade de termos como disponibilizado no componente [`PesquisaElasticFacil`](https://github.com/luizanisio/PesquisaElasticFacil) ou criar sua própria estrutura de dados com [`essas dicas`](https://github.com/luizanisio/PesquisaElasticFacil/blob/main/docs/ElasticQueries.md).
 - gravar os vetores, textos e metadados no [`SingleStore`](https://www.singlestore.com/) e criar views de similaridade para consulta em tempo real dos documentos inseridos na base, incluindo filtros de metadados e textuais como nos exemplos disponíveis aqui: [`dicas SingleStore`](./docs/readme_dicas.md).
