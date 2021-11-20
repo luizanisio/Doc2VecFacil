@@ -19,6 +19,8 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 
 ![exemplo recorte espaço vetorial](./exemplos/img_recorte_espaco_vetorial.png?raw=true "Exemplo recorte de espaço vetorial")
 
+> :bulb: Uma dica para conjuntos de documentos com pouca atualização, é fazer o cálculo da similaridade dos documentos e armazenar em um banco transacional qualquer para busca simples pelos metadados da similaridade. Por exemplo uma tabela com as colunas `seq_doc_1`, `seq_doc_2` e `sim` para todos os documentos que possuam similaridade acima de nn% a ser avaliado de acordo com o projeto. Depois basta fazer uma consulta simples para indicar documentos similares ao que o usuário está acessando, por exemplo.
+
 - O core desse componente é o uso de um Tokenizador Inteligente que usa as configurações dos arquivos contidos na pasta do modelo para tokenizar os arquivos de treinamento e os arquivos novos para comparação no futuro (toda a configuração do tokenizador é opcional).
 - Esse é um repositório de estudos. Analise, ajuste, corrija e use os códigos como desejar.
 > :thumbsup: <sub> Agradecimentos especiais ao Miguel Angelo Neto do Paraná por vários feedbacks contribuindo para a correção de bugs e a melhoria da documentação.</sub><br>
