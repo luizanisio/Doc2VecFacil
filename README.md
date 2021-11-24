@@ -161,6 +161,7 @@ frase3 = 'DE HONORÁRIOS ADVOCATÍCIOS EMBARGOS ADJUDICAÇÃO PENHORA EXECUÇÃO
 print('Frase1: ', frase1, '\nFrase2: ', frase2, '\n\t - Similaridade: ', dv.similaridade(frase1,frase2))
 print('Frase1: ', frase1, '\nFrase3: ', frase3, '\n\t - Similaridade: ', dv.similaridade(frase1,frase3))        
 print('\nTokens frase 1: ', dv.tokens_sentenca(frase1))
+print('\nVetor frase 1: ', dv.vetor_sentenca(frase1, normalizado = True, epocas = 3):  
  ```
  
  <b>Resultado:</b>
@@ -173,6 +174,7 @@ Frase3:  DE HONORÁRIOS ADVOCATÍCIOS EMBARGOS ADJUDICAÇÃO PENHORA EXECUÇÃO 
          - Similaridade:  0.46588313579559326
 
 Tokens frase 1:  ['execucao', 'por', 'titulo', 'extrajudicial', 'de', 'honorario', 'advocaticio', 'embargos', 'adjudicacao', 'penhoras'] 
+Vetor frase 1: [-0.09982843697071075, 0.05516746640205383, 0.09597551822662354, -0.03438882157206535, ...]
  ```
  
 ## Dicas de uso: <a name="dicas">
