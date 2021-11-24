@@ -41,7 +41,7 @@
 ![recorte curadoria_planilha_vocab.xlsx](../exemplos/img_corte_plan_curadoria.png?raw=true "Recorte planilha curadoria")
 
 > 💡 Notas sobre as colunas: 
-> - `TFIDF` - contém a média dos pesos que o termo teve nos documentos - [Saiba mais sobre `TFIDF`](https://www.ti-enxame.com/pt/python/interpretar-um-resumo-das-pontuacoes-das-palavras-do-tf-idf-nos-documentos/829990829/), ou [`aqui`](https://iyzico.engineering/how-to-calculate-tf-idf-term-frequency-inverse-document-frequency-from-the-beatles-biography-in-c4c3cd968296).
+> - `TFIDF` - contém a média dos pesos que o termo teve nos documentos - Saiba mais sobre [`TFIDF`](https://www.ti-enxame.com/pt/python/interpretar-um-resumo-das-pontuacoes-das-palavras-do-tf-idf-nos-documentos/829990829/), ou [`TFIDF - beatles`](https://iyzico.engineering/how-to-calculate-tf-idf-term-frequency-inverse-document-frequency-from-the-beatles-biography-in-c4c3cd968296).
 > - `TAMANHO` - é o tamanho do termo
 > - `QTD` - é a quantidade de vezes que o termo apareceu no corpus
 > - `QTD_DOCS` - é a quantidade de documentos onde o termo apareceu
