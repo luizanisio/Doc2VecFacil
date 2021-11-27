@@ -15,6 +15,7 @@ Chamada:
   - tokens = quantos tokens no mínimo uma sentença precisa ter para ser válida ou ser descartada
   - entrada = nome da pasta com os textos originais
   - saida = nome da pasta para gravação dos trechos 
+  - nome = mantém o nome do arquivo como prefixo incluindo um complemento.
 
 Primeiro as sentenças são unidas até chegar no mínimo de caracteres. 
 Depois os tokens são contados e ela é descartada se não possuir o mínimo de tokens.
@@ -185,9 +186,9 @@ if __name__ == "__main__":
 
     # varre os arquivos e cria novos arquivos por parágrafo
     qtd = 0
-    print('Carregando arquivos da pasta de entrada para ignorar repetições de conteúdo')
-    print(f'- {len(arquivos)} arquivos encontrados na pasta "{pasta_entrada}"')
     arquivos = listar_arquivos(pasta=pasta_entrada)
+    print('Carregando arquivos da pasta de entrada')
+    print(f'- {len(arquivos)} arquivos encontrados na pasta "{pasta_entrada}"')
     for i, arq in enumerate(arquivos):
         progress_bar(i+1,len(arquivos),f'Arq {ID_ARQ} - Novas {QTD_NOVAS} - Repet. {QTD_REPETIDAS}          ')
         gravar_sentencas(arq)
