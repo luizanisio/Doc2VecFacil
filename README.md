@@ -56,8 +56,9 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
   - [`Criação de vocab`](./src/util_doc2vec_vocab_facil.py)
   - [`UtilDoc2VecFacil`](./src/util_doc2vec_facil.py) e [`UtilDoc2VecFacil_Treinamento`](./src/util_doc2vec_facil.py) 
   - [`TradutorTermos`](./src/util_tradutor_termos.py)
-  - [`Criação de ngramas`](./src/util_ngramas_facil.py) dicas aqui [NGramasFacil](./docs/readme_ngramas.md)
-  - [`UtilAgrupamentoFacil`](./src/util_agrupamento_facil.py) dicas aqui [Agrupamento](./docs/agrupamento.md)
+  - [`Criação de ngramas`](./src/util_ngramas_facil.py) dicas aqui -> [NGramasFacil](./docs/readme_ngramas.md)
+  - [`UtilAgrupamentoFacil`](./src/util_agrupamento_facil.py) dicas aqui -> [agrupamento](./docs/agrupamento.md)
+  - [`Quebra de parágrafos`](./src/util_quebrar_paragrafos.py) dicas aqui -> [parágrafos para treinamento](./docs/quebrar_paragrafos.md)
 
 `EM BREVE`: Será disponibilizado um serviço exemplo em conjunto com o componente [PesquisaElasticFacil](https://github.com/luizanisio/PesquisaElasticFacil) para criação de modelos de similaridade textual, agregando valor às pesquisas do ElasticSearch de forma simples com um modelo treinado no corpus específico de cada projeto.
 
@@ -85,6 +86,7 @@ O arquivo `util_doc2vec_vocab_facil.py` é complementar à classe `Doc2VecFacil`
     - `-epocas` - define o número de épocas que serão treinadas, o padrão é 5000 e pode ser interrompido ou acrescido a qualquer momento.
     - `-dimensoes` - define o número de dimensões dos vetores de treinamento (não pode ser alterado depois de iniciado o treinamento). Não sabe como escolher use o padrão 300.
     - `-workers` - número de threads de treinamento, padrão 100
+    - `-bloco` - número de treinos realizados para cada gravação e testes do modelo - padrão 5
 
  - `python util_doc2vec_vocab_facil.py`
     - `-pasta` - nome da pasta de treinamento que contém as pastas de textos, o padrão é `meu_modelo` se não for informada.
