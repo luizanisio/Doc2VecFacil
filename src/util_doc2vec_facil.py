@@ -31,7 +31,8 @@ STEMMER = SnowballStemmer('portuguese')
 
 CST_LIMITE_TOKENS = 0 #10000 limite de tokens treinados por documento - o doc2vec limita internamente a 10mil tokens
 CST_MAX_BUILD_VOCAB = 0 #500000 # para erros de alocação de memória para o BuildVocab
-CST_NUM_EPOCAS_TESTES = 3
+CST_NUM_EPOCAS_TESTES = 5
+CST_BLOCO_TREINO = 5
 
 # função simples de carga de arquivos que tenta descobrir o tipo de arquivo (utf8, ascii, latin1)
 def carregar_arquivo(arq, limpar=False, juntar_linhas=False, retornar_tipo=False):
@@ -477,13 +478,14 @@ class Documentos:
                                                     fragmentar = fragmentar)
         self.retornar_tokens = retornar_tokens
         self.ignorar_cache = ignorar_cache
+        random.shuffle(self.documentos)
         if maximo_documentos and maximo_documentos>0:
-           random.shuffle(self.documentos)
            self.documentos=self.documentos[:maximo_documentos]
         self.high = len(self.documentos)
         self.qtd_processados = 0
         self.timer = timer()
         self.cache_extensao = cache_extensao
+        self.iteracao = 1
         print(f'Documentos: Lista criada com {self.high} documentos')
         if modelo_carregado:
             self.tokenizer.aplicar_vocab_do_modelo(modelo_carregado)
@@ -517,7 +519,13 @@ class Documentos:
             tags = self.get_tags_doc(self.documentos[self.current])
             #print('TAG: ', tags , self.documentos[self.current])
             return TaggedDocument(tokens, tags) 
-        print(f' [{round(timer()-self.timer)}s] o/') # finaliza o progresso de iterações
+        if self.iteracao>1:
+           print(f' [{round(timer()-self.timer)}s] - iteração {self.iteracao} - o/') # finaliza o progresso de iterações
+        else:
+           print(f' [{round(timer()-self.timer)}s] o/') # finaliza o progresso de iterações
+        self.current = -1
+        self.iteracao += 1
+        random.shuffle(self.documentos)
         raise StopIteration    
 
     def get_tags_doc(self, arquivo):
@@ -668,13 +676,15 @@ class UtilDoc2VecFacil():
         frase2 = 'EMENTA SEGUROs de VIDA COBRANÇA CUMULADA C PRETENSÃO INDENIZATÓRIA PRESCRIÇÃO RECONHECIDA'
         frase3 = 'ATENDIAM A TESTEMUNHA SEU DEPOIMENTO APESAR DE TRAZER ALGUMAS IMPRECISÕES SOBRE OS FATOS ATENDO-SE OS JURADOS ÀS PROVAS PRODUZIDAS EM PLENÁRIOS'
         print('Similaridade entre frases:')
-        print('- Frase1: ', frase1, '\n- Frase2: ', frase2, '\n\t - Similaridade: ', self.similaridade(frase1,frase2))
-        print('- Frase1: ', frase1, '\n- Frase3: ', frase3, '\n\t - Similaridade: ', self.similaridade(frase1,frase3))        
+        print('- Frase1: ', frase1, '\n- Frase2: ', frase2, '\n\t - Similaridade: ', self.similaridade(frase1,frase2, epocas = CST_NUM_EPOCAS_TESTES ))
+        print('- Frase1: ', frase1, '\n- Frase3: ', frase3, '\n\t - Similaridade: ', self.similaridade(frase1,frase3, epocas = CST_NUM_EPOCAS_TESTES))        
         print('\nSimilaridade padrão:')
-        print('- Frase1 com Frase1 - Similaridade: ', self.similaridade(frase1,frase1))
-        print('- Frase2 com Frase2 - Similaridade: ', self.similaridade(frase2,frase2))
-        print('- Frase3 com Frase3 - Similaridade: ', self.similaridade(frase3,frase3))
+        print('- Frase1 com Frase1 - Similaridade: ', self.similaridade(frase1,frase1, epocas = CST_NUM_EPOCAS_TESTES))
+        print('- Frase2 com Frase2 - Similaridade: ', self.similaridade(frase2,frase2, epocas = CST_NUM_EPOCAS_TESTES))
+        print('- Frase3 com Frase3 - Similaridade: ', self.similaridade(frase3,frase3, epocas = CST_NUM_EPOCAS_TESTES))
         print('\nTokens frase 3: ', self.tokens_sentenca(frase3))
+        v = self.vetor_sentenca(frase3,True, epocas = CST_NUM_EPOCAS_TESTES)
+        print('\nVetor frase 3: ', v[:3] ,f'... ({len(v)} dimensões)')
 
     def teste_termos(self, termos=None):
         if termos is None:
@@ -750,7 +760,7 @@ class UtilDoc2VecFacil():
         arquivos = [nome_arquivo(_).replace('.txt','') for _ in arquivos] 
         # compara um arquivo com ele mesmo 3 vezes para analisar a variabilidade
         igual_conteudo = carregar_arquivo(arq_igual, juntar_linhas=True)
-        igual_vetores = [ self.vetor_sentenca(igual_conteudo, normalizado=False, epocas = CST_NUM_EPOCAS_TESTES) for _ in range(4) ]
+        igual_vetores = [ self.vetor_sentenca(str(igual_conteudo), normalizado=False, epocas = CST_NUM_EPOCAS_TESTES) for _ in range(4) ]
         igual_sims = self.similaridade_vetores(igual_vetores[0], igual_vetores[1:])
         res[f' IGUAL: {nome_arquivo(arq_igual).replace(".txt","")}'] = [('',s) for s in igual_sims]
         # busca os mais similares de cada vetor
@@ -892,26 +902,36 @@ class UtilDoc2VecFacil_Treinamento():
             print('\t - Vocab criado em ', timer() - inicio_treino, ' segundos', flush=True)
             self.epocas_anteriores = 0
             qtd = documentos_treino.high
+            documentos_treino = None
 
         print(f'\t - Treinando com {qtd} documentos ')
         print( '\t - inicio_treino:', datetime.today().strftime('%Y-%m-%d %H:%M:%S%z'), flush=True)
-        for i in range(self.n_epocas):
+        i = 1
+        # para o primeiro treino, usa uma época pois vai tokenizar os arquivos na carga dos documentos
+        # com ignorar_cache = True
+        bloco_epocas = CST_BLOCO_TREINO 
+        while i <= self.n_epocas:
+            if i+bloco_epocas <= self.n_epocas:
+                qepc = bloco_epocas
+            else:
+                qepc = self.n_epocas - i + 1
             inicio_treino = timer()
-            print(f'\t - Treinando época número {self.epocas_treinadas+1} - {i}/{self.n_epocas}', flush=True)
-            # recria o iterator a cada época
-            if not documentos_treino:
-                # informar o modelo carregado otimiza o tokenizador pois são usados apenas os termos do modelo
-                # durante a limpeza do texto
-                documentos_treino = Documentos(self.pasta_textos, 
-                                               pasta_vocab = self.doc2vec.pasta_modelo, 
-                                               modelo_carregado=self.doc2vec.model,
-                                               ignorar_cache=False)
+            print('====================================================================')
+            print(f'>>> Treinando época(s) {self.epocas_treinadas+1} a {self.epocas_treinadas+qepc} - {i-1}/{self.n_epocas}', flush=True)
+            # recria o iterator a cada bloco de épocas
 
-            self.doc2vec.model.train(documentos_treino, epochs=1, total_examples=documentos_treino.high)
+            # informar o modelo carregado otimiza o tokenizador pois são usados apenas os termos do modelo
+            # durante a limpeza do texto
+            documentos_treino = Documentos(self.pasta_textos, 
+                                            pasta_vocab = self.doc2vec.pasta_modelo, 
+                                            modelo_carregado=self.doc2vec.model,
+                                            ignorar_cache=False)
+
+            self.doc2vec.model.train(documentos_treino, epochs=qepc, total_examples=documentos_treino.high)
             documentos_treino = None
-            self.epocas_treinadas += 1
+            self.epocas_treinadas += qepc
             fim_treino = timer()
-            print( '\t   - treino de 1 época em ', fim_treino-inicio_treino, ' segundos', flush=True)
+            print( f'\t   - treino de {bloco_epocas} época(s) em ', fim_treino-inicio_treino, ' segundos', flush=True)
             # log json do treino
             self.doc2vec.log_treino['alpha'] = self.doc2vec.model.alpha
             self.doc2vec.log_treino['min_alpha'] = self.doc2vec.model.min_alpha
@@ -923,10 +943,17 @@ class UtilDoc2VecFacil_Treinamento():
             self.doc2vec.log_treino['epochs'] = self.epocas_treinadas
             self.doc2vec.log_treino['epoch_dt'] = datetime.today().strftime('%Y-%m-%d %H:%M:%S%z')
             self.doc2vec.log_treino['batch_segundos'] = fim_treino - inicio_treino
+            self.doc2vec.log_treino['batch_epochs'] = qepc
+            self.doc2vec.log_treino['epochs_segundos'] = (fim_treino - inicio_treino) / qepc
             self.doc2vec.log_treino['min_count'] = self.min_count
             self.doc2vec.log_treino['nome_modelo'] = self.nome_modelo
             self.gravar_modelo()
             self.verificar_se_interrompe_treino()
+            i += qepc
+            if i==self.n_epocas:
+                break
+        print(f'>>> Total de épocas do modelo: {self.epocas_treinadas}', flush=True)
+        print('====================================================================')
     # 
     def carregar_lista_termos_comparacao(self):
         lista = self.doc2vec.carregar_lista_termos_comparacao()
@@ -1011,6 +1038,7 @@ if __name__ == "__main__":
     parser.add_argument('-dimensoes', help='número de dimensões para treinamento - padrão 300 ', required=False)
     parser.add_argument('-janela', help='janela de termos para treinamento - padrão 10 ', required=False)
     parser.add_argument('-workers', help='threads de treinamento - padrão 100 ', required=False)
+    parser.add_argument('-bloco', help='bloco de treinamento - padrão 5 ', required=False)
     args = parser.parse_args()
 
     PASTA_BASE = args.pasta if args.pasta else './meu_modelo'
@@ -1069,6 +1097,7 @@ if __name__ == "__main__":
     epocas = int(args.epocas) if args.epocas else 5000
     workers = int(args.workers) if args.workers else 100
     janela_termos = int(args.janela) if args.workers else 10
+    CST_BLOCO_TREINO = int(args.bloco) if args.bloco and int(args.bloco)>=1  else CST_BLOCO_TREINO
     doc2vecTreina = UtilDoc2VecFacil_Treinamento(pasta_modelo= PASTA_MODELO,
                                                     pasta_textos= PASTA_TEXTOS_TREINO,
                                                     epocas=epocas,
