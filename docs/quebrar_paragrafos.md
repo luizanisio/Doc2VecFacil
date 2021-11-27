@@ -16,12 +16,27 @@ Esse utilitário ajuda na quebra de documentos grandes em seus parágrafos de tr
 5. As sentenças que cumprirem o mínimo de tokens serão gravadas na pasta de saída com um nome sequencial ou, com a opção `-nome`, será usado o prefixo do nome e um complemento sequencial.
    - Caso a sentença já exista na pasta de saída ou nas sentenças geradas, ela será ignorada. É criado um hash de cada sentença para avaliar a duplicidade.
 
+- Depois da quebra realizada, pode-se fazer o treinamento normalmente com os documentos da pasta de saída.
+
 ### Exemplos:
 - quebrar em sentenças com pelo menos 5 tokens e qualquer tamanho de caracteres 
   - `python util_quebrar_paragrafos.py -entrada meu_modelo/textos_raw -saida meu_modelo/textos_treino -length 0 -tokens 5`
 
 - quebrar em sentenças com pelo menos 10 tokens e 200 caracteres 
   - `python util_quebrar_paragrafos.py -entrada meu_modelo/textos_raw -saida meu_modelo/textos_treino -length 200 -tokens 10`
+
+```
+--------------------------------------------------------------------------------
+Quebrando textos com sentenças de no mínimo 10 tokens e 200 caracteres.
+--------------------------------------------------------------------------------
+Carregando arquivos da pasta de entrada
+- 1057 arquivos encontrados na pasta "meu_modelo/textos_raw"
+[=========================] 100.00% Arq 1056 - Novas 137711 - Repet. 11433
+--------------------------------------------------------------------------------
+Quebra de sentenças finalizada com 137751 sentenças de 1057 arquivos.
+- 11433 repetidas foram ignoradas
+--------------------------------------------------------------------------------
+```
 
 ### Como isso afeta o treino?
 - Com trechos pequenos, menores que os documentos, o treinamento terá muito mais documentos para treinar
