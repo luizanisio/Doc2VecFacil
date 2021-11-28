@@ -25,7 +25,8 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 - Esse é um repositório de estudos. Analise, ajuste, corrija e use os códigos como desejar.
 > :thumbsup: <sub> Agradecimentos especiais ao Miguel Angelo Neto do Paraná por vários feedbacks contribuindo para a correção de bugs e a melhoria da documentação.</sub><br>
 
-> :warning: <sub>A quantidade de termos treinados e de épocas de treinamento são valores que dependem do objetivo e do tipo de texto de cada projeto. Quanto mais termos, mais detalhes e mais diferenças serão destacadas entre os textos e o modelo vai realçar as particularidades da escrita. Escolhendo menos termos mais relacionados com o domínio analisado, e compondo ngramas, há uma chance maior do modelo realçar a temática geral dos textos.</sub>
+> :warning: <sub>A quantidade de termos treinados e de épocas de treinamento são valores que dependem do objetivo e do tipo de texto de cada projeto. Quanto mais termos, mais detalhes e mais diferenças serão destacadas entre os textos e o modelo vai realçar as particularidades da escrita. Escolhendo menos termos mais relacionados com o domínio analisado, e compondo ngramas, há uma chance maior do modelo realçar a temática geral dos textos.</sub><br>
+> :warning: <sub>É importante lembrar que ao atualizar o modelo com mais épocas de treinamento ou mais documentos, todos os vetores gerados anteriormente e guardados para comparação no seu sistema devem ser atualizados. Uma dica é criar uma tabela nova no SingleStore ou uma coluna nova no ElasticSearch e, após a geração dos novos vetores, fazer a atualização em bloco substituindo os vetores antigos pelos novos.</sub>
 
 ### As etapas de um treinamento são simples:
 1) reservar um volume de documentos que represente a semântica que será treinada. Então o primeiro passo é extrair e separar em uma pasta os documentos que serão usados no treinamento. É interessante que sejam documentos “texto puro” (não ocerizados), mas não impede que sejam usados documentos ocerizados na falta de documentos “texto puro”. Com textos com muito ruído, como em textos ocerizados, torna-se mais importante a curadoria de termos como será descrito mais abaixo.
@@ -33,7 +34,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 3) baixar os arquivos do [`projeto`](./src/) 
 4) baixar um [`modelo`](./exemplos/) ou criar a sua estrutura de pastas
 5) rodar o treinamento, a curadoria, o agrupamento e explorar os recursos que o uso do espaço vetorial permite
-> :bulb: <sub> Nota: Esse é o [tutorial oficial](https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html#introducing-paragraph-vector), a ideia do componetne é simplificar a geração e uso do modelo treinado, mas não há nada muito especial se comparado aos códigos da documentação. </sub>
+> :bulb: <sub> Nota: Esse é o [tutorial oficial do gensim](https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html#introducing-paragraph-vector), a ideia do componetne é simplificar a geração e uso do modelo treinado, mas não há nada muito especial se comparado aos códigos da documentação. </sub>
 
 <hr>
 
