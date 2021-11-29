@@ -18,6 +18,7 @@
   - `-sim` é a similaridade mínima para que um ou mais arquivos sejam agrupados, se não informado será usada a similaridade 90%
   - `-epocas` é a quantidade de épocas para a inferência do vetor de cada arquivo, se não informado será inferido com `3` épocas.
   - `-plotar` faz a redução de dimensões dos vetores agrupados para 2d e plota um gráfico. É uma apresentação interessante, mas em 2d alguns vetores aparecem juntos no gráfico mesmo estando distantes, o que dá uma falsa impressão de proximidade. Mas os vetores realmente próximos estarão representados com a mesma cor.
+  - `-texto` inclui uma coluna com até 250 caracteres do texto analisado para auxiliar na análise do agrupamento
  
 - será criado um arquivo com o nome da pasta de textos e a similaridade informada `agrupamento {pasta de textos} sim {similaridade}.xlsx` 
 - se for usado o parâmetro `-plotar`, será criado o arquivo `agrupamento {pasta de textos} sim {similaridade}.png` também
