@@ -186,19 +186,20 @@ class UtilAgrupamentoFacil():
             arq = lista[i]
             texto = carregar_arquivo(arq, juntar_linhas=True)
             vetor = modelo.vetor_sentenca(sentenca=texto, epocas=epocas) if texto else None
+            hash_texto = hash( ' '.join( modelo.tokens_sentenca(sentenca=texto) ) )
             # atualiza a lista com o nome do arquivo e o vetor
             if coluna_texto:
                 resumo = texto.replace('\n',' | ')
                 resumo = f'{resumo[:CST_TAMANHO_COLUNA_TEXTO]} [..]' if len(resumo)>CST_TAMANHO_COLUNA_TEXTO else resumo
-                lista[i] = (lista[i], vetor, resumo)
             else:
-                lista[i] = (lista[i], vetor)
+                resumo = ''
+            lista[i] = (lista[i], vetor, resumo, hash_texto)
             if i % 10 ==0:
                 progresso[0] = max(progresso[0],i)
-                progress_bar(progresso[0],len(lista),f' vetorizando {os.path.split(arq)[-1]}' )
+                progress_bar(progresso[0],len(lista),f' vetorizando {os.path.split(arq)[-1]}                 ' )
         # vetoriza os arquivos para o agrupamento
         map_thread(_vetorizar, lista = range(len(lista)), n_threads=10)
-        progress_bar(1,1,' finalizado ')
+        progress_bar(1,1,' finalizado                                          ')
         # filtra os arquivos sem vetor / texto
         return [dados for dados in lista if dados[0] and dados[1]]
 
@@ -217,22 +218,39 @@ class UtilAgrupamentoFacil():
         if not arquivo_saida:
             comp = os.path.split(pasta_arquivos)[-1]
             arquivo_saida = f'./agrupamento {comp} sim {similaridade}.xlsx'
+        if not arquivo_saida.lower().endswith('.xlsx'):
+           arquivo_saida = f'{arquivo_saida}.xlsx'
         lista = self.vetorizar_arquivos(pasta_modelo=pasta_modelo, 
                                         epocas = epocas, 
                                         pasta_arquivos=pasta_arquivos, 
                                         coluna_texto=coluna_texto)
         #arquivos, vetores = zip(*lista)
-        if coluna_texto:
-            _dados = [{'pasta':os.path.split(a)[0], 'arquivo': os.path.splitext(os.path.split(a)[1])[0], 'vetor':v, 'texto':t} 
-                    for a,v,t in lista]
-        else:
-            _dados = [{'pasta':os.path.split(a)[0], 'arquivo': os.path.splitext(os.path.split(a)[1])[0], 'vetor':v} 
-                    for a,v in lista]
+        _dados = [{'pasta':os.path.split(a)[0], 'arquivo': os.path.splitext(os.path.split(a)[1])[0], 'vetor':v, 'texto':t, 'hash':h} 
+                for a,v,t,h in lista]
         util = UtilAgrupamentoFacil(_dados, similaridade=similaridade)
         util.dados['similaridade'] = [round(s,2) for s in util.dados['similaridade']]
+        # varre os grupos para indicar se o texto é idêntico ao centróide
+        # os dados vão chegar aqui ordenados pelo centróide, 
+        # então o primeiro de cada grupo é o hash de comparação
+        _hash_centroide = 0
+        _identicos = []
+        for _,row in util.dados.iterrows():
+            if row['centroide'] == 1:
+                _hash_centroide = row['hash']
+                _identicos.append('Sim')
+                continue
+            if row['grupo'] <= 0:
+                _identicos.append('')
+                continue
+            if _hash_centroide == row['hash']:
+                _identicos.append('Sim')
+            else:
+                _identicos.append('Não')
+        util.dados['idêntico'] = _identicos
+        
         print('\t - construindo planilha de dados')
         print('\t - finalizando arquivo excel')
-        colunas = ['pasta','arquivo', 'grupo', 'similaridade','centroide']
+        colunas = ['pasta','arquivo', 'grupo', 'similaridade','idêntico','centroide']
         if coluna_texto:
             colunas.append('texto')
         util.dados.to_excel(arquivo_saida,sheet_name=f'Agrupamento de arquivos',
@@ -254,15 +272,16 @@ if __name__ == "__main__":
     parser.add_argument('-modelo', help='pasta contendo o modelo - padrao meu_modelo ou doc2vecfacil', required=False)
     parser.add_argument('-textos', help='pasta contendo os textos que serão agrupados - padrao ./textos_treino', required=False)
     parser.add_argument('-sim', help='similaridade padrão 90%', required=False)
-    parser.add_argument('-epocas', help='épocas para inferir o vetor padrão 3', required=False)
+    parser.add_argument('-epocas', help='épocas para inferir o vetor padrão 5', required=False)
     parser.add_argument('-plotar', help='plota um gráfico com a visão 2d do agrupamento', required=False, action='store_const', const=1)
     parser.add_argument('-texto', help='inclui uma coluna com parte do texto no resultado', required=False, action='store_const', const=1)
+    parser.add_argument('-saida', help='nome do arquivo de saída - opcional', required=False)
 
     args = parser.parse_args()
 
     arq_modelo = 'doc2vec.model'
     similaridade = int(args.sim or 90)
-    epocas = int(args.epocas or 3)
+    epocas = int(args.epocas or 5)
     epocas = 1 if epocas<1 else epocas
     plotar = args.plotar
     coluna_texto = args.texto
@@ -292,12 +311,15 @@ if __name__ == "__main__":
         print(f'ERRO: pasta de textos não encontrada em "{PASTA_TEXTOS}"')
         exit()
 
+    arquivo_saida = args.saida 
+
     util = UtilAgrupamentoFacil.agrupar_arquivos(pasta_modelo=PASTA_MODELO, 
                                           pasta_arquivos=PASTA_TEXTOS, 
                                           similaridade=similaridade,
                                           epocas = epocas,
                                           plotar = plotar,
-                                          coluna_texto = coluna_texto)
+                                          coluna_texto = coluna_texto,
+                                          arquivo_saida = arquivo_saida)
 
 
 
