@@ -13,14 +13,14 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 
 - Com essa comparação vetorial, é possível encontrar documentos semelhantes a um indicado ou [`agrupar documentos semelhantes`](./docs/agrupamento.md) entre si de uma lista de documentos. Pode-se armazenar os vetores no `SingleStore` ou `ElasticSearch` para permitir uma pesquisa vetorial rápida e combinada com metadados dos documentos, como nas dicas [aqui](#dicas).
 
+- Em um recorte do espaço vetorial criado pelo treinamento do modelo, pode-se perceber que documentos semelhantes ficam próximos enquanto documentos diferentes ficam distantes entre si. Então agrupar ou buscar documentos semelhantes é uma questão de identificar a distância vetorial dos documentos após o treinamento. Armazenando os vetores dos documentos no `ElasticSearch` ou `SingleStore`, essa tarefa é simplificada, permitindo construir sistemas de busca semântica com um esforço pequeno. Uma técnica parecida pode ser usada para treinar e armazenar vetores de imagens para encontrar imagens semelhantes, mas isso fica para outro projeto.
+
+![exemplo recorte espaço vetorial](./exemplos/img_recorte_espaco_vetorial.png?raw=true "Exemplo recorte de espaço vetorial")
+
 - O uso da similaridade permite também um sistema sugerir rótulos para documentos novos muito similares a documentos rotulados previamente – como uma classificação rápida, desde que o rótulo esteja relacionado ao conteúdo geral do documento e não a informações externas a ele. Rotulação por informações muito específicas do documento pode não funcionar muito bem, pois detalhes do documento podem não ser ressaltados na similaridade semântica. 
 - Outra possibilidade seria o sistema sugerir revisão de rotulação/classificação quando dois documentos possuem similaridades muito altas, mas rótulos distintos (como no exemplos do assunto A e B na figura abaixo), ou rótulos iguais para similaridades muito baixas (não é necessariamente um erro, mas sugere-se conferência nesses casos). Ou o sistema pode auxiliar o usuário a identificar rótulos que precisam ser revistos, quando rótulos diferentes são encontrados para documentos muito semelhantes e os rótulos poderiam ser unidos em um único rótulo, por exemplo. Essas são apenas algumas das possibilidades de uso da similaridade. 
 
 ![exemplo recorte espaço vetorial e assuntos](./exemplos/img_agrupamento_assuntos.png?raw=true "Exemplo recorte de espaço vetorial e assuntos")
-
-- Em um recorte do espaço vetorial criado pelo treinamento do modelo, pode-se perceber que documentos semelhantes ficam próximos enquanto documentos diferentes ficam distantes entre si. Então agrupar ou buscar documentos semelhantes é uma questão de identificar a distância vetorial dos documentos após o treinamento. Armazenando os vetores dos documentos no `ElasticSearch` ou `SingleStore`, essa tarefa é simplificada, permitindo construir sistemas de busca semântica com um esforço pequeno. Uma técnica parecida pode ser usada para treinar e armazenar vetores de imagens para encontrar imagens semelhantes, mas isso fica para outro projeto.
-
-![exemplo recorte espaço vetorial](./exemplos/img_recorte_espaco_vetorial.png?raw=true "Exemplo recorte de espaço vetorial")
 
 > :bulb: Uma dica para conjuntos de documentos com pouca atualização, é fazer o cálculo da similaridade dos documentos e armazenar em um banco transacional qualquer para busca simples pelos metadados da similaridade. Por exemplo uma tabela com as colunas `seq_doc_1`, `seq_doc_2` e `sim` para todos os documentos que possuam similaridade acima de nn% a ser avaliado de acordo com o projeto. Depois basta fazer uma consulta simples para indicar documentos similares ao que o usuário está acessando, por exemplo.
 
