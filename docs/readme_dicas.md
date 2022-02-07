@@ -27,6 +27,8 @@ Scripts:
     from testes.vw_similares where sim>0.8 and seq_documento_1=42 
     order by sim desc
 ```
+![exemplo view similaridade](../exemplos/img_view_similaridade.png?raw=true "Exemplo de resultado da view de similaridade")
+
  > 💡 <sub> o SingleStore vai retornar um erro caso sejam comparados vetores de dimensôes diferentes, ele não impede inserir vetores de diversas dimensões em uma tabela, mas não consegue compará-los.</sub>
 
 - Criação da tabela desse exemplo:
@@ -125,7 +127,6 @@ select * from testes.grupos_logs
   where sessao = 'teste'
 order by ordem
 ```
-
 ![exemplo log procedure agrupamento](../exemplos/img_agrupamento_tabela_log.png?raw=true "Exemplo de logs gerados pela procedure")
 
 > :bulb: <sub>O log contém um resumo do que está ocorrendo durante o agrupamento, podendo ser consultado por uma chamada de callback para atualizar a interface do usuário com o status do agrupamento para sessões muito grandes (dezenas ou centezas de milhares de vetores).</sub><br>
