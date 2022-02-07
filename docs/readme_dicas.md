@@ -1,7 +1,18 @@
-### Dicas de estrutura de índice para o ElasticSearch
+## Uso de vetores no SingleStore
+
+Você encontra aqui:
+- Pesquisa de documentos por Similaridade vetorial
+- Criação de tabela para armazenamento dos vetores
+- Criação de uma procedure de agrupamento de documentos pela similaridade semântica/vetorial
+
+Scripts:
+- tabelas e views: [`scripts_tabelas_views.sql`](../src/script_procedure_agrupamento.sql)
+- procedure de agrupamento: [`script_procedure_agrupamento.sql`](../src/script_procedure_agrupamento.sql)
+
+#### Caso queira dicas de estrutura de índice para o ElasticSearch
  - nesse link [`ElasticQueries`](https://github.com/luizanisio/PesquisaElasticFacil/blob/main/docs/ElasticQueries.md) estão disponíveis exemplos de criação de índice e pesquisas no ElasticSearch. 
 
-### Dicas de inclusão e comparação de vetores no SigleStore
+## Dicas de inclusão e comparação de vetores no SigleStore
  - exemplo de view para consultar documentos similares:
 ```sql
     create VIEW testes.vw_similares as
@@ -9,9 +20,6 @@
            v1.dthr as dthr_1, v2.dthr as dthr_2, dot_product(v1.vetor,v2.vetor) as sim, round(dot_product(v1.vetor,v2.vetor) * 100,2) as sim_100
     from testes.vetores v1, testes.vetores v2 where v1.seq_documento <> v2.seq_documento and dot_product(v1.vetor,v2.vetor)> 0.7
 ```
-
- - mais sobre comparação vetorial no SingleStore [`aqui`](https://www.singlestore.com/blog/image-recognition-at-the-speed-of-memory-bandwidth/)
-> 💡 <sub> é possível criar uma procedure de clusterização de documentos no SingleStore, agrupando milhares de documentos em poucos segundos. Em breve vou disponibilizar um exemplo aqui.</sub>
 
 - usando a view: buscando os documentos mais similares ao documento 42, com similaridade acima de 80%
 ```sql
@@ -39,6 +47,9 @@
    insert into testes.vetores(seq_documento, pagina, vetor) values 
    (1,1522,JSON_ARRAY_PACK("[0.29622436059440654, 0.3295083520338847, 0.03051693646308954, 0.33317335819453725, 0.11752939155710365, 0.1427171700446146, 0.17068415021818217, 0.28603840476043374, 0.10785501747400973, 0.1591158711405065, 0.3110699766574472, 0.09797969933472601, 0.10708984600425096, 0.27178365054099046, 0.01997878240363319, 0.3408928615842041, 0.27572629407004984, 0.3336592503497728, 0.014973387837642078, 0.11735723579858952]")),
 ```
+
+### Geração de vetores com o Doc2VecFacial e armazenamento no SigleStore
+
 - Para gerar o vetor de um documento com o `Doc2VecFacil`, use o médodo:
 ```python
    from util_doc2vec_facil import UtilDoc2VecFacil
@@ -79,3 +90,45 @@ insert into testes.vetores(seq_documento, pagina, vetor) values
 (174,1715,JSON_ARRAY_PACK("[0.03408977990407908, 0.2956950256670329, 0.13517611113386946, 0.09221515906735812, 0.28307045409684656, 0.25451677890230856, 0.3399580436769727, 0.0024481751364894716, 0.20671592044591144, 0.2449710436290856, 0.330926585226881, 0.13898249092084805, 0.2514757938519619, 0.2661914505890695, 0.13416825635659912, 0.0036819701688747927, 0.2387163481312366, 0.3138887456462762, 0.1165834244533205, 0.2671220456123604]")),
 (439,11624,JSON_ARRAY_PACK("[0.22298433483656915, 0.2301148081987591, 0.24588601671975943, 0.08631640560714288, 0.11846557529190216, 0.2626954367632294, 0.4069243940319214, 0.005078829890341869, 0.2034471860455145, 0.07020611349277718, 0.025652983690086232, 0.21537371506698205, 0.21976185688825287, 0.3977187100734922, 0.17750445500843268, 0.23722218998322891, 0.34330593739706566, 0.01875538915483548, 0.24899471453349362, 0.11370202981368821]"))
 ```
+
+## Agrupamento de documentos por similaridade vetorial/semântica
+- criei uma procedure que compara todos os documentos selecionados previamente por uma similaridade definida, criando grupos de documentos usando a comparação vetorial do SingleStore. Segue abaixo o script para criação das tabelas de apoio e o script para criação da procedure.
+- A procedure usa uma tabela de apoio `grupos` onde são inseridos os sequenciais dos documentos que serão agrupados e é informado o nome de uma sessão de agrupamento, pois vários agrupamentos podem ocorrer ao mesmo tempo.
+
+- inserindo documentos para agrupamento:
+```sql
+insert into testes.grupos (seq_documento, sessao)
+select seq_documento, 'teste' from testes.vetores v
+where seq_documento not in (select seq_documento from testes.grupos where sessao='teste')
+limit 1000
+```
+
+- acionando a procedure para agrupar os documentos selecionados com 90% de similaridade:
+```sql
+call testes.agrupar('teste', 90) 
+```
+> :bulb: <sub>O primeiro parâmetro é o nome da sessão de agrupamento, nome livre utilizado para verificar o resultado do agrupamento ao final do processo. O segundo parâmetro é a similaridade entre 0-100</sub><br>
+
+- conferindo o resultado do agrupamento:
+```sql
+select * from testes.grupos 
+  where grupo >0 and sessao = 'teste'
+order by grupo, sim desc 
+```
+![exemplo procedure agrupamento](../exemplos/img_agrupamento_tabela.png?raw=true "Exemplo de resultado de agrupamento pela procedure")
+
+> :bulb: <sub>A coluna grupo será preenchida com o número do grupo formado. Será usado -1 para documentos não agrupados por não possuírem documentos semelhantes na relação de documentos da sessão de agrupamento. Será usado o grupo -2 caso o seq_documento informado não tenha vetor na tebela de vetores.</sub><br>
+
+- conferindo um log do agrupamento:
+```sql
+select * from testes.grupos_logs
+  where sessao = 'teste'
+order by ordem
+```
+
+![exemplo log procedure agrupamento](../exemplos/img_agrupamento_tabela_log.png?raw=true "Exemplo de logs gerados pela procedure")
+
+> :bulb: <sub>O log contém um resumo do que está ocorrendo durante o agrupamento, podendo ser consultado por uma chamada de callback para atualizar a interface do usuário com o status do agrupamento para sessões muito grandes (dezenas ou centezas de milhares de vetores).</sub><br>
+
+## Mais informações sobre comparação vetorial no SingleStore
+- Quer saber um pouco mais sobreo o uso do SingleStore em comparação vetorial, veja esse [`conteúdo oficial`](https://www.singlestore.com/blog/image-recognition-at-the-speed-of-memory-bandwidth/)
