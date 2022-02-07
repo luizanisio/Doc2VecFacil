@@ -131,5 +131,11 @@ order by ordem
 
 > :bulb: <sub>O log contém um resumo do que está ocorrendo durante o agrupamento, podendo ser consultado por uma chamada de callback para atualizar a interface do usuário com o status do agrupamento para sessões muito grandes (dezenas ou centezas de milhares de vetores).</sub><br>
 
+- testando a procedure: essa chamada permite receber alguns indicadores que a procedure de agrupamento está funcionando. São verificados se todos os registros foram agrupados corretamente, se as melhores similaridades foram usadas e se os melhores centróides foram escolhidos. Serve como curiosidade ou para quando forem feitos ajustes na procedure de agrupamento.
+```sql
+echo testes.testar_grupos('teste',90)
+```
+
+
 ## Mais informações sobre comparação vetorial no SingleStore
 - Quer saber um pouco mais sobreo o uso do SingleStore em comparação vetorial, veja esse [`conteúdo oficial`](https://www.singlestore.com/blog/image-recognition-at-the-speed-of-memory-bandwidth/)
