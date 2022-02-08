@@ -1,4 +1,5 @@
-gensim==4.0.1  
+gensim>=4.0.1  
 pandas
 nltk
 python-Levenshtein==0.12.2
+xlsxwriter
