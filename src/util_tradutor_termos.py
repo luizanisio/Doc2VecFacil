@@ -13,7 +13,7 @@
 import re
 
 class TradutorTermosRe(dict):
-    """ Inspirador em: https://www.oreilly.com/library/view/python-cookbook/0596001673/ch03s15.html
+    """ Inspirado em: https://www.oreilly.com/library/view/python-cookbook/0596001673/ch03s15.html
         Consultado em: 08/10/2021
     """
     def __init__(self, termos, ignore_case = True):
