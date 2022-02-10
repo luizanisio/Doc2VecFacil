@@ -13,6 +13,7 @@ Chamada:
   - python util_quebrar_paragrafos.py -entrada pasta_textos -saida pasta_trechos -length 200 -tokens 5
   - length = qual o menor tamanho de uma sentença para iniciar uma nova ou unir com a anterior
   - tokens = quantos tokens no mínimo uma sentença precisa ter para ser válida ou ser descartada
+             são considerados tokens com no mínimo 2 caracteres nesse controle
   - entrada = nome da pasta com os textos originais
   - saida = nome da pasta para gravação dos trechos 
   - nome = mantém o nome do arquivo como prefixo incluindo um complemento.
@@ -49,6 +50,7 @@ ABREVIACOES_RGX = re.compile(r'(?:\b{})\.\s*$'.format(r'|\b'.join(ABREVIACOES)),
 PONTUACAO_FINAL = re.compile(r'([\.\?\!]\s+)')
 PONTUACAO_FINAL_LISTA = {'.','?','!'}
 RE_NUMEROPONTO = re.compile(r'(\d+)\.(?=\d)')
+RE_NAO_LETRAS = re.compile('[^\wá-ú]')
 
 def unir_paragrafos_quebrados(texto):
     lista = texto if type(texto) is list else texto.split('\n')
@@ -91,7 +93,10 @@ def sentencas_arquivo(arq, texto = ''):
     for sent in sentencas:
         ultima += f' {sent}'
         if len(ultima) >= MIN_LENGTH_SENTENCA:
-            if MIN_TOKENS_SENTENCA<1 or len(ultima.strip().split(' ')) >= MIN_TOKENS_SENTENCA:
+            # verifica os tokens válidos com letras e maiores que 2 caracteres
+            tokens_validos = [] if MIN_TOKENS_SENTENCA<1 else [RE_NAO_LETRAS.sub('',_) for _ in ultima.strip().split(' ') if len(_)>2]
+            tokens_validos = [_ for _ in tokens_validos if len(_)>2]
+            if MIN_TOKENS_SENTENCA<1 or len(tokens_validos) >= MIN_TOKENS_SENTENCA:
                 res.append(ultima)
             ultima = ''
     # o resto vai unir com a anterior
