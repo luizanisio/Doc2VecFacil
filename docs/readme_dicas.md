@@ -6,7 +6,7 @@ Você encontra aqui:
 - Criação de uma procedure de agrupamento de documentos pela similaridade semântica/vetorial
 
 Scripts:
-- tabelas e views: [`scripts_tabelas_views.sql`](../src/script_procedure_agrupamento.sql)
+- tabelas e views: [`scripts_tabelas_views.sql`](../src/scripts_tabelas_views.sql)
 - procedure de agrupamento: [`script_procedure_agrupamento.sql`](../src/script_procedure_agrupamento.sql)
 
 #### Caso queira dicas de estrutura de índice para o ElasticSearch
