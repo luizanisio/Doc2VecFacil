@@ -18,15 +18,15 @@ from timeit import default_timer as timer
 
 TOKENIZADOR = TokenizadorInteligente('',registrar_oov=False, tokenizar_tudo=True, fragmentar=False)
 
-# exemplos de conjuntos de stop_words para os ngramas
-STOP_MINI = {'de', 'da', 'do', 'para', 'ao', 'a', 'e', 'i', 'o', 'u', 'pra', 'di', 'du', 'por', 'em', 'num', 'ao','aos','no', 'na' }
-STOP_BR_ACENTUADO = {"a", "ao", "aos", "aquela", "aquelas", "aquele", "aqueles", "aquilo", "as", "ate", "até", "com", "como", "da", "das", "de", "dela", "delas", "dele", "deles", "depois", "di", "do", "dos", "du", "e", "e-stj", "e_stj", "ela", "elas", "ele", "eles", "em", "entre", "era", "eram", "eramos", "essa", "essas", "esse", "esses", "esta", "estamos", "estao", "estas", "estava", "estavam", "estavamos", "este", "esteja", "estejam", "estejamos", "estes", "esteve", "estive", "estivemos", "estiver", "estivera", "estiveram", "estiveramos", "estiverem", "estivermos", "estivesse", "estivessem", "estivessemos", "estivéramos", "estivéssemos", "estou", "está", "estávamos", "estão", "eu", "fl", "foi", "fomos", "for", "fora", "foram", "foramos", "forem", "formos", "fosse", "fossem", "fossemos", "fui", "fôramos", "fôssemos", "ha", "haja", "hajam", "hajamos", "hao", "havemos", "hei", "houve", "houvemos", "houver", "houvera", "houveram", "houveramos", "houverao", "houverei", "houverem", "houveremos", "houveria", "houveriam", "houveriamos", "houvermos", "houverá", "houverão", "houveríamos", "houvesse", "houvessem", "houvessemos", "houvéramos", "houvéssemos", "há", "hão", "i", "i-stj", "i_stj", "isso", "isto", "ja", "já", "lhe", "lhes", "mais", "mas", "me", "mesmo", "meu", "meus", "minha", "minhas", "muito", "na", "nao", "nas", "nem", "no", "nos", "nossa", "nossas", "nosso", "nossos", "num", "numa", "não", "nós", "o", "os", "ou", "para", "pela", "pelas", "pelo", "pelos", "por", "pra", "qual", "quando", "que", "quem", "sao", "se", "seja", "sejam", "sejamos", "sem", "sera", "serao", "serei", "seremos", "seria", "seriam", "seriamos", "será", "serão", "seríamos", "seu", "seus", "so", "somos", "sou", "sua", "suas", "são", "só", "tambem", "também", "te", "tem", "temos", "tenha", "tenham", "tenhamos", "tenho", "tera", "terao", "terei", "teremos", "teria", "teriam", "teriamos", "terá", "terão", "teríamos", "teu", "teus", "teve", "tinha", "tinham", "tinhamos", "tive", "tivemos", "tiver", "tivera", "tiveram", "tiveramos", "tiverem", "tivermos", "tivesse", "tivessem", "tivessemos", "tivéramos", "tivéssemos", "tu", "tua", "tuas", "tém", "tínhamos", "u", "uaos", "um", "uma", "voce", "voces", "você", "vocês", "vos", "à", "às", "éramos"}
-STOP_BR = {"a", "ao", "aos", "aquela", "aquelas", "aquele", "aqueles", "aquilo", "as", "ate", "ate", "com", "como", "da", "das", "de", "dela", "delas", "dele", "deles", "depois", "di", "do", "dos", "du", "e", "e-stj", "e_stj", "ela", "elas", "ele", "eles", "em", "entre", "era", "eram", "eramos", "essa", "essas", "esse", "esses", "esta", "estamos", "estao", "estas", "estava", "estavam", "estavamos", "este", "esteja", "estejam", "estejamos", "estes", "esteve", "estive", "estivemos", "estiver", "estivera", "estiveram", "estiveramos", "estiverem", "estivermos", "estivesse", "estivessem", "estivessemos", "estiveramos", "estivessemos", "estou", "esta", "estavamos", "estao", "eu", "fl", "foi", "fomos", "for", "fora", "foram", "foramos", "forem", "formos", "fosse", "fossem", "fossemos", "fui", "foramos", "fossemos", "ha", "haja", "hajam", "hajamos", "hao", "havemos", "hei", "houve", "houvemos", "houver", "houvera", "houveram", "houveramos", "houverao", "houverei", "houverem", "houveremos", "houveria", "houveriam", "houveriamos", "houvermos", "houvera", "houverao", "houveriamos", "houvesse", "houvessem", "houvessemos", "houveramos", "houvessemos", "ha", "hao", "i", "i-stj", "i_stj", "isso", "isto", "ja", "ja", "lhe", "lhes", "mais", "mas", "me", "mesmo", "meu", "meus", "minha", "minhas", "muito", "na", "nao", "nas", "nem", "no", "nos", "nossa", "nossas", "nosso", "nossos", "num", "numa", "nao", "nos", "o", "os", "ou", "para", "pela", "pelas", "pelo", "pelos", "por", "pra", "qual", "quando", "que", "quem", "sao", "se", "seja", "sejam", "sejamos", "sem", "sera", "serao", "serei", "seremos", "seria", "seriam", "seriamos", "sera", "serao", "seriamos", "seu", "seus", "so", "somos", "sou", "sua", "suas", "sao", "so", "tambem", "tambem", "te", "tem", "temos", "tenha", "tenham", "tenhamos", "tenho", "tera", "terao", "terei", "teremos", "teria", "teriam", "teriamos", "tera", "terao", "teriamos", "teu", "teus", "teve", "tinha", "tinham", "tinhamos", "tive", "tivemos", "tiver", "tivera", "tiveram", "tiveramos", "tiverem", "tivermos", "tivesse", "tivessem", "tivessemos", "tiveramos", "tivessemos", "tu", "tua", "tuas", "tem", "tinhamos", "u", "uaos", "um", "uma", "voce", "voces", "voce", "voces", "vos", "a", "as", "eramos"}
+# algumas preposições não são incluídas pois evitariam ngramas como código_do_consumidor
+STOP_NGRAMAS = {'ao', 'aos', 'aquela', 'aquelas', 'aquele', 'aqueles', 'aquilo', 'as', 'ate', 'com', 'como', 'das', 'dela', 'delas', 'dele', 'deles', 'depois', 'di', 'dos', 'du', 'e-stj', 'e_stj', 'ela', 'elas', 'ele', 
+'eles', 'em', 'entre', 'era', 'eram', 'eramos', 'essa', 'essas', 'esse', 'esses', 'esta', 'estamos', 'estao', 'estas', 'estava', 'estavam', 'estavamos', 'este', 'esteja', 'estejam', 'estejamos', 'estes', 
+'esteve', 'estive', 'estivemos', 'estiver', 'estivera', 'estiveram', 'estiveramos', 'estiverem', 'estivermos', 'estivesse', 'estivessem', 'estivessemos', 'estou', 'eu', 'fl', 'foi', 'fomos', 'for', 'fora', 'foram', 'foramos', 'forem', 'formos', 'fosse', 'fossem', 'fossemos', 'fui', 'ha', 'haja', 'hajam', 'hajamos', 'hao', 'havemos', 'hei', 'houve', 'houvemos', 'houver', 'houvera', 'houveram', 'houveramos', 'houverao', 'houverei', 'houverem', 'houveremos', 'houveria', 'houveriam', 'houveriamos', 'houvermos', 'houvesse', 'houvessem', 'houvessemos', 'i', 'i-stj', 'i_stj', 'isso', 'isto', 'ja', 'lhe', 'lhes', 'mais', 'mas', 'me', 'mesmo', 'meu', 'meus', 'minha', 'minhas', 'muito', 'na', 'nao', 'nas', 'nem', 'no', 'nos', 'nossa', 'nossas', 'nosso', 'nossos', 'num', 'numa', 'o', 'os', 'ou', 'para', 'pela', 'pelas', 'pelo', 'pelos', 'por', 'pra', 'qual', 'quando', 'que', 'quem', 'sao', 'se', 'seja', 'sejam', 'sejamos', 'sem', 'sera', 'serao', 'serei', 'seremos', 'seria', 'seriam', 'seriamos', 'seu', 'seus', 'so', 'somos', 'sou', 'sua', 'suas', 'tambem', 'te', 'tem', 'temos', 'tenha', 'tenham', 'tenhamos', 'tenho', 'tera', 'terao', 'terei', 'teremos', 'teria', 'teriam', 'teriamos', 'teu', 'teus', 'teve', 'tinha', 'tinham', 'tinhamos', 'tive', 'tivemos', 'tiver', 'tivera', 'tiveram', 'tiveramos', 'tiverem', 'tivermos', 'tivesse', 'tivessem', 'tivessemos', 'tu', 'tua', 'tuas', 'u', 'uaos', 'um', 'uma', 'voce', 'voces', 'vos',
+'um', 'dois', 'tres', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'novo', 'zero'}
+# filtros para remover ngramas estranhos iniciados por preposições
+FILTRO_FINAL = {'de', 'da', 'do', 'para', 'ao', 'a', 'e', 'i', 'o', 'u', 'pra', 'di', 'du', 'por', 'em', 'num', 'ao','aos','no', 'na' }
 
-# define o conjunto usado nos ngramas - não são só as stop-words, são também termos do 
-# texto mas que não são interessantes para compor ngramas
-STOP_NGRAMAS = STOP_BR
-# alguns termos extras podem comport essa lista para não formar ngramas 
+# alguns termos extras podem compor essa lista para não formar ngramas 
 #STOP_NGRAMAS.update({'pauta','pastadigital','poder','outro','informe','um','dois','três','quatro','cinco','seis','sete','oito','nove','dez','dias','listview','seam'})
 # alguns termos compostos podem compor essa lista para não formar trigramas ou quadrigramas
 #STOP_NGRAMAS.update({'assinado_eletronicamente'})
@@ -154,12 +154,47 @@ def gerar_bigramas_preprocessados(pasta_textos=r'.\textos', pasta_saida_ngramas=
 
     print('Modelos finalizados: ', arquivo_bigrama, arquivo_quadrigrama)
 
+    arquivo_incluir = os.path.join(pasta_saida,'ngramas_incluir.txt')
+    if os.path.isfile(arquivo_incluir):
+        print('Carregando ngramas prontos: ', arquivo_incluir)
+        lista = carregar_arquivo(arquivo_incluir, juntar_linhas=False)
+        lista = [pre_processamento(_, realizar_split=False).strip() for _ in lista if _ and _[0] !='#']
+        lista.sort(key= lambda k:len(k), reverse=True)
+        qtd = 0
+        for termo in lista:
+            if termo not in lst_vocab_sub:
+                lst_vocab_sub.append(termo.strip().replace(' ','_'))
+                qtd += 1
+        print('\t ngramas incluídos: ', qtd)
+    else:
+        with open(arquivo_incluir,'w') as f:
+            f.write('### lista de termos para inclusão ###\n')
+
     print(' - gravando vocab de substituição')
     with open(os.path.join(pasta_saida,'VOCAB_TRADUTOR ngramas sugeridos.txt'),'w') as f:
-        for linha in lst_vocab_sub:
-            de, por = linha.strip().replace('_',' '), linha.strip()
-            if len(de)>1 and len(por)>1:
-                f.write(f'{de} => {por}\n')
+        with open(os.path.join(pasta_saida,'ngramas_removidos.log'),'w') as fr:
+            for linha in lst_vocab_sub:
+                de, por = linha.strip().replace('_',' '), linha.strip()
+                if len(de)>1 and len(por)>1 and not ignorar_stop_mini(de):
+                    f.write(f'{de} => {por}\n')
+                else:
+                    fr.write(f'{de} => {por}\n')
+
+def ignorar_stop_mini(termo_de):
+    tks = termo_de.split(' ')
+    if not any(tks):
+        return True
+    for termo in FILTRO_FINAL:
+        # inicia com um termo de STOP_MINI
+        if tks[0] == termo:
+            # print('Removeu: ', termo, termo_de)
+            return True
+        # termina com um termo de STOP_MINI
+        if tks[-1] == termo:
+            # print('Removeu: ', termo, termo_de)
+            return True
+    return False
+        
 
 def testar_ngramas(pasta_textos=r'.\textos', pasta_saida_ngramas=None, texto='', maximo_linhas=1000):
     pasta_ngramas = pasta_saida_ngramas if pasta_saida_ngramas else pasta_textos 
