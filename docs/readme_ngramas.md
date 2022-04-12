@@ -30,6 +30,7 @@
   - `bigramas.log` - lista de bigramas gerados no formato texto
   - `quadrigramas.bin` - modelo de trigramas ou quadrigramas
   - `quadrigramas.log` - lista de quadrigramas gerados no formato texto
+  - `ngramas_removidos.log` - lista de ngramas removidos no final por iniciarem ou terminarem com preposições ou números
   - `vocab_sub_bigramas_sugerido.txt` - arquivo com transformações sugeridas para usar no [`Doc2VecFacil`](https://github.com/luizanisio/Doc2VecFacil)
 
 - Resultado: ao rodar o código, serão mostrados alguns exemplos de bigramas e quadrigramas gerados e o caminho dos arquivos gerados.
