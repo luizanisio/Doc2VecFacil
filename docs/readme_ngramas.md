@@ -7,12 +7,8 @@
 
 ## Gerando os modelos de bigramas e nGramas:
 - rodar o código `python util_ngramas_facil.py -pasta ./meu_modelo -min_count 20 -threshold 50
-- Serão gerados os arquivos:
-  - `bigramas.bin` - modelo de bigramas 
-  - `bigramas.log` - lista de bigramas gerados no formato texto
-  - `quadrigramas.bin` - modelo de trigramas ou quadrigramas
-  - `quadrigramas.log` - lista de quadrigramas gerados no formato texto
-  - `vocab_sub_bigramas_sugerido.txt` - arquivo com transformações sugeridas para usar no [`Doc2VecFacil`](https://github.com/luizanisio/Doc2VecFacil)
+- Arquivos de configuração:
+  - `ngramas_incluir.txt` - lista de termos que deverão ser considerados como ngramas independente da análise dos arquivos. Exemplo: `codigo_do_consumidor`, `bem imovel`
   - `ngramas_remover.txt` - lista de termos (um por linha) que não devem compôr bigramas ou quadrigramas. 
     - Exemplo:
     ```
@@ -26,8 +22,15 @@
   - Essa configuração evitaria bigramas como `penal_fls`, e evitaria `pagina_digitalizada_agravo` caso `pagina_digitalizada` fosse um bigrama formado.
   - A classe já contém uma lista de stop words em português para serem evitadas nos ngramas. 
   ```
-  STOP_BR = {"a", "ao", "aos", "aquela", "aquelas", "aquele", "aqueles", "aquilo", "as", "ate", "ate", "com", "como", "da", "das", "de", "dela", "delas", "dele", "deles", "depois", "di", "do", "dos", "du", "e", "e-stj", "e_stj", "ela", "elas", "ele", "eles", "em", "entre", "era", "eram", "eramos", "essa", "essas", "esse", "esses", "esta", "estamos", "estao", "estas", "estava", "estavam", "estavamos", "este", "esteja", "estejam", "estejamos", "estes", "esteve", "estive", "estivemos", "estiver", "estivera", "estiveram", "estiveramos", "estiverem", "estivermos", "estivesse", "estivessem", "estivessemos", "estiveramos", "estivessemos", "estou", "esta", "estavamos", "estao", "eu", "fl", "foi", "fomos", "for", "fora", "foram", "foramos", "forem", "formos", "fosse", "fossem", "fossemos", "fui", "foramos", "fossemos", "ha", "haja", "hajam", "hajamos", "hao", "havemos", "hei", "houve", "houvemos", "houver", "houvera", "houveram", "houveramos", "houverao", "houverei", "houverem", "houveremos", "houveria", "houveriam", "houveriamos", "houvermos", "houvera", "houverao", "houveriamos", "houvesse", "houvessem", "houvessemos", "houveramos", "houvessemos", "ha", "hao", "i", "i-stj", "i_stj", "isso", "isto", "ja", "ja", "lhe", "lhes", "mais", "mas", "me", "mesmo", "meu", "meus", "minha", "minhas", "muito", "na", "nao", "nas", "nem", "no", "nos", "nossa", "nossas", "nosso", "nossos", "num", "numa", "nao", "nos", "o", "os", "ou", "para", "pela", "pelas", "pelo", "pelos", "por", "pra", "qual", "quando", "que", "quem", "sao", "se", "seja", "sejam", "sejamos", "sem", "sera", "serao", "serei", "seremos", "seria", "seriam", "seriamos", "sera", "serao", "seriamos", "seu", "seus", "so", "somos", "sou", "sua", "suas", "sao", "so", "tambem", "tambem", "te", "tem", "temos", "tenha", "tenham", "tenhamos", "tenho", "tera", "terao", "terei", "teremos", "teria", "teriam", "teriamos", "tera", "terao", "teriamos", "teu", "teus", "teve", "tinha", "tinham", "tinhamos", "tive", "tivemos", "tiver", "tivera", "tiveram", "tiveramos", "tiverem", "tivermos", "tivesse", "tivessem", "tivessemos", "tiveramos", "tivessemos", "tu", "tua", "tuas", "tem", "tinhamos", "u", "uaos", "um", "uma", "voce", "voces", "voce", "voces", "vos", "a", "as", "eramos"}
+  STOP_NGRAMAS = {'ao', 'aos', 'aquela', 'aquelas', 'aquele', 'aqueles', 'aquilo', 'as', 'ate', 'com', 'como', 'das', 'dela', 'delas', 'dele', 'deles', 'depois', 'di', 'dos', 'du', 'e-stj', 'e_stj', 'ela', 'elas', 'ele', ..., 'sete', 'oito', 'novo', 'zero'}
   ```
+
+- Serão gerados os arquivos:
+  - `bigramas.bin` - modelo de bigramas 
+  - `bigramas.log` - lista de bigramas gerados no formato texto
+  - `quadrigramas.bin` - modelo de trigramas ou quadrigramas
+  - `quadrigramas.log` - lista de quadrigramas gerados no formato texto
+  - `vocab_sub_bigramas_sugerido.txt` - arquivo com transformações sugeridas para usar no [`Doc2VecFacil`](https://github.com/luizanisio/Doc2VecFacil)
 
 - Resultado: ao rodar o código, serão mostrados alguns exemplos de bigramas e quadrigramas gerados e o caminho dos arquivos gerados.
 ```
