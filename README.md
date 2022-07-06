@@ -37,7 +37,7 @@ Componente python que simplifica o processo de criação de um modelo `Doc2Vec` 
 3) baixar os arquivos do [`projeto`](./src/) 
 4) baixar um [`modelo`](./exemplos/) ou criar a sua estrutura de pastas
 5) rodar o treinamento, a curadoria, o agrupamento e explorar os recursos que o uso do espaço vetorial permite
-> :bulb: <sub> Nota: Esse é o [tutorial oficial do gensim](https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html#introducing-paragraph-vector), a ideia do componetne é simplificar a geração e uso do modelo treinado, mas não há nada muito especial se comparado aos códigos da documentação. </sub>
+> :bulb: <sub> Nota: Esse é o [tutorial oficial do gensim](https://radimrehurek.com/gensim/auto_examples/tutorials/run_doc2vec_lee.html#introducing-paragraph-vector), a ideia do componente é simplificar a geração e uso do modelo treinado, mas não há nada muito especial se comparado aos códigos da documentação. </sub>
 
 <hr>
 
