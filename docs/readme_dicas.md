@@ -4,6 +4,7 @@ Você encontra aqui:
 - Pesquisa de documentos por Similaridade vetorial
 - Criação de tabela para armazenamento dos vetores
 - Criação de uma procedure de agrupamento de documentos pela similaridade semântica/vetorial
+- Pesquisa vetorial SingleStore - [saiba mais](https://www.singlestore.com/blog/image-recognition-at-the-speed-of-memory-bandwidth/)
 
 Scripts:
 - tabelas e views: [`scripts_tabelas_views.sql`](../src/scripts_tabelas_views.sql)
