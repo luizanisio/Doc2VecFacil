@@ -1,6 +1,8 @@
 # Doc2VecFacil
+
+- **Atenção**: Para um uso rápido e sem muitos parâmetros, criei o [Dov2VecRapido](https://github.com/luizanisio/Doc2VecRapido) e o [Doc2BertRapido](https://github.com/luizanisio/Doc2VecRapido), fica a dica.
+
 Classe python que simplifica o processo de criação de um modelo `Doc2Vec` [`Gensim 4.0.1`](https://radimrehurek.com/gensim/models/doc2vec.html) com facilitadores para geração de um vocab personalizado e com a geração de arquivos de curadoria. Dicas de agrupamento de documentos similares, uso de `ElasticSearch` e `SingleStore`.
-> :bulb: <sub>Para um uso rápido e sem muitos parâmetros, criei o [Dov2VecRapido](https://github.com/luizanisio/Doc2VecRapido), fica a dica.</sub>
 - se você não sabe o que é um modelo de similaridade, em resumo é um algoritmo não supervisionado para criar um modelo que transforma frases ou documentos em vetores matemáticos que podem ser comparados retornando um valor equivalente à similaridade semântica de documentos do mesmo contexto/domínio dos documentos usados no treinamento do modelo (doc2vec). Nesse cenário a máquina 'aprende' o vocabulário treinado e o contexto em que as palavras aparecem (word2vec), permitindo identificar a similaridade entre os termos, as frases e os documentos. O doc2vec amplia o treinamento do word2vec para frases ou documentos.
 - alguns links para saber mais:
   - [`Paragraph Vector 2014`](https://cs.stanford.edu/~quocle/paragraph_vector.pdf) - a origem do Doc2Vec
